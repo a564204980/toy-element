@@ -1,0 +1,78 @@
+name: Test and deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Run Lint and Test
+    runs-on: ubuntu-latest
+
+    # 运行代码检查和测试
+    steps:
+      # 检出代码仓库
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # 设置node环境
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      # 安装pnpm包管理器
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # 安装项目依赖
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 运行测试命令
+      - name: Run tests
+        run: npm run test
+
+  # 构建文档
+  build:
+    name: Build docs
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build docs
+        run: npm run docs:build
+
+      - name: Upload docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: ./packages/docs/.vitepress/dist
+
+  # 部署文档到GitHub Pages
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download docs
+        uses: actions/download-artifact@v3
+        with:
+          name: docs
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: .
