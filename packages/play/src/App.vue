@@ -2,8 +2,7 @@
 
 <template>
   <div>
-    <el-button>这是按钮</el-button>
-    <el-button>这是按钮2</el-button>
+    <er-button type="primary" size="small">这是按钮222</er-button>
   </div>
 </template>
 
