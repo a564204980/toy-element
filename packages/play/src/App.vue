@@ -1,9 +1,17 @@
-<script setup lang="ts"></script>
-
 <template>
   <div>
-    <er-button type="primary" size="small">这是按钮222</er-button>
+    <er-button-group>
+      <er-button type="danger" round></er-button>
+      <er-button type="warning" round></er-button>
+      <er-button type="primary" round icon="search"></er-button>
+    </er-button-group>
   </div>
 </template>
+
+<script setup lang="ts">
+const handleClick = (e: MouseEvent) => {
+  console.log("这是点击事件", e);
+};
+</script>
 
 <style scoped></style>
