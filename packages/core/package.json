@@ -2,9 +2,11 @@
   "name": "toy-element",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-umd": "vite build --config vite.umd.config.ts",
+    "build-es": "vite build --config vite.es.config.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,5 +14,8 @@
   "packageManager": "pnpm@10.13.0",
   "dependencies": {
     "@toy-element/components": "workspace:*"
+  },
+  "devDependencies": {
+    "vite-plugin-dts": "^4.5.4"
   }
 }

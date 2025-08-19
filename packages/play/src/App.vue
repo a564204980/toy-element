@@ -1,7 +1,7 @@
 <template>
   <div>
     <er-button-group>
-      <er-button type="danger" round></er-button>
+      <er-button type="danger" round icon="face-smile"></er-button>
       <er-button type="warning" round></er-button>
       <er-button type="primary" round icon="search"></er-button>
     </er-button-group>
