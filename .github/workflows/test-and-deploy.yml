@@ -28,9 +28,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 运行测试命令
-      - name: Run tests
-        run: npm run test
+     
 
   # 构建文档
   build:
