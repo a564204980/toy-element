@@ -1,34 +1,29 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
+import { readdirSync } from "fs";
 import vue from "@vitejs/plugin-vue";
-import { includes } from "lodash-es";
+import { includes, filter, map } from "lodash-es";
 
-const COMP_NAMES = [
-  "Alert",
-  "Button",
-  "Collapse",
-  "Dropdown",
-  "Form",
-  "Icon",
-  "Input",
-  "Loading",
-  "Message",
-  "MessageBox",
-  "Notification",
-  "Overlay",
-  "Popconfirm",
-  "Select",
-  "Switch",
-  "Tooltip",
-  "Upload"
-] as const
+const getDirectoriesSync = (basePath: string) => {
+  // 返回包含文件信息的对象
+  const entries = readdirSync(basePath, { withFileTypes: true });
+  // item.isDirectory()  当前是否为目录
+
+  return map(
+    filter(entries, (item) => item.isDirectory()),
+    (entry) => entry.name
+  );
+};
 
 export default defineConfig({
-  plugins: [vue(), dts({
-    tsconfigPath:"../../tsconfig.build.json", // 配置文件路径
-    outDir:"dist/types"
-  })],
+  plugins: [
+    vue(),
+    dts({
+      tsconfigPath: "../../tsconfig.build.json", // 配置文件路径
+      outDir: "dist/types",
+    }),
+  ],
   build: {
     outDir: "dist/es",
     lib: {
@@ -55,8 +50,8 @@ export default defineConfig({
           return assetInfo.name as string;
         },
         // 分包
-        manualChunks:(id) => {
-         if (includes(id, "node_modules")) return "vendor";
+        manualChunks: (id) => {
+          if (includes(id, "node_modules")) return "vendor";
 
           if (includes(id, "/packages/hooks")) return "hooks";
 
@@ -66,12 +61,12 @@ export default defineConfig({
           )
             return "utils";
 
-          for(const item of COMP_NAMES){
-             if(id.includes(`/packages/components/${item}`)){
-              return item
+          for (const item of getDirectoriesSync("../components")) {
+            if (id.includes(`/packages/components/${item}`)) {
+              return item;
             }
           }
-        }
+        },
       },
     },
   },

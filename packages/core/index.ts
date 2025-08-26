@@ -1,6 +1,6 @@
 import components from "./components";
-import "@toy-element/theme/index.css";
-import { makeInstaller } from "@toy-element/utils";
+import "@toy-element-clone/theme/index.css";
+import { makeInstaller } from "@toy-element-clone/utils";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 
