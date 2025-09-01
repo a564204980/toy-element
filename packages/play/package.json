@@ -8,7 +8,14 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@toy-element-clone/core": "workspace:*",
+    "@toy-element-clone/theme": "workspace:*",
+    "vue": "^3.5.18"
+  },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1"
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^1.8.27"
   }
 }

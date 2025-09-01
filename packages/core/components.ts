@@ -1,4 +1,16 @@
 import type { Plugin } from "vue";
-import { ErButton, ErIcon, ErButtonGroup } from "@toy-element-clone/components";
+import {
+  ErButton,
+  ErIcon,
+  ErButtonGroup,
+  ErCollapse,
+  ErCollapseItem,
+} from "@toy-element-clone/components";
 
-export default [ErButton, ErButtonGroup, ErIcon] as Plugin[];
+export default [
+  ErButton,
+  ErButtonGroup,
+  ErIcon,
+  ErCollapse,
+  ErCollapseItem,
+] as Plugin[];
