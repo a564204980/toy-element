@@ -132,10 +132,26 @@ importers:
   packages/hooks: {}
 
   packages/play:
+    dependencies:
+      '@toy-element-clone/theme':
+        specifier: workspace:*
+        version: link:../theme
+      toy-element-clone:
+        specifier: workspace:*
+        version: link:../core
+      vue:
+        specifier: ^3.5.18
+        version: 3.5.20(typescript@5.9.2)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.1
         version: 6.0.1(vite@5.4.19(@types/node@20.19.11))(vue@3.5.20(typescript@5.9.2))
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.2
+      vue-tsc:
+        specifier: ^1.8.27
+        version: 1.8.27(typescript@5.9.2)
 
   packages/theme: {}
 

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@toy-element-clone/core": "workspace:*",
+    "toy-element-clone": "workspace:*",
     "@toy-element-clone/theme": "workspace:*",
     "vue": "^3.5.18"
   },
