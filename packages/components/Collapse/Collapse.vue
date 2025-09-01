@@ -5,16 +5,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, provide } from "vue";
+import { ref, watch, watchEffect, provide } from "vue";
 import { COLLAPSE_CTX_KEY } from "./contants.ts";
+import { debugWarn } from "@toy-element-clone/utils";
 import type {
   CollapseProps,
   CollapseEmits,
   CollapseItemName,
 } from "./types.ts";
 
+const COMPONENT_NAME = "ErCollapse";
+
 defineOptions({
-  name: "ErCollapse",
+  name: COMPONENT_NAME,
 });
 
 const emits = defineEmits<CollapseEmits>();
@@ -22,15 +25,17 @@ const props = defineProps<CollapseProps>();
 
 const activeNames = ref(props.modelValue);
 
-if (props.accordion && activeNames.value.length > 1) {
-  console.warn("手风琴模式下只能有一个展开 - 热重载测试");
-}
-
 const updateActiveNames = (newNames: CollapseItemName[]) => {
   activeNames.value = newNames;
   emits("update:modelValue", newNames);
   emits("change", newNames);
 };
+
+watchEffect(() => {
+  if (props.accordion && activeNames.value.length > 1) {
+    debugWarn(COMPONENT_NAME, "手风琴模式下只能有一个展开");
+  }
+});
 
 watch(
   () => props.modelValue,

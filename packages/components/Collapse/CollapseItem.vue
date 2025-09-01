@@ -11,16 +11,13 @@
       </span>
       <er-icon icon="angle-right" class="header-angle"></er-icon>
     </div>
-    <div class="er-collapse-item__wapper" v-show="isActive">
-      <div class="er-collapse-item__content" :id="`item-content=${name}`">
-        <slot></slot>
+    <transition name="slide" v-on="transitionEvents">
+      <div class="er-collapse-item__wapper" v-show="isActive">
+        <div class="er-collapse-item__content" :id="`item-content=${name}`">
+          <slot></slot>
+        </div>
       </div>
-    </div>
-    <!--
-     <transition name="slide" v-on="transitionEvents">
-     
     </transition>
-   -->
   </div>
 </template>
 
@@ -29,6 +26,7 @@ import ErIcon from "../Icon/Icon.vue";
 import { inject, computed } from "vue";
 import { COLLAPSE_CTX_KEY } from "./contants.ts";
 import type { CollapseItemProps } from "./types.ts";
+import transitionEvents from "./transitionEvents.ts";
 
 defineOptions({ name: "ErCollapseItem" });
 const props = defineProps<CollapseItemProps>();

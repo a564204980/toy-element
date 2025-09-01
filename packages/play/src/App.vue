@@ -6,7 +6,7 @@
       <er-button type="primary" round icon="search"></er-button>
     </er-button-group>
 
-    <er-collapse v-model="activeNames">
+    <er-collapse v-model="activeNames" :accordion="true">
       <er-collapse-item name="1">
         <template #title> 🚀 热重载测试 - 标题已更新！ </template>
         ✅ 这是热重载测试内容 - 无需打包即可看到变化！
