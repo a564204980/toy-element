@@ -40,8 +40,8 @@
     "@toy-element-clone/hooks": "workspace:*",
     "@toy-element-clone/theme": "workspace:*",
     "@toy-element-clone/utils": "workspace:*",
-    "lodash-es": "^4.17.21",
     "toy-element-clone": "workspace:*",
+    "lodash-es": "^4.17.21",
     "vue": "^3.5.18"
   }
 }
