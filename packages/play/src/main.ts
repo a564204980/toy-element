@@ -4,7 +4,7 @@ import App from "./App.vue";
 // import "toy-element-clone/dist/index.css"; // 引入构建后的样式文件
 
 import ToyElement from "../../core/index";
-import "@toy-element-clone/theme/index.css";
+ import "toy-element-clone/dist/index.css"; 
 
 const app = createApp(App);
 

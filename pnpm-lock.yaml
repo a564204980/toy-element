@@ -155,7 +155,14 @@ importers:
 
   packages/theme: {}
 
-  packages/utils: {}
+  packages/utils:
+    dependencies:
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      vue:
+        specifier: ^3.5.18
+        version: 3.5.20(typescript@5.9.2)
 
 packages:
 
