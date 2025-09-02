@@ -6,8 +6,13 @@ import dts from "vite-plugin-dts";
 import shell from "shelljs";
 import hooks from "./hooksPlugin";
 import vue from "@vitejs/plugin-vue";
+import terser from "@rollup/plugin-terser";
 
 const TRY_MOVE_STYLES_DELAY = 800;
+// 环境变量
+const isProd = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV === "development";
+const isTest = process.env.NODE_ENV === "test";
 
 const moveStyles = () => {
   try {
@@ -42,11 +47,44 @@ export default defineConfig({
       rmFiles: ["./dist/es", "./dist/types", "./dist/theme"],
       afterBuild: moveStyles,
     }),
+    // 压缩配置
+    terser({
+      // 代码压缩优化
+      compress: {
+        sequences: isProd, // 生产环境：合并连续语句
+        arguments: isProd, // 生产环境：优化函数参数（如删除未使用的参数）
+        drop_console: isProd && ["log"], // 生产环境：移除 console.log
+        drop_debugger: isProd, // 生产环境：移除 debugger 语句
+        passes: isProd ? 4 : 1, // 生产环境：压缩次数增加到 4 次
+        global_defs: {
+          // 全局常量替换（编译时替换代码中的 @DEV 等标识）
+          "@DEV": JSON.stringify(isDev),
+          "@PROD": JSON.stringify(isProd),
+          "@TEST": JSON.stringify(isTest),
+        },
+      },
+      // 输出代码格式化控制
+      format: {
+        semicolons: false, // 不强制添加分号
+        shorthand: isProd, // 生产环境：使用短路表达式等简写（如 a=a||b → a||=b）
+        braces: !isProd, // 开发环境：强制为块级语句添加大括号（如 if(a){...}）
+        beautify: !isProd, // 开发环境：美化代码（换行、缩进），生产环境压缩为一行
+        comments: !isProd, // 开发环境：保留注释，生产环境删除注释
+      },
+      // 变量名混淆
+      mangle: {
+        toplevel: isProd, // 生产环境：混淆顶层变量（如模块内的全局变量）
+        eval: isProd, // 生产环境：允许混淆 eval 中的变量
+        keep_classnames: isDev, // 开发环境：保留类名（方便调试类相关逻辑）
+        keep_fnames: isDev, // 开发环境：保留函数名（方便堆栈跟踪和调试）
+      },
+    }),
   ],
   build: {
     outDir: "dist/es",
     minify: false, // 是否开启压缩代码
     cssCodeSplit: true, // 开启css资源拆分
+
     lib: {
       entry: resolve(__dirname, "./index.ts"),
       name: "ToyElement",
