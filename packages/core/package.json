@@ -24,12 +24,10 @@
     "dist/index.css"
   ],
   "scripts": {
-    "build": "run-s clean build-only move-style",
+    "build": "run-s build-only",
     "build-only": "run-p build-es build-umd",
     "build-umd": "vite build --config vite.umd.config.ts",
     "build-es": "vite build --config vite.es.config.ts",
-    "move-style": "move-file dist/es/index.css dist/index.css",
-    "clean": "rimraf dist",
     "release": "release-it"
   },
   "keywords": [],
@@ -41,6 +39,7 @@
     "vite": "^5.4.19"
   },
   "devDependencies": {
+    "vite-plugin-compression2": "^2.2.1",
     "vite-plugin-dts": "^4.5.4"
   }
 }

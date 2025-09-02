@@ -7,5 +7,5 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 library.add(fas); // 添加所有图标
 const installer = makeInstaller(components);
 
-export * from "../components";
+export * from "@toy-element-clone/components";
 export default installer;

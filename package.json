@@ -19,9 +19,9 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.19.10",
+    "@types/shelljs": "^0.8.17",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/tsconfig": "^0.5.1",
-    "move-file-cli": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "postcss-color-mix": "^1.1.0",
     "postcss-each": "^1.1.0",
@@ -29,7 +29,7 @@
     "postcss-for": "^2.1.1",
     "postcss-nested": "^6.2.0",
     "release-it": "^19.0.4",
-    "rimraf": "^6.0.1",
+    "shelljs": "^0.10.0",
     "typescript": "^5.8.3",
     "vite": "^5.4.19",
     "vite-plugin-dts": "^3.9.1",
@@ -40,8 +40,8 @@
     "@toy-element-clone/hooks": "workspace:*",
     "@toy-element-clone/theme": "workspace:*",
     "@toy-element-clone/utils": "workspace:*",
-    "toy-element-clone": "workspace:*",
     "lodash-es": "^4.17.21",
+    "toy-element-clone": "workspace:*",
     "vue": "^3.5.18"
   }
 }

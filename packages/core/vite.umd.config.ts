@@ -1,9 +1,35 @@
 import { resolve } from "path";
+import { readFileSync } from "fs";
 import { defineConfig } from "vite";
+import { compression } from "vite-plugin-compression2";
+import shell from "shelljs";
+import hooks from "./hooksPlugin";
 import vue from "@vitejs/plugin-vue";
+import { delay } from "lodash-es";
+
+const TRY_MOVE_STYLES_DELAY = 800;
+
+const moveStyles = () => {
+  try {
+    readFileSync("./dist/umd/index.css.gz");
+    // 复制一份到dist的根目录，确保可以直接引入到样式文件，不用关心内部的路径，也确保不会被tree shaking优化掉
+    shell.cp("./dist/umd/index.css", "./dist/index.css");
+  } catch (_) {
+    delay(moveStyles, TRY_MOVE_STYLES_DELAY);
+  }
+};
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    compression({
+      include: /.(cjs|css)$/i,
+    }),
+    hooks({
+      rmFiles: ["./dist/umd", "./dist/index.css"],
+      afterBuild: moveStyles,
+    }),
+  ],
   build: {
     outDir: "dist/umd", // 输出目录
     // 库模式
@@ -32,7 +58,6 @@ export default defineConfig({
           if (assetInfo.name === "style.css") return "index.css";
           return assetInfo.name as string;
         },
-        
       },
     },
   },
