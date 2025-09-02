@@ -161,6 +161,9 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.9.2
+      vite:
+        specifier: ^5.4.19
+        version: 5.4.19(@types/node@20.19.11)(terser@5.43.1)
       vue-tsc:
         specifier: ^1.8.27
         version: 1.8.27(typescript@5.9.2)

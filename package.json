@@ -7,7 +7,8 @@
     "dev": "pnpm --filter @toy-element-clone/play dev",
     "docs:dev": "pnpm --filter @toy-element-clone/docs dev",
     "docs:build": "pnpm --filter @toy-element-clone/docs build",
-    "build": "pnpm --filter toy-element-clone build"
+    "build": "cross-env NODE_ENV=production pnpm --filter toy-element-clone build",
+    "build:dev": "cross-env NODE_ENV=development pnpm --filter toy-element-clone build:watch"
   },
   "keywords": [],
   "author": "",
