@@ -5,6 +5,7 @@ import {
   ErButtonGroup,
   ErCollapse,
   ErCollapseItem,
+  ErAlert,
 } from "@toy-element-clone/components";
 
 export default [
@@ -13,4 +14,5 @@ export default [
   ErIcon,
   ErCollapse,
   ErCollapseItem,
+  ErAlert,
 ] as Plugin[];
