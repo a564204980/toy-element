@@ -4,7 +4,7 @@
   <er-button
     type="primary"
     tag="a"
-    href="https://github.com/EricWXY/eric-ui"
+    href="https://github.com/a564204980/toy-element"
     target="_blank"
     rel="noopener noreferrer"
   >
