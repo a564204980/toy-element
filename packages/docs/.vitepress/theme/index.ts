@@ -3,7 +3,7 @@ import { ElementPlusContainer } from "vitepress-preview-component";
 import DefaultTheme from "vitepress/theme";
 import toyElementClone from "toy-element-clone";
 
-import "vitepress-preview-component/_product/style.css";
+import "vitepress-preview-component/style.css";
 import "toy-element-clone/dist/index.css";
 
 export default {
