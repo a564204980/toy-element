@@ -40,6 +40,8 @@ import { ref, computed } from "vue";
 import { typeIconMap } from "@toy-element-clone/utils";
 import type { AlertProps, AlertEmits, AlertInstance } from "./types.ts";
 
+import ErIcon from "../Icon/Icon.vue";
+
 defineOptions({
   name: "ErAlert",
 });
@@ -56,14 +58,11 @@ const slots = defineSlots();
 const visible = ref(true);
 
 const iconName = computed(() => {
-  console.log("props", props.type);
   return typeIconMap.get(props.type) ?? "circle-info";
 });
-const withDescription = computed(() => props.description || slots.default);
-
-console.log("slots", slots.default());
-
-console.log("iconName", iconName.value);
+const withDescription = computed(() => {
+  return props.description || slots.default;
+});
 
 const open = () => {
   visible.value = true;
@@ -73,8 +72,12 @@ const close = () => {
   emits("close");
 };
 
-defineExpose({
+defineExpose<AlertInstance>({
   open,
   close,
 });
 </script>
+
+<style scoped>
+@import "./style.css";
+</style>

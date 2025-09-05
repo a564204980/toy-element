@@ -28,8 +28,8 @@
 
     </br>
 
-    <ErAlert ref="alertRef" type="warning">
-      这是一条警告信息
+    <ErAlert ref="alertRef"  center title="这是标题">
+      这是文字22222
     </ErAlert>
   </div>
 </template>
