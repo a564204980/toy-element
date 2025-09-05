@@ -1,11 +1,11 @@
 import { resolve } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, readFile } from "fs";
 import { defineConfig } from "vite";
 import { compression } from "vite-plugin-compression2";
 import shell from "shelljs";
-import hooks from "./hooksPlugin";
+import hooks from "../hooksPlugin";
 import vue from "@vitejs/plugin-vue";
-import { delay } from "lodash-es";
+import { delay, defer } from "lodash-es";
 import terser from "@rollup/plugin-terser";
 
 const TRY_MOVE_STYLES_DELAY = 800;
@@ -15,13 +15,10 @@ const isDev = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
 const moveStyles = () => {
-  try {
-    readFileSync("./dist/umd/index.css.gz");
-    // 复制一份到dist的根目录，确保可以直接引入到样式文件，不用关心内部的路径，也确保不会被tree shaking优化掉
-    shell.cp("./dist/umd/index.css", "./dist/index.css");
-  } catch (_) {
-    delay(moveStyles, TRY_MOVE_STYLES_DELAY);
-  }
+  readFile("./dist/umd/index.css.gz", (err) => {
+    if (err) return delay(moveStyles, TRY_MOVE_STYLES_DELAY);
+    defer(() => shell.cp("./dist/umd/index.css", "./dist/index.css"));
+  });
 };
 
 export default defineConfig({
@@ -54,7 +51,7 @@ export default defineConfig({
     // 库模式
     lib: {
       // 入口文件（库的主文件，导出所有公共 API）
-      entry: resolve(__dirname, "./index.ts"),
+      entry: resolve(__dirname, "../index.ts"),
       // 库的全局变量名（UMD 模式下，通过 script 标签引入时使用）
       name: "ToyElement",
       // 输出文件名（会自动加上模块格式后缀，如 .umd.js、.es.js）

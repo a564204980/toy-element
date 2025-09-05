@@ -1,10 +1,10 @@
 import { resolve } from "path";
-import { readdirSync } from "fs";
+import { readdirSync, readdir } from "fs";
 import { defineConfig } from "vite";
-import { includes, filter, map, delay } from "lodash-es";
+import { includes, filter, map, delay, defer } from "lodash-es";
 import dts from "vite-plugin-dts";
 import shell from "shelljs";
-import hooks from "./hooksPlugin";
+import hooks from "../hooksPlugin";
 import vue from "@vitejs/plugin-vue";
 import terser from "@rollup/plugin-terser";
 
@@ -15,16 +15,13 @@ const isDev = process.env.NODE_ENV === "development";
 const isTest = process.env.NODE_ENV === "test";
 
 const moveStyles = () => {
-  try {
-    // 确保css 文件生成完成
-    readdirSync("./dist/es/theme");
-    // 移动到dist的根目录，确保可以直接引入到样式文件
-    shell.mv("./dist/es/theme", "./dist");
-  } catch (_) {
-    delay(moveStyles, TRY_MOVE_STYLES_DELAY);
-  }
+  readdir("./dist/es/theme", (err) => {
+    if (err) return delay(moveStyles, TRY_MOVE_STYLES_DELAY);
+    defer(() => shell.mv("./dist/es/theme", "./dist"));
+  });
 };
 
+// 获取目录下的所有目录名
 const getDirectoriesSync = (basePath: string) => {
   // 返回包含文件信息的对象
   const entries = readdirSync(basePath, { withFileTypes: true });
@@ -86,7 +83,7 @@ export default defineConfig({
     cssCodeSplit: true, // 开启css资源拆分
 
     lib: {
-      entry: resolve(__dirname, "./index.ts"),
+      entry: resolve(__dirname, "../index.ts"),
       name: "ToyElement",
       fileName: "index",
       formats: ["es"],
