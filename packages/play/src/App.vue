@@ -31,6 +31,9 @@
     <ErAlert ref="alertRef"  center title="这是标题">
       这是文字22222
     </ErAlert>
+
+    <er-tooltip>
+    </er-tooltip>
   </div>
 </template>
 
