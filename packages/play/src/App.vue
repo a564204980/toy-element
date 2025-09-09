@@ -32,8 +32,11 @@
       这是文字22222
     </ErAlert>
 
-    <er-tooltip>
+    <er-tooltip content="这是一个提示文本" placement="top">
+      <er-button>鼠标悬停查看提示</er-button>
     </er-tooltip>
+    
+    
   </div>
 </template>
 

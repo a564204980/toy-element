@@ -8,8 +8,8 @@ export interface TooltipProps {
   disbaled?: boolean;
   popperOptions?: Partial<Options>;
   transition?: string; // 自定义动画
-  showTimeout?: string;
-  hiddenTimeout?: string; // 隐藏和展示的一个延时，针对hover的触发方式
+  showTimeout?: number;
+  hiddenTimeout?: number; // 隐藏和展示的一个延时，针对hover的触发方式
 }
 
 export interface TooltipEmits {
