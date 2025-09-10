@@ -1,12 +1,12 @@
-import { resolve } from "path";
-import { readFileSync, readFile } from "fs";
-import { defineConfig } from "vite";
-import { compression } from "vite-plugin-compression2";
 import shell from "shelljs";
-import hooks from "../hooksPlugin";
+import { resolve } from "path";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { delay, defer } from "lodash-es";
 import terser from "@rollup/plugin-terser";
+import { readFile } from "fs";
+import { compression } from "vite-plugin-compression2";
+import { hooksPlugin as hooks } from "@toy-element-clone/vite-plugins";
 
 const TRY_MOVE_STYLES_DELAY = 800;
 // 环境变量

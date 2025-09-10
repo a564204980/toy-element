@@ -32,11 +32,12 @@
       这是文字22222
     </ErAlert>
 
-    <er-tooltip content="这是一个提示文本" placement="top">
+    <er-tooltip content="这是一个提示文本" trigger="click" :virtualTriggering="true" :virtualRef="virtualRef">
       <er-button>鼠标悬停查看提示</er-button>
     </er-tooltip>
+
     
-    
+    <div ref="virtualRef">这是虚拟触发要展示的</div>
   </div>
 </template>
 
@@ -46,6 +47,7 @@ import { ref } from "vue";
 const alertRef = ref()
 const btnGroupRef = ref();
 const activeNames = ref(["1"]);
+const virtualRef = ref()
 
 const handleClick = (e: MouseEvent) => {
   console.log("这是点击事件", alertRef.value.open());

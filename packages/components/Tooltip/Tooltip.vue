@@ -3,7 +3,7 @@
   <div class="er-tooltip" ref="containerNode" v-on="outerEvents">
     <div
       class="er-tooltip__trigger"
-      ref="triggerNode"
+      ref="_triggerNode"
       v-on="events"
       v-if="!virtualTriggering"
     >
@@ -29,15 +29,21 @@
 <script setup lang="ts">
 import { useClickOutside } from "@toy-element-clone/hooks";
 import { createPopper, type Instance } from "@popperjs/core";
+import useEventsToTriggerNode from "./useEventsToTriggerNode.ts";
 import { bind, debounce, isNil, type DebouncedFunc } from "lodash-es";
 import type { TooltipProps, TooltipEmits, TooltipInstance } from "./types";
 import { ref, computed, watchEffect, watch, onUnmounted, type Ref } from "vue";
+
+interface _TooltipProps extends TooltipProps {
+  virtualRef?: HTMLElement | void;
+  virtualTriggering?: boolean; // 是否开启虚拟触发
+}
 
 defineOptions({
   name: "ErTooltip",
 });
 
-const props = withDefaults(defineProps<TooltipProps>(), {
+const props = withDefaults(defineProps<_TooltipProps>(), {
   placement: "bottom",
   trigger: "hover",
   transition: "fade", // 过渡动画
@@ -54,9 +60,16 @@ const events: Ref<Record<string, EventListener>> = ref({}); // 触发元素的�
 const outerEvents: Ref<Record<string, EventListener>> = ref({}); // 外层的所有事件
 const dropdownEvent: Ref<Record<string, EventListener>> = ref({}); // 弹出层的所有事件
 
-const containerNode = ref<HTMLDivElement | null>(null);
+const containerNode = ref<HTMLElement | null>(null);
 const popperNode = ref<HTMLElement>();
-const triggerNode = ref<HTMLDivElement>();
+const _triggerNode = ref<HTMLElement>();
+
+const triggerNode = computed(() => {
+  if (props.virtualTriggering) {
+    return (props.virtualRef as HTMLElement) ?? _triggerNode.value;
+  }
+  return _triggerNode.value as HTMLElement;
+});
 
 const popperOptions = computed(() => ({
   placement: props.placement,
@@ -130,6 +143,7 @@ const attachEvents = () => {
 
 let popperInstance: Instance | null;
 
+// 销毁弹出元素
 const destroyPopperInstance = () => {
   // isNil 检查是否是null或undefined，如果是返回true
   if (isNil(popperInstance)) return;
@@ -165,6 +179,7 @@ watch(
       );
     }
   },
+  // 在dom更新之后再执行回调函数
   { flush: "post" }
 );
 
@@ -191,12 +206,16 @@ watch(
   }
 );
 
+// 监听容器外部的点击事件
 useClickOutside(containerNode, () => {
   emits("hide-outside");
   if (props.trigger === "hover" || props.manual) return;
   visible.value && closeFinal();
 });
 
+useEventsToTriggerNode(props, triggerNode, events, closeFinal);
+
+// 组件挂载时开始监听
 watchEffect(() => {
   if (!props.manual) {
     attachEvents();

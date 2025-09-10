@@ -1,12 +1,12 @@
-import { resolve } from "path";
-import { readdirSync, readdir } from "fs";
-import { defineConfig } from "vite";
-import { includes, filter, map, delay, defer } from "lodash-es";
-import dts from "vite-plugin-dts";
 import shell from "shelljs";
-import hooks from "../hooksPlugin";
+import { resolve } from "path";
+import dts from "vite-plugin-dts"; // 生成类型声明文件
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { readdirSync, readdir } from "fs";
 import terser from "@rollup/plugin-terser";
+import { hooksPlugin as hooks } from "@toy-element-clone/vite-plugins";
+import { includes, filter, map, delay, defer } from "lodash-es";
 
 const TRY_MOVE_STYLES_DELAY = 800;
 // 环境变量
@@ -41,7 +41,9 @@ export default defineConfig({
       outDir: "dist/types",
     }),
     hooks({
+      // 构建前需要删除的文件目录
       rmFiles: ["./dist/es", "./dist/types", "./dist/theme"],
+      // 构建后执行moveStyles这个函数
       afterBuild: moveStyles,
     }),
     // 压缩配置

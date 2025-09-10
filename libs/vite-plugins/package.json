@@ -1,0 +1,19 @@
+{
+  "name": "@toy-element-clone/vite-plugins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "module": "./.dist/index.js",
+  "types": "./.dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./.dist/index.mjs",
+      "types": "./.dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build"
+  }
+}
