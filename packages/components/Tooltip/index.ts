@@ -3,4 +3,4 @@ import { withInstall } from "@toy-element-clone/utils";
 
 export const ErTooltip = withInstall(Tooltip);
 
-// export * from "./style.css";
+export * from "./types";
