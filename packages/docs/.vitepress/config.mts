@@ -22,13 +22,18 @@ export default defineConfig({
     sidebar: [
       {
         text: "指南",
-        collapsed: false,
+        collapsed: false, // 不折叠
         items: [{ text: "快速开始", link: "/get-started" }],
       },
       {
         text: "基础组件",
         collapsed: false,
         items: [{ text: "Button 按钮", link: "components/button" }],
+      },
+      {
+        text: "反馈组件",
+        collapsed: false, // 不折叠
+        items: [{ text: "Tooltip 提示框", link: "components/tooltip" }],
       },
     ],
 
@@ -38,8 +43,8 @@ export default defineConfig({
   },
   markdown: {
     config(md) {
-      md.use(containerPreview);
-      md.use(componentPreview);
+      md.use(containerPreview); // 代码预览
+      md.use(componentPreview); // 组件预览
     },
   },
 });
