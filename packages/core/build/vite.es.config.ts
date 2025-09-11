@@ -98,7 +98,7 @@ export default defineConfig({
         "@fortawesome/vue-fontawesome",
         "@popperjs/core",
         "async-validator",
-      ],
+      ], // 外部依赖，不打包进库文件
       output: {
         globals: {
           vue: "Vue",

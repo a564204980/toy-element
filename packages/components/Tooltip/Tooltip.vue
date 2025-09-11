@@ -115,30 +115,28 @@ const closeDelay = computed(() =>
   props.trigger === "hover" ? props.hiddenTimeout : 0
 );
 
+const triggerStrategyMap: Map<string, () => void> = new Map();
+triggerStrategyMap.set("hover", () => {
+  events.value["mouseenter"] = openFinal; // 显示
+  outerEvents.value["mouseleave"] = closeFinal; // 离开隐藏
+  dropdownEvent.value["mouseenter"] = openFinal; // 弹出层进入显示
+});
+triggerStrategyMap.set("click", () => {
+  events.value["click"] = togglePopper;
+});
+triggerStrategyMap.set("contextmenu", () => {
+  events.value["contextmenu"] = ((e: Event) => {
+    // 阻止默认的右键菜单事件
+    e.preventDefault();
+    openFinal();
+  }) as EventListener;
+  return;
+});
+
 // 绑定事件
 const attachEvents = () => {
   if (props.disbaled || props.manual) return;
-
-  if (props.trigger === "hover") {
-    events.value["mouseenter"] = openFinal; // 显示
-    outerEvents.value["mouseleave"] = closeFinal; // 离开隐藏
-    dropdownEvent.value["mouseenter"] = openFinal; // 弹出层进入显示
-    return;
-  }
-
-  if (props.trigger === "click") {
-    events.value["click"] = togglePopper;
-    return;
-  }
-
-  if (props.trigger === "contextmenu") {
-    events.value["contextmenu"] = ((e: Event) => {
-      // 阻止默认的右键菜单事件
-      e.preventDefault();
-      openFinal();
-    }) as EventListener;
-    return;
-  }
+  triggerStrategyMap.get(props.trigger)?.();
 };
 
 let popperInstance: Instance | null;
