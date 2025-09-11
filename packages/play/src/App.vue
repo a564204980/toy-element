@@ -32,7 +32,7 @@
       这是文字22222
     </ErAlert>
 
-    <er-tooltip content="这是一个提示文本" trigger="click" :virtualTriggering="true" :virtualRef="virtualRef">
+    <er-tooltip content="这是一个提示文本" trigger="hover" :disabled="disabled">
       <er-button>鼠标悬停查看提示</er-button>
     </er-tooltip>
 
@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const disabled = ref(true)
 const alertRef = ref()
 const btnGroupRef = ref();
 const activeNames = ref(["1"]);

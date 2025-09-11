@@ -103,7 +103,7 @@ const togglePopper = () => {
 };
 
 const setVisible = (val: boolean) => {
-  if (props.disbaled) return;
+  if (props.disabled) return;
   visible.value = val;
   emits("visible-change", val);
 };
@@ -135,7 +135,7 @@ triggerStrategyMap.set("contextmenu", () => {
 
 // 绑定事件
 const attachEvents = () => {
-  if (props.disbaled || props.manual) return;
+  if (props.disabled || props.manual) return;
   triggerStrategyMap.get(props.trigger)?.();
 };
 

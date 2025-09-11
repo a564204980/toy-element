@@ -5,7 +5,7 @@ export interface TooltipProps {
   trigger?: "hover" | "click" | "contextmenu"; // 触发方式
   placement?: Placement; // 弹出位置
   manual?: boolean; // 是否手动控制 tooltip 的显示/隐藏状态
-  disbaled?: boolean;
+  disabled?: boolean;
   popperOptions?: Partial<Options>;
   transition?: string; // 自定义动画
   showTimeout?: number;
