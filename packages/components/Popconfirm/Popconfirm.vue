@@ -7,10 +7,10 @@
           {{ title }}
         </div>
         <div class="er-popconfirm__action">
-          <ErButton size="small" :type="cancelButtonType">{{
+          <ErButton size="small" :type="cancelButtonType" @click="cancel">{{
             cancelButtonText
           }}</ErButton>
-          <ErButton size="small" :type="confirmButtonType">{{
+          <ErButton size="small" :type="confirmButtonType" @click="confirm">{{
             confirmButtonText
           }}</ErButton>
         </div>
@@ -61,4 +61,23 @@ const style = computed(() => {
     width: addUnit(props.width),
   };
 });
+
+// 隐藏提示框
+const hidePopper = () => {
+  tooltipRef.value?.hide();
+};
+
+const confirm = (e: Mouseenter) => {
+  emits("confirm", e);
+  hidePopper();
+};
+
+const cancel = (e: Mouseenter) => {
+  emits("cancel", e);
+  hidePopper();
+};
 </script>
+
+<style scoped>
+@import "./style.css";
+</style>
