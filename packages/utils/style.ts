@@ -10,6 +10,12 @@ const isStringNumber = (val: string): boolean => {
   return !Number.isNaN(Number(val));
 };
 
+/**
+ * 为数值添加单位
+ * @param val 数值
+ * @param defaultUnit 单位
+ * @returns 数值 + 单位
+ */
 export function addUnit(val: string | number, defaultUnit = "px") {
   if (!val) return "";
 

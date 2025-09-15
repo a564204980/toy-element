@@ -14,6 +14,6 @@ export interface PopconfirmProps {
 }
 
 export interface PopconfirmEmits {
-  (e: "confirm", value: MouseEvent): void;
+  (e: "confrim", value: MouseEvent): void;
   (e: "cancel", value: MouseEvent): void;
 }

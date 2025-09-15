@@ -39,10 +39,8 @@
     
     <div ref="virtualRef">这是虚拟触发要展示的</div>
 
-    <er-popconfirm
-     
-    >
-     
+    <er-popconfirm title="确认删除吗？" @confrim="handleConfrim">
+      <er-button type="primary">确认删除</er-button>
     </er-popconfirm>
   </div>
 </template>
@@ -59,6 +57,10 @@ const virtualRef = ref()
 const handleClick = (e: MouseEvent) => {
   console.log("这是点击事件", alertRef.value.open());
 };
+
+const handleConfrim = (e: MouseEvent) => {
+  console.log("这是确认事件", e);
+}
 </script>
 
 <style scoped></style>

@@ -10,7 +10,7 @@
           <ErButton size="small" :type="cancelButtonType" @click="cancel">{{
             cancelButtonText
           }}</ErButton>
-          <ErButton size="small" :type="confirmButtonType" @click="confirm">{{
+          <ErButton size="small" :type="confirmButtonType" @click="confrim">{{
             confirmButtonText
           }}</ErButton>
         </div>
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, useSlots } from "vue";
 import { addUnit } from "@toy-element-clone/utils";
 import type { TooltipInstance } from "../Tooltip";
 import type { PopconfirmProps, PopconfirmEmits } from "./types.ts";
@@ -56,7 +56,10 @@ const props = withDefaults(defineProps<PopconfirmProps>(), {
 
 const tooltipRef = ref<TooltipInstance>();
 
+const slots = useSlots();
+
 const style = computed(() => {
+  console.log("这是slots", slots);
   return {
     width: addUnit(props.width),
   };
@@ -67,12 +70,12 @@ const hidePopper = () => {
   tooltipRef.value?.hide();
 };
 
-const confirm = (e: Mouseenter) => {
-  emits("confirm", e);
+const confrim = (e: MouseEvent) => {
+  emits("confrim", e);
   hidePopper();
 };
 
-const cancel = (e: Mouseenter) => {
+const cancel = (e: MouseEvent) => {
   emits("cancel", e);
   hidePopper();
 };
