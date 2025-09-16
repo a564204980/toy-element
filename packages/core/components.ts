@@ -8,6 +8,7 @@ import {
   ErAlert,
   ErTooltip,
   ErPopconfirm,
+  ErDropdown,
 } from "@toy-element-clone/components";
 
 export default [
@@ -19,4 +20,5 @@ export default [
   ErAlert,
   ErTooltip,
   ErPopconfirm,
+  ErDropdown,
 ] as Plugin[];

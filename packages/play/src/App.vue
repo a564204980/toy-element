@@ -32,16 +32,25 @@
       这是文字22222
     </ErAlert>
 
-    <er-tooltip content="这是一个提示文本" trigger="click" :disabled="disabled">
-      <er-button @click="disabled = !disabled">鼠标悬停查看提示</er-button>
+    <er-tooltip content="这是一个提示文本" trigger="hover" :virtualTriggering="true" :virtualRef="virtualRef">
+      <er-button>鼠标悬停查看提示</er-button>
     </er-tooltip>
 
     
     <div ref="virtualRef">这是虚拟触发要展示的</div>
 
-    <er-popconfirm title="确认删除吗？" @confrim="handleConfrim">
+    <er-popconfirm title="确认删除吗？" @confrim="handleConfrim" >
       <er-button type="primary">确认删除</er-button>
     </er-popconfirm>
+
+    <br/>
+
+    <er-dropdown :items="menuItems" >
+      <er-button type="primary">操作菜单</er-button>
+    </er-dropdown>
+    
+   
+
   </div>
 </template>
 
@@ -53,6 +62,11 @@ const alertRef = ref()
 const btnGroupRef = ref();
 const activeNames = ref(["1"]);
 const virtualRef = ref()
+const menuItems = [
+  { label: '编辑', command: 'edit' },
+  { label: '复制', command: 'copy' },
+  { label: '删除', command: 'delete', divided: true, disabled: false }
+]
 
 const handleClick = (e: MouseEvent) => {
   console.log("这是点击事件", alertRef.value.open());

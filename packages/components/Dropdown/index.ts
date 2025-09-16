@@ -4,3 +4,5 @@ import { withInstall } from "@toy-element-clone/utils";
 
 export const ErDropdown = withInstall(Dropdown);
 export const ErDropdownItem = withInstall(DropdownItem);
+
+export * from "./types";

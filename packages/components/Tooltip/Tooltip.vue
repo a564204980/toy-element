@@ -27,15 +27,17 @@
 </template>
 
 <script setup lang="ts">
+import type { ButtonInstance } from "../Button/type.ts";
+import type { TooltipProps, TooltipEmits, TooltipInstance } from "./types";
+
 import { useClickOutside } from "@toy-element-clone/hooks";
 import { createPopper, type Instance } from "@popperjs/core";
 import useEventsToTriggerNode from "./useEventsToTriggerNode.ts";
 import { bind, debounce, isNil, type DebouncedFunc } from "lodash-es";
-import type { TooltipProps, TooltipEmits, TooltipInstance } from "./types";
 import { ref, computed, watchEffect, watch, onUnmounted, type Ref } from "vue";
 
 interface _TooltipProps extends TooltipProps {
-  virtualRef?: HTMLElement | void;
+  virtualRef?: HTMLElement | ButtonInstance | void;
   virtualTriggering?: boolean; // 是否开启虚拟触发
 }
 
