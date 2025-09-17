@@ -22,9 +22,10 @@
 
       <template #content>
         <ul class="er-dropdown__menu">
-          <!-- 外部传进来：下拉列表 -->
           <slot name="dropdown">
+            <!-- 插槽的默认内容 -->
             <template v-for="item in items" :key="item.command">
+              <!-- 可以使用DropdwonItem传递自定义的场景 -->
               <DropdwonItem v-bind="item"></DropdwonItem>
             </template>
           </slot>
@@ -35,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDisabledStyle } from "@toy-element-clone/hooks";
 import { omit, isNil } from "lodash-es";
 import { ref, computed, provide } from "vue";
 import { DROPDOWN_CTX_KEY } from "./constants.ts";
@@ -74,6 +76,8 @@ const tooltipRef = ref<TooltipInstance>();
 const tooltipProps = computed(() =>
   omit(props, ["type", "size", "items", "hideOnClick", "splitButton"])
 );
+
+useDisabledStyle();
 
 /**
  * 下拉列表项点击事件
