@@ -206,9 +206,6 @@ importers:
 
   packages/hooks:
     dependencies:
-      '@toy-element-clone/locale':
-        specifier: workspace:*
-        version: link:../locale
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
