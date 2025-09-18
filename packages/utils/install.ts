@@ -1,17 +1,6 @@
-import { each } from "lodash-es";
 import type { App, Plugin } from "vue";
 
 type SFCWithInstall<T> = T & Plugin;
-
-/**
- * 插件安装器-用于批量安装插件
- * @param components 插件列表
- * @returns 插件安装函数
- */
-export const makeInstaller = (components: Plugin[]) => {
-  const installer = (app: App) => each(components, (c) => app.use(c));
-  return installer as Plugin;
-};
 
 /**
  * 给组件添加install方法，从而可以通过app.use()安装组件

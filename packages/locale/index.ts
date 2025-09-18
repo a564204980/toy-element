@@ -13,3 +13,6 @@ export type Language = {
   name: string;
   el: TranslatePair;
 };
+
+// 导出所有语言包
+export { en, ja, ko, zh_cn, zh_tw };

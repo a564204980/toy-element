@@ -1,10 +1,11 @@
 {
-  "name": "@toy-element-plus/locale",
+  "name": "@toy-element-clone/locale",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.ts",
   "module": "index.ts",
-  "private": "true",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

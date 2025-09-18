@@ -48,7 +48,7 @@
     "@toy-element-clone/hooks": "workspace:*",
     "@toy-element-clone/theme": "workspace:*",
     "@toy-element-clone/utils": "workspace:*",
-    "@toy-element-plus/locale": "workspace:*",
+    "@toy-element-clone/locale": "workspace:*",
     "@toy-element-clone/vite-plugins": "workspace:*",
     "@vue/test-utils": "^2.4.6",
     "lodash-es": "^4.17.21",

@@ -24,7 +24,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: ["vue", "lodash-es"], // 外部依赖 不会被打进最终的包里面
+      external: ["vue", "lodash-es", "vue3-i18n"], // 外部依赖 不会被打进最终的包里面
       output: {
         manualChunks(id) {
           if (includes(id, "/packages/hooks/use"))

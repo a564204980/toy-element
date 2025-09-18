@@ -8,10 +8,10 @@
         </div>
         <div class="er-popconfirm__action">
           <ErButton size="small" :type="cancelButtonType" @click="cancel">{{
-            cancelButtonText
+            cancelButtonText || t("popconfirm.cancelButtonText")
           }}</ErButton>
           <ErButton size="small" :type="confirmButtonType" @click="confrim">{{
-            confirmButtonText
+            confirmButtonText || t("popconfirm.confirmButtonText")
           }}</ErButton>
         </div>
       </div>
@@ -28,8 +28,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, useSlots } from "vue";
+import { ref, computed } from "vue";
 import { addUnit } from "@toy-element-clone/utils";
+import { useLocale } from "@toy-element-clone/hooks";
+
 import type { TooltipInstance } from "../Tooltip";
 import type { PopconfirmProps, PopconfirmEmits } from "./types.ts";
 
@@ -46,8 +48,6 @@ const emits = defineEmits<PopconfirmEmits>();
 const props = withDefaults(defineProps<PopconfirmProps>(), {
   title: "",
   confirmButtonType: "primary",
-  confirmButtonText: "确定",
-  cancelButtonText: "取消",
   icon: "question-circle",
   iconColor: "#f90",
   hideAfter: 200,
@@ -56,14 +56,13 @@ const props = withDefaults(defineProps<PopconfirmProps>(), {
 
 const tooltipRef = ref<TooltipInstance>();
 
-const slots = useSlots();
-
 const style = computed(() => {
-  console.log("这是slots", slots);
   return {
     width: addUnit(props.width),
   };
 });
+
+const { t } = useLocale();
 
 // 隐藏提示框
 const hidePopper = () => {

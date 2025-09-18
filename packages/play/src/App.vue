@@ -1,17 +1,13 @@
 <template>
   <div>
-    <er-dropdown :items="menuItems" command="click">
-      <er-button>操作菜单</er-button>
-    </er-dropdown>
+    <er-popconfirm title="确定删除吗？">
+      <template #reference>
+        <er-button type="danger">删除</er-button>
+      </template>
+    </er-popconfirm>
   </div>
 </template>
 
-<script setup lang="ts">
-const menuItems = [
-  { label: "编辑", command: "edit" },
-  { label: "复制", command: "copy" },
-  { label: "删除", command: "delete", divided: true, disabled: true },
-];
-</script>
+<script setup lang="ts"></script>
 
 <style scoped></style>

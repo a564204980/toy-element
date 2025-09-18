@@ -14,6 +14,9 @@ importers:
       '@toy-element-clone/hooks':
         specifier: workspace:*
         version: link:packages/hooks
+      '@toy-element-clone/locale':
+        specifier: workspace:*
+        version: link:packages/locale
       '@toy-element-clone/theme':
         specifier: workspace:*
         version: link:packages/theme
@@ -23,9 +26,6 @@ importers:
       '@toy-element-clone/vite-plugins':
         specifier: workspace:*
         version: link:libs/vite-plugins
-      '@toy-element-plus/locale':
-        specifier: workspace:*
-        version: link:packages/locale
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -206,6 +206,9 @@ importers:
 
   packages/hooks:
     dependencies:
+      '@toy-element-clone/locale':
+        specifier: workspace:*
+        version: link:../locale
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
