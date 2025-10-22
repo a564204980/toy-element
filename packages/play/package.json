@@ -9,9 +9,20 @@
     "preview": "vite preview",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.4"
+    "@chromatic-com/storybook": "4.1.1",
+    "@storybook/addon-a11y": "9.1.13",
+    "@storybook/addon-docs": "9.1.13",
+    "@storybook/addon-vitest": "9.1.13",
+    "@storybook/vue3-vite": "9.1.13",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "storybook": "9.1.13",
+    "@vitest/browser": "^3.2.4",
+    "playwright": "^1.56.1",
+    "@vitest/coverage-v8": "^3.2.4"
   }
 }
