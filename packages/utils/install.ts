@@ -10,7 +10,7 @@ type SFCWithInstall<T> = T & Plugin; // 从类型上约束组件必须同时具�
  */
 export const makeInstaller = (components: Plugin[]) => {
   // 遍历所有组件并注册到Vue应用中
-  const installer = (app: App) => each(components, (c) => app.use(c));
+  const installer = (app: App) => each(components, (c) => app.use(c)); // app.use内部会调用install方法，真正的注册组件
   return installer as Plugin;
 };
 

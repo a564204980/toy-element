@@ -17,9 +17,9 @@
 }
 
 .er-button {
-  display: inline-block;
+  display: inline-flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   line-height: 1;
   height: 32px;
   white-space: nowrap;

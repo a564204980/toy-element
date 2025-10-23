@@ -1,4 +1,4 @@
-import type { Component } from "vue";
+import type { Component, Ref } from "vue";
 
 export type ButtonType = "primary" | "success" | "warning" | "danger" | "info";
 export type NativeType = "button" | "submit" | "reset";
@@ -15,4 +15,16 @@ export interface ButtonProps {
   circle?: boolean; // 是否为圆形
   plain?: boolean; // 是否为朴素按钮
   round?: boolean; // 是否为圆角按钮
+  autofocus?: boolean; // 是否自动获取焦点
+  useThrottle?: boolean; // 是否使用节流
+  throttleDuration?: number; // 节流时间
+  loadingIcon?: string;
+}
+
+export interface ButtonEmits {
+  (e: "click", value: MouseEvent): void;
+}
+
+export interface ButtonInstance {
+  ref: Ref<HTMLButtonElement | void>;
 }
