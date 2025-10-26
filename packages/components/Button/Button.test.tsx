@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, test } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import Button from "./Button.vue";
+import Icon from "../Icon/Icon.vue";
+import ButtonGroup from "./ErButtonGroup.vue";
 
 // 分组测试，第一个参数是组件名，第二个参数是测试用例
 describe("Button.vue", () => {
@@ -43,6 +45,7 @@ describe("Button.vue", () => {
         stubs: ["ErIcon"],
       },
     });
+
     expect(wrapper.classes()).toContain(className);
   });
 
@@ -59,6 +62,29 @@ describe("Button.vue", () => {
     expect((wrapper.element as any).type).toBe("submit");
   });
 
+  it.each([
+    ["withoutThrottle", false], // 不使用节流
+    ["withThrottle", true], // 使用节流
+  ])("当 %s 属性被设置时，应该正确处理节流逻辑", async (_, useThrottle) => {
+    // 创建模拟点击事件，主要作用是追踪函数的调用情况
+    const clickSpy = vi.fn();
+    // 通过mount挂载组件
+    const wrapper = mount(() => {
+      return (
+        <Button
+          onClick={clickSpy}
+          {...{ useThrottle, throttleDuration: 400 }}
+        ></Button>
+      );
+    });
+
+    await wrapper.get("button").trigger("click");
+    await wrapper.get("button").trigger("click");
+    await wrapper.get("button").trigger("click");
+
+    expect(clickSpy).toBeCalledTimes(useThrottle ? 1 : 3);
+  });
+
   it("当 tag 属性被设置时，应该渲染自定义标签", () => {
     const wrapper = mount(Button, {
       props: { tag: "a" },
@@ -73,5 +99,102 @@ describe("Button.vue", () => {
     // wrapper.emitted() 获取组件触发的所有事件，返回的是一个对象，在获取click属性 返回的是一个数组
     // toHaveLength 断言数组长度是否为 1
     expect(wrapper.emitted().click).toHaveLength(1);
+  });
+
+  it("当按钮处于加载 loading 状态时，应该显示加载图标，且不触发点击事件", async () => {
+    const wrapper = mount(Button, {
+      props: { loading: true },
+      global: {
+        stubs: ["ErIcon"],
+      },
+    });
+
+    // 图标元素变量
+    const iconElement = wrapper.findComponent(Icon);
+
+    // 断言加载图标是否存在 wrapper.find 查找css类，exists 检查该元素是否存在dom中，toBe(true) 断言是否为true
+    expect(wrapper.find(".loading-icon").exists()).toBe(true);
+    // 断言图标元素是否存在，toBeTruthy 断言是否为true
+    expect(iconElement.exists()).toBeTruthy();
+    // 检查图标类型  iconElement.attributes("icon") 获取图标组件的 icon 属性值，断言为spinner
+    expect(iconElement.attributes("icon")).toBe("spinner");
+    // 模拟点击
+    await wrapper.trigger("click");
+    // 断言点击事件不存在 ,wrapper.emitted获取组件的click事件，toBeUndefined 断言是否为undefined
+    expect(wrapper.emitted("click")).toBeUndefined();
+  });
+
+  test("当按钮组件传入 icon 属性时，应正确渲染指定图标的图标组件", () => {
+    const wrapper = mount(Button, {
+      props: {
+        icon: "arrow-up",
+      },
+      slots: {
+        default: "icon button",
+      },
+      global: {
+        stubs: ["ErIcon"],
+      },
+    });
+
+    const iconElement = wrapper.findComponent(Icon);
+    expect(iconElement.exists()).toBeTruthy();
+    expect(iconElement.attributes("icon")).toBe("arrow-up");
+  });
+});
+
+describe("ButtonGroup.vue", () => {
+  test("基础按钮组", () => {
+    const wrapper = mount(() => (
+      <ButtonGroup>
+        <Button>button 1</Button>
+        <Button>button 2</Button>
+      </ButtonGroup>
+    ));
+
+    // wrapper.classes 返回组件上所有的class类名
+    expect(wrapper.classes()).toContain("er-button-group");
+  });
+
+  test("按钮组尺寸", () => {
+    const sizes = ["large", "default", "small"];
+    sizes.forEach((size) => {
+      const wrapper = mount(() => (
+        <ButtonGroup size={size as any}>
+          <Button>button 1</Button>
+          <Button>button 2</Button>
+        </ButtonGroup>
+      ));
+
+      const buttonWrapper = wrapper.findComponent(Button);
+      expect(buttonWrapper.classes()).toContain(`er-button--${size}`);
+    });
+  });
+
+  test("按钮组类型", () => {
+    const types = ["primary", "success", "warning", "danger", "info"];
+    types.forEach((type) => {
+      const wrapper = mount(() => (
+        <ButtonGroup type={type as any}>
+          <Button>button 1</Button>
+          <Button>button 2</Button>
+        </ButtonGroup>
+      ));
+
+      const buttonWrapper = wrapper.findComponent(Button);
+      expect(buttonWrapper.classes()).toContain(`er-button--${type}`);
+    });
+  });
+
+  test("按钮组禁用", () => {
+    const wrapper = mount(() => (
+      <ButtonGroup disabled>
+        <Button>button 1</Button>
+        <Button>button 2</Button>
+      </ButtonGroup>
+    ));
+
+    const buttonWrapper = wrapper.findComponent(Button);
+    expect(buttonWrapper.classes()).toContain(`is-disabled`);
   });
 });
