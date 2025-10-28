@@ -3,7 +3,11 @@ import { ErButton } from "toy-element";
 </script>
 
 <template>
-  <ErButton type="primary" size="small" disabled>默认按钮</ErButton>
+  <er-button-group>
+    <er-button type="primary" size="small">默认按钮</er-button>
+    <er-button type="primary" size="small">默认按钮</er-button>
+    <er-button type="primary" size="small">默认按钮</er-button>
+  </er-button-group>
 </template>
 
 <style scoped></style>

@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Button from "./Button.vue";
 import Icon from "../Icon/Icon.vue";
-import ButtonGroup from "./ErButtonGroup.vue";
+import ButtonGroup from "./ButtonGroup.vue";
 
 // 分组测试，第一个参数是组件名，第二个参数是测试用例
 describe("Button.vue", () => {

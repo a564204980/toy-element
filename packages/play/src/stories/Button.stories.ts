@@ -215,7 +215,7 @@ export const Group: Story & { args: { content1: string; content2: string } } = {
          <er-button v-bind="args">{{args.content1}}</er-button>
          <er-button v-bind="args">{{args.content2}}</er-button>
        </er-button-group>
-      `),
+    `),
   }),
   play: async ({
     canvasElement,
@@ -227,10 +227,10 @@ export const Group: Story & { args: { content1: string; content2: string } } = {
     step: any;
   }) => {
     const canvas = within(canvasElement);
-    await step("click btn1", async () => {
+    await step("点击按钮1", async () => {
       await userEvent.click(canvas.getByText("Button1"));
     });
-    await step("click btn2", async () => {
+    await step("点击按钮2", async () => {
       await userEvent.click(canvas.getByText("Button2"));
     });
     expect(args.onClick).toHaveBeenCalled();
