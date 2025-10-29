@@ -1,6 +1,6 @@
 {
   "name": "toy-element-cli-clone",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Components library by Vue3 + TS",
   "main": "./dist/umd/index.umd.cjs",
   "module": "./dist/es/index.js",
