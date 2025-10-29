@@ -2,24 +2,18 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import vue from "@vitejs/plugin-vue";
+import { readdirSync } from "fs"; // 同步读取目录
+import { filter, map } from "lodash-es";
 
-const COMP_NAMES = [
-  "Alert",
-  "Button",
-  "Collapse",
-  "Dropdown",
-  "Icon",
-  "Form",
-  "Input",
-  "Loading",
-  "Message",
-  "MessageBox",
-  "Notification",
-  "Select",
-  "Switch",
-  "ToolTip",
-  "Upload",
-] as const;
+const getDirectoriesSync = (basePath: string) => {
+  const entries = readdirSync(basePath, { withFileTypes: true });
+
+  // filter(entries, (entry) => entry.isDirectory())  筛选出子目录
+  return map(
+    filter(entries, (entry) => entry.isDirectory()),
+    (entry) => entry.name
+  );
+};
 
 export default defineConfig({
   plugins: [
@@ -27,6 +21,7 @@ export default defineConfig({
     dts({
       tsconfigPath: "../../tsconfig.build.json",
       outDir: "dist/types",
+      exclude: ["**/vitest.config.ts", "**/vitest.config.js"],
     }),
   ],
   build: {
@@ -62,9 +57,9 @@ export default defineConfig({
             return "hooks";
           }
 
-          for (const item of COMP_NAMES) {
-            if (id.includes(`/packages/components/${item}`)) {
-              return item;
+          for (const dirName of getDirectoriesSync("../components")) {
+            if (id.includes(`/packages/components/${dirName}`)) {
+              return dirName;
             }
           }
         },
