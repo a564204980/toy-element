@@ -4,7 +4,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "Toy-Element",
   description: "高防 Element-plus 组件库",
-  base: "/toy-element/", // 默认路径
+  base: "/toy-element-cli-clone/", // 默认路径
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
