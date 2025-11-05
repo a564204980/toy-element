@@ -5,24 +5,29 @@ import "prismjs/themes/prism-tomorrow.css";
 // 替换 Docs ArgsTable 列头为中文
 import "../src/storybook-i18n.css";
 
+type DocsLanguage =
+  | "vue"
+  | "tsx"
+  | "typescript"
+  | "jsx"
+  | "js"
+  | "html"
+  | "css"
+  | "bash"
+  | "json"
+  | "yml"
+  | "md"
+  | "graphql";
+
+const docsLanguage: DocsLanguage = "vue";
+
 const preview: Preview = {
   parameters: {
     docs: {
       // 启用语法高亮
       source: {
         type: "code",
-        language:
-          "jsextra" |
-          "jsx" |
-          "json" |
-          "yml" |
-          "md" |
-          "bash" |
-          "css" |
-          "html" |
-          "tsx" |
-          "typescript" |
-          "graphql",
+        language: docsLanguage,
       },
     },
     controls: {

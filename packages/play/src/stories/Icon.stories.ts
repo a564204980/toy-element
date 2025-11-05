@@ -174,7 +174,7 @@ interface IconProps {
     },
   },
 
-  render: (args) => ({
+  render: (args: any) => ({
     components: { ErIcon },
     setup() {
       return { args };
@@ -234,7 +234,7 @@ Icon 组件支持多种动画效果，通过设置不同的动画属性来实现
     },
   },
 
-  render: (args) => ({
+  render: (args: any) => ({
     components: { ErIcon },
     setup() {
       return { args };
