@@ -9,45 +9,107 @@ type Story = StoryObj<typeof ErButton> & { argTypes: ArgTypes };
 const meta: Meta<typeof ErButton> = {
   title: "基础组件/Button 按钮",
   component: ErButton,
-  subcomponents: { ButtonGroup: ErButtonGroup },
+  parameters: {
+    docs: {
+      description: {
+        component: "常用的操作按钮。",
+      },
+    },
+  },
+  subcomponents: { ButtonGroup: ErButtonGroup }, // 注册子组件
   tags: ["autodocs"], // 启用自动文档
   argTypes: {
     type: {
       control: { type: "select" },
       options: ["primary", "success", "warning", "danger", "info", ""],
+      description: "按钮类型",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "-" },
+      },
     },
     size: {
       control: { type: "select" },
       options: ["large", "default", "small", ""],
+      description: "按钮尺寸",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "default" },
+      },
     },
     disabled: {
       control: "boolean",
+      description: "是否禁用按钮",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
     },
     loading: {
       control: "boolean",
+      description: "是否加载中状态",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
     },
     useThrottle: {
       control: "boolean",
+      description: "是否使用节流",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+      },
     },
     throttleDuration: {
       control: "number",
+      description: "节流时长(ms)",
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "500" },
+      },
     },
     autofocus: {
       control: "boolean",
+      description: "是否自动获取焦点",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
     },
     tag: {
       control: { type: "select" },
       options: ["button", "a", "div"],
+      description: "按钮标签类型",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "button" },
+      },
     },
     nativeType: {
       control: { type: "select" },
       options: ["button", "submit", "reset", ""],
+      description: "原生 type 属性",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "button" },
+      },
     },
     icon: {
       control: { type: "text" },
+      description: "图标组件",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "-" },
+      },
     },
     loadingIcon: {
       control: { type: "text" },
+      description: "加载中状态图标组件",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "-" },
+      },
     },
   },
   args: { onClick: fn() },

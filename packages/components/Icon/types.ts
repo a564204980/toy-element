@@ -50,4 +50,5 @@ export interface IconProps {
   inverse?: boolean; // 反转图标颜色
   type?: "primary" | "success" | "warning" | "danger" | "info";
   color?: string;
+  rotateBy?: boolean;
 }

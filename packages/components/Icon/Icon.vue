@@ -9,9 +9,13 @@ defineOptions({
   inheritAttrs: false,
 });
 
-const props = defineProps<IconProps>();
+const props = withDefaults(defineProps<IconProps>(), {
+  type: "info",
+  rotateBy: false,
+});
 
 const filterProps = computed(() => {
+  console.log("omit", omit(props, ["type", "color"]));
   return omit(props, ["type", "color"]);
 });
 const customeStyles = computed(() => ({ color: props.color ?? void 0 }));
