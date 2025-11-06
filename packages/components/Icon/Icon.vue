@@ -15,7 +15,6 @@ const props = withDefaults(defineProps<IconProps>(), {
 });
 
 const filterProps = computed(() => {
-  console.log("omit", omit(props, ["type", "color"]));
   return omit(props, ["type", "color"]);
 });
 const customeStyles = computed(() => ({ color: props.color ?? void 0 }));

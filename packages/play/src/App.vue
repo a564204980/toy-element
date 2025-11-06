@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { ErButton } from "toy-element-cli-clone";
+import { ref, watch } from "vue";
+const activeNames = ref(["a"]);
+
+watch(activeNames, (newNames) => {
+  console.log("watch触发了", newNames);
+});
 </script>
 
 <template>
@@ -11,6 +16,11 @@ import { ErButton } from "toy-element-cli-clone";
     </er-button-group>
   -->
   <er-icon icon="house" rotateBy style="--fa-rotate-angle: 190deg"></er-icon>
+
+  <er-collapse v-model="activeNames" accordion>
+    <er-collapse-item title="标题1" name="a"> 内容1 </er-collapse-item>
+    <er-collapse-item title="标题2" name="b"> 内容2 </er-collapse-item>
+  </er-collapse>
 </template>
 
 <style scoped></style>
