@@ -8,7 +8,7 @@
     "docs:dev": "pnpm --filter @toy-element/docs dev",
     "docs:build": "pnpm --filter @toy-element/docs build",
     "story": "pnpm --filter @toy-element/play storybook",
-    "test": "cross-ent NODE_ENV=test pnpm --filter @toy-element/components test",
+    "test": "cross-env NODE_ENV=test pnpm --filter @toy-element/components test",
     "build": "cross-env NODE_ENV=production pnpm --filter toy-element-cli-clone build",
     "build:dev": "cross-env NODE_ENV=development  pnpm --filter toy-element-cli-clone build:watch"
   },
