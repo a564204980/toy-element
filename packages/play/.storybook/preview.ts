@@ -1,5 +1,5 @@
 import type { Preview } from "@storybook/vue3-vite";
-import "toy-element-cli-clone/dist/index.css";
+import "toy-element-cli-clone/dist/theme/index.css";
 // 添加语法高亮样式
 import "prismjs/themes/prism-tomorrow.css";
 // 替换 Docs ArgsTable 列头为中文

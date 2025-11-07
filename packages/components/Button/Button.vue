@@ -29,6 +29,8 @@ const iconStyle = computed(() => ({
   marginRight: slots.default ? "6px" : "0px",
 }));
 
+console.log("button");
+
 const handleBtnClick = (e: MouseEvent) => emits("click", e);
 const handleBtnClickThrottle = throttle(
   handleBtnClick,

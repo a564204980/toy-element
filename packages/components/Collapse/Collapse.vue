@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { provide, ref, watch, watchEffect } from "vue";
+import { debugWarn } from "@toy-element/utils";
 import { COLLAPSE_CTX_KEY } from "./constants";
+import { provide, ref, watch, watchEffect } from "vue";
 import type { CollapseEmits, CollapseProps, CollapseItemName } from "./types";
+
+const COMP_NAME = "ErCollapse";
 
 defineOptions({
   name: "ErCollapse",
@@ -43,7 +46,7 @@ const updateActiveNames = (newNames: CollapseItemName[]) => {
 
 watchEffect(() => {
   if (props.accordion && activeNames.value.length > 1) {
-    console.warn("手风琴模式下，modelValue最多只能有一个值");
+    debugWarn(COMP_NAME, "手风琴模式下，modelValue最多只能有一个值");
   }
 });
 

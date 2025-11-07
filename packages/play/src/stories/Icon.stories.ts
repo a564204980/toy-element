@@ -1,5 +1,5 @@
-import type { Meta, StoryObj, ArgTypes } from "@storybook/vue3-vite";
-import { fn, within, userEvent, expect, clearAllMocks } from "storybook/test";
+import type { Meta, StoryObj } from "@storybook/vue3-vite";
+import "toy-element-cli-clone/dist/theme/Icon.css";
 
 import { ErIcon } from "toy-element-cli-clone";
 
