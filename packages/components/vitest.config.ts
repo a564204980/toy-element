@@ -9,9 +9,10 @@ export default defineConfig({
   plugins: [vue(), vueJsx()],
 
   define: {
-    "@DEV": JSON.stringify(DEV),
-    "@PROD": JSON.stringify(PROD),
-    "@TEST": JSON.stringify(TEST),
+    // 定义全局环境变量（用于条件编译）
+    DEV: JSON.stringify(false),
+    PROD: JSON.stringify(false),
+    TEST: JSON.stringify(true),
   },
   test: {
     globals: true,
