@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm --filter @toy-element/play dev",
+    "dev": "pnpm --filter @toy-element/play dev --host",
     "docs:dev": "pnpm --filter @toy-element/docs dev",
     "docs:build": "pnpm --filter @toy-element/docs build",
     "story": "pnpm --filter @toy-element/play storybook",

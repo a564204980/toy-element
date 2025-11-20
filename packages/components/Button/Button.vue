@@ -23,13 +23,11 @@ const slots = defineSlots();
 const _ref = ref<HTMLButtonElement>();
 
 const size = computed(() => ctx?.size ?? props?.size ?? "default");
-const type = computed(() => ctx?.type ?? props?.type ?? "");
+const type = computed(() => ctx?.type ?? props?.type ?? "info");
 const disabled = computed(() => ctx?.disabled || props?.disabled || false);
 const iconStyle = computed(() => ({
   marginRight: slots.default ? "6px" : "0px",
 }));
-
-console.log("button");
 
 const handleBtnClick = (e: MouseEvent) => emits("click", e);
 const handleBtnClickThrottle = throttle(
@@ -40,6 +38,9 @@ const handleBtnClickThrottle = throttle(
 
 defineExpose<ButtonInstance>({
   ref: _ref,
+  disabled,
+  size,
+  type,
 });
 </script>
 
