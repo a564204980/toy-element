@@ -15,7 +15,7 @@ export const makeInstaller = (components: Plugin[]) => {
 };
 
 /**
- * 为组件添加插件安装功能
+ * 为组件添加插件安装功能，可以按需通过app.use的方式安装
  * @param component - 需要添加安装功能的组件
  * @returns 返回带有安装功能的组件
  */

@@ -29,5 +29,5 @@
         "packages/**/*.tsx",
         "packages/**/*.vue",
         "env.d.ts"
-    ]
+, "vitest.config.ts"    ]
 }

@@ -13,8 +13,13 @@ class ErUiError extends Error {
  * @param msg 错误的具体信息
  * @throws ErUiError 带有格式化消息的错误对象
  */
+
+const createErUiError = (scope: string, msg: string) => {
+  return new ErUiError(`[${scope}]: ${msg}`);
+};
+
 export function throwError(scope: string, msg: string) {
-  throw new ErUiError(`[${scope}]:${msg}`);
+  throw createErUiError(scope, msg);
 }
 
 export function debugWarn(error: Error): void;
@@ -27,7 +32,7 @@ export function debugWarn(scope: string, msg: string): void;
  */
 export function debugWarn(scope: string | Error, msg?: string) {
   if (process.env.NODE_ENV !== "production") {
-    const err = isString(scope) ? new ErUiError(`[${scope}]:${msg}`) : scope;
+    const err = isString(scope) ? createErUiError(scope, msg!) : scope;
     console.warn(err);
   }
 }

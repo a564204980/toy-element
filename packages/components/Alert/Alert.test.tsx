@@ -2,7 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import Alert from "./Alert.vue";
 import Icon from "../Icon/Icon.vue";
 import { mount } from "@vue/test-utils";
+import { ErAlert } from "./index"
 import type { AlertType } from "./types";
+import { withInstall } from "@toy-element/utils";
 
 describe("Alert.vue", () => {
   const title = "这是一条提示信息" as const;
@@ -129,3 +131,25 @@ describe("Alert.vue", () => {
     expect(wrapper.find(".er-alert").attributes().style).toBe("");
   });
 });
+
+describe("Alert/index", () => {
+  it("该组件应该具有install方法", () => {
+    expect(ErAlert.install).toBeDefined()
+  })
+
+  it("组件应该被导出", () => {
+    expect(ErAlert).toBe(Alert)
+  })
+
+  it("应当增强 Alert 组件", () => {
+    const enhanceAlert = withInstall(Alert)
+    // 增强后的组件 ≡ 项目导出的 ErAlert 组件
+    expect(enhanceAlert).toBe(ErAlert)
+  })
+
+  it("特定的增强逻辑被正确应用", () => {
+    const enhanceAlert = withInstall(Alert)
+    // toHaveProperty校验目标对象是否存在指定的属性
+    expect(enhanceAlert).toHaveProperty("install")
+  })
+})
