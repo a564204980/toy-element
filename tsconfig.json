@@ -22,12 +22,18 @@
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        /* 性能优化，添加排除规则，避免不必要的文件处理，缩短ts类型检测时间 */
+        /* incremental:使编译器仅重新编译变更的文件及其依赖项 */
+        "incremental": true,
+        /* tsBuildInfoFile:用于记录编译信息以避免重复计算，显著加快大型项目构建速度 */
+        "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo"
     },
     "include": [
         "packages/**/*.ts",
         "packages/**/*.tsx",
         "packages/**/*.vue",
-        "env.d.ts"
-, "vitest.config.ts"    ]
+        "env.d.ts",
+        "vitest.config.ts"
+    ]
 }

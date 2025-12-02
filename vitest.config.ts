@@ -3,6 +3,7 @@
 import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,5 +18,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    // 在每个测试文件运行前执行 setup 文件
+    setupFiles: [resolve(__dirname, "./vitest.setup.ts")],
   },
 });

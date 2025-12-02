@@ -52,6 +52,8 @@ export default defineConfig({
       tsconfigPath: "../../tsconfig.build.json",
       outDir: "dist/types",
       exclude: ["**/vitest.config.ts", "**/vitest.config.js"],
+      // 启用类型声明文件的更快生成，就是只输出一个类型文件，不建议
+      // rollupTypes: true,
     }),
     hooksPlugin({
       rmFiles: ["./dist/es", "./dist/theme", "./dist/types"],
@@ -143,5 +145,7 @@ export default defineConfig({
         },
       },
     },
+    // 使用更快的 sourcemap 生成方式
+    sourcemap: isDev,
   },
 });

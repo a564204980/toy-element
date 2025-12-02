@@ -3,6 +3,7 @@ import { mount, DOMWrapper, type VueWrapper } from "@vue/test-utils";
 
 import Collapse from "./Collapse.vue";
 import CollapseItem from "./CollapseItem.vue";
+import transitionEvents from "./transitionEvents";
 
 const onChange = vi.fn();
 
@@ -52,7 +53,6 @@ describe("Collapse.vue", () => {
     secondContent = contents[1];
     disabledContent = contents[2];
   });
-
   test("测试基础结构以及对应文本", () => {
     expect(headers.length).toBe(3);
     expect(contents.length).toBe(3);
@@ -94,13 +94,8 @@ describe("Collapse.vue", () => {
   });
 
   test("modelValue 变更", async () => {
-    // setValue 方法 用于设置组件的属性值，参数为属性值和属性名
     wrapper.setValue(["b"], "modelValue");
     await wrapper.vm.$nextTick();
-
-    const secondItem = wrapper.findAllComponents(CollapseItem)[1];
-    console.log("333333", secondItem.vm);
-
     expect(secondHeader.classes()).toContain("is-active");
     expect(firstHeader.classes()).not.toContain("is-active");
   });
@@ -146,7 +141,7 @@ describe("Collapse.vue", () => {
 
   test("手风琴模式 错误处理", () => {
     // 监视 console.warn
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => { });
     wrapper = mount(
       () => (
         <Collapse accordion modelValue={["a", "b"]} {...{ onChange }}>
@@ -241,4 +236,44 @@ describe("Collapse.vue", () => {
   });
 });
 
-describe("");
+describe("Collapse/transitionEvents.ts", () => {
+  const wrapper = mount(() => <div></div>);
+
+  test("beforeEnter", () => {
+    transitionEvents.beforeEnter(wrapper.element);
+    expect(wrapper.element.style.height).toBe("0px");
+    expect(wrapper.element.style.overflow).toBe("hidden");
+  });
+
+  test("enter", () => {
+    transitionEvents.enter(wrapper.element);
+    expect(wrapper.element.style.height).toBe(
+      `${wrapper.element.scrollHeight}px`
+    );
+  });
+
+  test("afterEnter", () => {
+    transitionEvents.afterEnter(wrapper.element);
+    expect(wrapper.element.style.height).toBe("");
+    expect(wrapper.element.style.overflow).toBe("");
+  });
+
+  test("beforeLeave", () => {
+    transitionEvents.beforeLeave(wrapper.element);
+    expect(wrapper.element.style.height).toBe(
+      `${wrapper.element.scrollHeight}px`
+    );
+    expect(wrapper.element.style.overflow).toBe("hidden");
+  });
+
+  test("leave", () => {
+    transitionEvents.leave(wrapper.element);
+    expect(wrapper.element.style.height).toBe("0px");
+  });
+
+  test("afterLeave", () => {
+    transitionEvents.afterLeave(wrapper.element);
+    expect(wrapper.element.style.height).toBe("");
+    expect(wrapper.element.style.overflow).toBe("");
+  });
+});

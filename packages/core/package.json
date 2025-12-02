@@ -24,7 +24,8 @@
     "./dist/index.css"
   ],
   "scripts": {
-    "build": "run-p build-umd build-es",
+    "build": "run-p type:build build-umd build-es",
+    "type:build": "tsc -p ../../tsconfig.build.json --noEmit",
     "build:watch": "run-p build-umd:watch build-es:watch",
     "build-umd": "vite build --config vite.umd.config.ts",
     "build-es": "vite build --config vite.es.config.ts",
