@@ -4,6 +4,7 @@ import { computed, ref, inject } from "vue";
 import { BUTTON_GROUP_CTX_KEY } from "./contants";
 import type { ButtonProps, ButtonEmits, ButtonInstance } from "./types";
 import ErIcon from "../Icon/Icon.vue";
+import { useNamespace } from "@toy-element/hooks";
 
 defineOptions({
   name: "ErButton",
@@ -15,6 +16,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   useThrottle: true,
   throttleDuration: 1000,
 });
+
+const ns = useNamespace("button");
 
 const emits = defineEmits<ButtonEmits>();
 const ctx = inject(BUTTON_GROUP_CTX_KEY, void 0);
@@ -44,23 +47,27 @@ defineExpose<ButtonInstance>({
 });
 </script>
 
+<!-- [`er-button--${type}`]: type, [`er-button--${size}`]: size, 'is-plain': plain,
+'is-round': round, 'is-circle': circle, 'is-disabled': disabled, 'is-loading':
+loading, -->
+
 <template>
   <component
     ref="_ref"
-    class="er-button"
     :is="tag"
     :autofocus="autofocus"
     :type="tag === 'button' ? nativeType : void 0"
     :disabled="disabled || loading ? true : void 0"
-    :class="{
-      [`er-button--${type}`]: type,
-      [`er-button--${size}`]: size,
-      'is-plain': plain,
-      'is-round': round,
-      'is-circle': circle,
-      'is-disabled': disabled,
-      'is-loading': loading,
-    }"
+    :class="[
+      ns.b(),
+      ns.m(type),
+      ns.m(size),
+      ns.is('disabled', disabled),
+      ns.is('round', round),
+      ns.is('circle', circle),
+      ns.is('loading', loading),
+      ns.is('plain', plain),
+    ]"
     @click="(e:MouseEvent) => useThrottle ? handleBtnClickThrottle(e) : handleBtnClick(e)"
   >
     <template v-if="loading">

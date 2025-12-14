@@ -27,7 +27,9 @@ const handleAlert = () => {
     <er-collapse-item title="标题1" name="a"> 内容1 </er-collapse-item>
     <er-collapse-item title="标题2" name="b"> 内容2 </er-collapse-item>
   </er-collapse> -->
-  <er-button @click="handleAlert">按钮</er-button>
+  <er-button @click="handleAlert" type="primary" disabled plain loading
+    >按钮</er-button
+  >
   <er-alert :closable="true" title="这是标题" center type="success"
     >这是内容</er-alert
   >
