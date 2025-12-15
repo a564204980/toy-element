@@ -1,4 +1,4 @@
-@import "./reset.css";
+@import "./src/mixins/mixins.scss";
 
 :root {
   /* 基础颜色变量 */

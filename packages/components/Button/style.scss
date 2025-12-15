@@ -1,0 +1,171 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+@include b(button-group) {
+  --#{$namespace}-button-group-border-color: var(
+    --#{$namespace}-border-color-lighter
+  );
+  display: inline-block;
+  vertical-align: middle;
+
+  &::after {
+    clear: both;
+  }
+
+  & > :deep(.#{$namespace}-button) {
+    float: left;
+    position: relative;
+    margin-left: 0;
+    &:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right-color: var(--#{$namespace}-button-group-border-color);
+    }
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left-color: var(--#{$namespace}-button-group-border-color);
+    }
+
+    /* 中间的按钮 */
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+
+      border-left-color: var(--#{$namespace}-button-group-border-color);
+      border-right-color: var(--#{$namespace}-button-group-border-color);
+    }
+    &:not(:last-child) {
+      margin-right: -1px;
+    }
+    &:first-child:last-child {
+      border-top-right-radius: var(--#{$namespace}-border-radius-base);
+      border-bottom-right-radius: var(--#{$namespace}-border-radius-base);
+      border-top-left-radius: var(--#{$namespace}-border-radius-base);
+      border-bottom-left-radius: var(--#{$namespace}-border-radius-base);
+
+      @include when(round) {
+        border-radius: var(--#{$namespace}-border-radius-round);
+      }
+
+      @include when(circle) {
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+@include b(button) {
+  --#{$namespace}-button-font-weight: var(--#{$namespace}-font-weight-primary);
+  --#{$namespace}-button-border-color: var(--#{$namespace}-border-color);
+  --#{$namespace}-button-bg-color: var(--#{$namespace}-fill-color-blank);
+  --#{$namespace}-button-text-color: var(--#{$namespace}-text-color-regular);
+  --#{$namespace}-button-disabled-text-color: var(
+    --#{$namespace}-disabled-text-color
+  );
+  --#{$namespace}-button-disabled-bg-color: var(
+    --#{$namespace}-fill-color-blank
+  );
+  --#{$namespace}-button-disabled-border-color: var(
+    --#{$namespace}-border-color-light
+  );
+  --#{$namespace}-button-hover-text-color: var(--#{$namespace}-color-primary);
+  --#{$namespace}-button-hover-bg-color: var(
+    --#{$namespace}-color-primary-light-9
+  );
+  --#{$namespace}-button-hover-border-color: var(
+    --#{$namespace}-color-primary-light-7
+  );
+  --#{$namespace}-button-active-text-color: var(
+    --#{$namespace}-button-hover-text-color
+  );
+  --#{$namespace}-button-active-border-color: var(
+    --#{$namespace}-color-primary
+  );
+  --#{$namespace}-button-active-bg-color: var(
+    --#{$namespace}-button-hover-bg-color
+  );
+  --#{$namespace}-button-outline-color: var(
+    --#{$namespace}-color-primary-light-5
+  );
+  --#{$namespace}-button-active-color: var(--#{$namespace}-text-color-primary);
+
+  // 基础样式
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  height: 32px;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--#{$namespace}-button-text-color);
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.1s;
+  font-weight: var(--#{$namespace}-button-font-weight);
+  user-select: none;
+  /* 垂直中心对齐 */
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: var(--#{$namespace}-button-bg-color);
+  border: var(--#{$namespace}-border);
+  border-color: var(--#{$namespace}-button-border-color);
+  padding: 8px 15px;
+  font-size: var(--#{$namespace}-font-size-base);
+  border-radius: var(--#{$namespace}-border-radius-base);
+
+  & + & {
+    margin-left: 12px;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--#{$namespace}-button-hover-text-color);
+    border-color: var(--#{$namespace}-button-hover-border-color);
+    background-color: var(--#{$namespace}-button-hover-bg-color);
+    outline: none;
+  }
+  &:active {
+    color: var(--#{$namespace}-button-active-text-color);
+    border-color: var(--#{$namespace}-button-active-border-color);
+    background-color: var(--#{$namespace}-button-active-bg-color);
+    outline: none;
+  }
+
+  // --- 状态 (State) ---
+  @include when(plain) {
+    --#{$namespace}-button-hover-text-color: var(--#{$namespace}-color-primary);
+    --#{$namespace}-button-hover-bg-color: var(
+      --#{$namespace}-fill-color-blank
+    );
+    --#{$namespace}-button-hover-border-color: var(
+      --#{$namespace}-color-primary
+    );
+  }
+
+  @include when(round) {
+    border-radius: var(--#{$namespace}-border-radius-round);
+  }
+
+  @include when(circle) {
+    border-radius: 50%;
+    padding: 8px;
+  }
+
+  &.is-loading,
+  &.is-disabled,
+  &.is-disabled:hover,
+  &.is-disabled:focus,
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:focus {
+    color: var(--er-button-disabled-text-color);
+    cursor: not-allowed;
+    background-image: none;
+    background-color: var(--er-button-disabled-bg-color);
+    border-color: var(--er-button-disabled-border-color);
+  }
+  [class*="er-icon"] {
+    width: 1em;
+    height: 1em;
+  }
+}

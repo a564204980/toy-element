@@ -1,2 +1,48 @@
-$namespace: "er" !default;
-$common-separator: "__" !default;
+$namespace: "err" !default;
+$common-separator: "-" !default;
+$element-separator: "__" !default;
+$modifier-separator: "--" !default;
+$state-prefix: "is-" !default;
+
+$B: null !default;
+
+@mixin b($block) {
+  $B: $namespace + $common-separator + $block !global;
+  .#{$B} {
+    @content;
+  }
+}
+
+@mixin e($element) {
+  // 给全局变量e赋值为$element
+  $E: $element !global;
+  // & 表示当前父级选择器，例如 .er-button
+  $selector: &;
+
+  // @at-root 表示将选择器提升到根级，例如 .er-button__element，扁平兄弟节点
+  @at-root {
+    // #{} 动态生成选择器名
+    #{$selector + $element-separator + $E} {
+      // @content 占位符，代表用户调用@include e()时写的内容
+      @content;
+    }
+  }
+}
+
+@mixin m($modifier) {
+  $selector: &;
+
+  @at-root {
+    #{$selector + $modifier-separator + $modifier} {
+      @content;
+    }
+  }
+}
+
+@mixin when($state) {
+  @at-root {
+    &.#{$state-prefix + $state} {
+      @content;
+    }
+  }
+}
