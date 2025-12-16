@@ -1,9 +1,6 @@
 @use "@toy-element/theme/src/mixins/mixins.scss" as *;
 
 @include b(button-group) {
-  --#{$namespace}-button-group-border-color: var(
-    --#{$namespace}-border-color-lighter
-  );
   display: inline-block;
   vertical-align: middle;
 
@@ -151,21 +148,202 @@
     padding: 8px;
   }
 
-  &.is-loading,
-  &.is-disabled,
-  &.is-disabled:hover,
-  &.is-disabled:focus,
+  // &.is-loading,
+  // &.is-disabled,
+  // &.is-disabled:hover,
+  // &.is-disabled:focus,
+  // &[disabled],
+  // &[disabled]:hover,
+  // &[disabled]:focus {
+  //   color: var(--er-button-disabled-text-color);
+  //   cursor: not-allowed;
+  //   background-image: none;
+  //   background-color: var(--er-button-disabled-bg-color);
+  //   border-color: var(--er-button-disabled-border-color);
+  // }
+
+  &.#{state-prefix}loading,
+  &.#{state-prefix}disabled,
   &[disabled],
-  &[disabled]:hover,
-  &[disabled]:focus {
-    color: var(--er-button-disabled-text-color);
-    cursor: not-allowed;
-    background-image: none;
-    background-color: var(--er-button-disabled-bg-color);
-    border-color: var(--er-button-disabled-border-color);
+  &:disabled {
+    &,
+    &:hover,
+    &:focus {
+      color: var(--#{$namespace}-button-disabled-text-color);
+      cursor: not-allowed;
+      background-image: none;
+      background-color: var(--#{$namespace}-button-disabled-bg-color);
+      border-color: var(--#{$namespace}-button-disabled-border-color);
+    }
   }
-  [class*="er-icon"] {
+
+  @include when(loading) {
+    position: relative;
+    pointer-events: none;
+  }
+
+  // 内部图标样式
+  [class*="#{$namespace}-icon"] {
     width: 1em;
     height: 1em;
+  }
+
+  @each $val in primary, success, warning, info, danger {
+    @include b(button) {
+      @include m($val) {
+        --#{$namespace}-button-text-color: var(--#{$namespace}-color-white);
+        --#{$namespace}-button-bg-color: var(--#{$namespace}-color-#{$val});
+        --#{$namespace}-button-border-color: var(--#{$namespace}-color-#{$val});
+        --#{$namespace}-button-outline-color: var(
+          --#{$namespace}-color-#{$val}-light-5
+        );
+        --#{$namespace}-button-active-color: var(
+          --#{$namespace}-color-#{$val}-dark-2
+        );
+        --#{$namespace}-button-hover-text-color: var(
+          --#{$namespace}-color-white
+        );
+        --#{$namespace}-button-hover-bg-color: var(
+          --#{$namespace}-color-#{$val}-light-3
+        );
+        --#{$namespace}-button-hover-border-color: var(
+          --#{$namespace}-color-#{$val}-light-3
+        );
+        --#{$namespace}-button-active-bg-color: var(
+          --#{$namespace}-color-#{$val}-dark-2
+        );
+        --#{$namespace}-button-active-border-color: var(
+          --#{$namespace}-color-#{$val}-dark-2
+        );
+        --#{$namespace}-button-disabled-text-color: var(
+          --#{$namespace}-color-white
+        );
+        --#{$namespace}-button-disabled-bg-color: var(
+          --#{$namespace}-color-#{$val}-light-5
+        );
+        --#{$namespace}-button-disabled-border-color: var(
+          --#{$namespace}-color-#{$val}-light-5
+        );
+      }
+
+      @include when(plain) {
+        --#{$namespace}-button-text-color: var(--#{$namespace}-color-#{$val});
+        --#{$namespace}-button-bg-color: var(
+          --#{$namespace}-color-#{$val}-light-9
+        );
+        --#{$namespace}-button-border-color: var(
+          --#{$namespace}-color-#{$val}-light-5
+        );
+        --#{$namespace}-button-hover-text-color: var(
+          --#{$namespace}-color-white
+        );
+        --#{$namespace}-button-hover-bg-color: var(
+          --#{$namespace}-color-#{$val}
+        );
+        --#{$namespace}-button-hover-border-color: var(
+          --#{$namespace}-color-#{$val}
+        );
+        --#{$namespace}-button-active-text-color: var(
+          --#{$namespace}-color-white
+        );
+
+        --#{$namespace}-button-disabled-text-color: var(
+          --#{$namespace}-color-#{$val}-light-5
+        );
+        --#{$namespace}-button-disabled-bg-color: var(
+          --#{$namespace}-color-#{$val}-light-9
+        );
+        --#{$namespace}-button-disabled-border-color: var(
+          --#{$namespace}-color-#{$val}-light-8
+        );
+      }
+    }
+  }
+}
+
+@include b(button) {
+  @include m(large) {
+    --#{$namespace}-button-size: 40px;
+    height: var(--#{$namespace}-button-size);
+    padding: 12px 19px;
+    font-size: var(--#{$namespace}-font-size-base);
+    border-radius: var(--#{$namespace}-border-radius-base);
+
+    @include when(circle) {
+      border-radius: 50%;
+      padding: 12px;
+    }
+  }
+}
+
+@include b(button) {
+  @include m(small) {
+    --#{$namespace}-button-size: 24px;
+    height: var(--er-button-size);
+    padding: 5px 11px;
+    font-size: 12px;
+    border-radius: calc(var(--#{$namespace}-border-radius-base) - 1px);
+    @include when(circle) {
+      border-radius: 50%;
+      padding: 5px;
+    }
+    [class*="#{$namespace}-icon"] {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+@include b(button-group) {
+  --#{$namespace}-button-group-border-color: var(
+    --#{$namespace}-border-color-lighter
+  );
+
+  display: inline-block;
+  vertical-align: middle;
+
+  &::after {
+    clear: both;
+  }
+
+  & > :deep(.#{$namespace}-button) {
+    float: left;
+    position: relative;
+    margin-left: 0;
+    &:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right-color: var(--#{$namespace}-button-group-border-color);
+    }
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left-color: var(--#{$namespace}-button-group-border-color);
+    }
+
+    /* 中间的按钮 */
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+
+      border-left-color: var(--#{$namespace}-button-group-border-color);
+      border-right-color: var(--#{$namespace}-button-group-border-color);
+    }
+    &:not(:last-child) {
+      margin-right: -1px;
+    }
+    &:first-child:last-child {
+      border-top-right-radius: var(--#{$namespace}-border-radius-base);
+      border-bottom-right-radius: var(--#{$namespace}-border-radius-base);
+      border-top-left-radius: var(--#{$namespace}-border-radius-base);
+      border-bottom-left-radius: var(--#{$namespace}-border-radius-base);
+
+      @include when(round) {
+        border-radius: var(--#{$namespace}-border-radius-round);
+      }
+
+      @include when(circle) {
+        border-radius: 50%;
+      }
+    }
   }
 }
