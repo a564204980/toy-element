@@ -189,42 +189,38 @@
   }
 
   @each $val in primary, success, warning, info, danger {
-    @include b(button) {
-      @include m($val) {
-        --#{$namespace}-button-text-color: var(--#{$namespace}-color-white);
-        --#{$namespace}-button-bg-color: var(--#{$namespace}-color-#{$val});
-        --#{$namespace}-button-border-color: var(--#{$namespace}-color-#{$val});
-        --#{$namespace}-button-outline-color: var(
-          --#{$namespace}-color-#{$val}-light-5
-        );
-        --#{$namespace}-button-active-color: var(
-          --#{$namespace}-color-#{$val}-dark-2
-        );
-        --#{$namespace}-button-hover-text-color: var(
-          --#{$namespace}-color-white
-        );
-        --#{$namespace}-button-hover-bg-color: var(
-          --#{$namespace}-color-#{$val}-light-3
-        );
-        --#{$namespace}-button-hover-border-color: var(
-          --#{$namespace}-color-#{$val}-light-3
-        );
-        --#{$namespace}-button-active-bg-color: var(
-          --#{$namespace}-color-#{$val}-dark-2
-        );
-        --#{$namespace}-button-active-border-color: var(
-          --#{$namespace}-color-#{$val}-dark-2
-        );
-        --#{$namespace}-button-disabled-text-color: var(
-          --#{$namespace}-color-white
-        );
-        --#{$namespace}-button-disabled-bg-color: var(
-          --#{$namespace}-color-#{$val}-light-5
-        );
-        --#{$namespace}-button-disabled-border-color: var(
-          --#{$namespace}-color-#{$val}-light-5
-        );
-      }
+    @include m($val) {
+      --#{$namespace}-button-text-color: var(--#{$namespace}-color-white);
+      --#{$namespace}-button-bg-color: var(--#{$namespace}-color-#{$val});
+      --#{$namespace}-button-border-color: var(--#{$namespace}-color-#{$val});
+      --#{$namespace}-button-outline-color: var(
+        --#{$namespace}-color-#{$val}-light-5
+      );
+      --#{$namespace}-button-active-color: var(
+        --#{$namespace}-color-#{$val}-dark-2
+      );
+      --#{$namespace}-button-hover-text-color: var(--#{$namespace}-color-white);
+      --#{$namespace}-button-hover-bg-color: var(
+        --#{$namespace}-color-#{$val}-light-3
+      );
+      --#{$namespace}-button-hover-border-color: var(
+        --#{$namespace}-color-#{$val}-light-3
+      );
+      --#{$namespace}-button-active-bg-color: var(
+        --#{$namespace}-color-#{$val}-dark-2
+      );
+      --#{$namespace}-button-active-border-color: var(
+        --#{$namespace}-color-#{$val}-dark-2
+      );
+      --#{$namespace}-button-disabled-text-color: var(
+        --#{$namespace}-color-white
+      );
+      --#{$namespace}-button-disabled-bg-color: var(
+        --#{$namespace}-color-#{$val}-light-5
+      );
+      --#{$namespace}-button-disabled-border-color: var(
+        --#{$namespace}-color-#{$val}-light-5
+      );
 
       @include when(plain) {
         --#{$namespace}-button-text-color: var(--#{$namespace}-color-#{$val});
