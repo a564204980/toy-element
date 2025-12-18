@@ -1,0 +1,118 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+@include b(alert) {
+    --#{$namespace}-alert-padding: 8px 16px;
+    --#{$namespace}-alert-border-radius-base: var(--#{$namespace}-border-radius-base);
+    --#{$namespace}-alert-bg-color: var(--#{$namespace}-color-white);
+    --#{$namespace}-alert-title-font-size: 14px;
+    --#{$namespace}-alert-title-font-size-with-desc: 16px;
+    --#{$namespace}-alert-desc-font-size: 14px;
+    --#{$namespace}-alert-text-color: var(--#{$namespace}-text-color-primary);
+    --#{$namespace}-alert-top-margin: 20px;
+    --#{$namespace}-alert-icon-size: 16px;
+    --#{$namespace}-alert-icon-margin: 8px;
+    --#{$namespace}-alert-big-icon-size: 28px;
+    --#{$namespace}-alert-big-icon-margin: 12px;
+
+    // 基础样式
+    padding: var(--#{$namespace}-alert-padding);
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: var(--#{$namespace}-alert-border-radius-base);
+    position: relative;
+    background-color: var(--#{$namespace}-alert-bg-color);
+    overflow: hidden;
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    transition: opacity var(--#{$namespace}-transition-duration);
+    margin-top: var(--#{$namespace}-alert-top-margin);
+
+    @include e(icon) {
+        color: var(--#{$namespace}-alert-text-color);
+        font-size: var(--#{$namespace}-alert-icon-size);
+        width: var(--#{$namespace}-alert-icon-size);
+        margin-right: var(--#{$namespace}-alert-icon-margin);
+
+        &.big-icon {
+            font-size: var(--#{$namespace}-alert-big-icon-size);
+            width: var(--#{$namespace}-alert-big-icon-size);
+            margin-right: var(--#{$namespace}-alert-big-icon-margin);
+        }
+    }
+
+    @include e(content) {
+        color: var(--#{$namespace}-alert-text-color);
+        vertical-align: text-top;
+    }
+
+    @include e(title) {
+        font-size: var(--#{$namespace}-alert-title-font-size);
+        line-height: 24px;
+
+        &.with-desc {
+            font-size: var(--#{$namespace}-alert-title-font-size-with-desc);
+        }
+    }
+
+    @include e(description) {
+        font-size: var(--#{$namespace}-alert-desc-font-size);
+        margin: 0;
+    }
+
+    @include b(close) {
+        font-size: var(--#{$namespace}-alert-close-font-size);
+        opacity: 1;
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        cursor: pointer;
+
+        :deep(.er-icon) {
+            vertical-align: top;
+        }
+    }
+
+    &.text-center {
+        justify-content: center;
+
+        span,
+        p {
+            text-align: center;
+        }
+    }
+
+    @include m(light) {
+        @include b(close) {
+            color: var(--#{$namespace}-text-color-placeholder);
+        }
+    }
+
+    @include m(dark) {
+        @include b(close) {
+            color: var(--#{$namespace}-color-white);
+        }
+    }
+
+}
+
+@each $val in success, warning, info, danger {
+    @include m($val) {
+        &.#{$namespace}-alert__light {
+            --#{$namespace}-alert-text-color: var(--#{$namespace}-color-#{$val});
+            --#{$namespace}-alert-bg-color: var(--#{$namespace}-color-#{$val}-light-9);
+        }
+    }
+
+    @include m($val) {
+        &.#{$namespace}-alert__dark {
+            --#{$namespace}-alert-text-color: var(--#{$namespace}-color-white);
+            --#{$namespace}-alert-bg-color: var(--#{$namespace}-color-#{$val});
+        }
+    }
+}
+
+.#{$namespace}-alert-fade-enter-from,
+.#{$namespace}-alert-fade-leave-to {
+    opacity: 0;
+}

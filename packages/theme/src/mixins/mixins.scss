@@ -30,9 +30,7 @@ $B: null !default;
 }
 
 /**
- * 生成 BEM 修饰符类（Modifier），如 `--primary`
- * 用法：@include m(primary) { ... }
- * 生成：.当前选择器--primary { ... }
+ * 生成状态类样式 .er-button--primary
  * 适用于主题、尺寸等结构性变体（如 primary / small / round）
  * 
  * @param {String} $modifier - 修饰符名称，如 'primary'

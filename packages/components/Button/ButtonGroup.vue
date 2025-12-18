@@ -26,5 +26,5 @@ provide(
 </template>
 
 <style scoped>
-@import "./style.css";
+@import "./style.scss";
 </style>
