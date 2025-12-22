@@ -5,7 +5,13 @@ $modifier-separator: "--" !default;
 $state-prefix: "is-" !default;
 
 $B: null !default;
+$E: null !default;
 
+/**
+ * 生成 BEM 规范中的 Block (块) 类名
+ * 例如：b(button) => .er-button
+ * * @param {String} $block - 块名称，如 'button', 'alert'
+ */
 @mixin b($block) {
   $B: $namespace + $common-separator + $block !global;
   .#{$B} {
@@ -13,6 +19,12 @@ $B: null !default;
   }
 }
 
+/**
+ * 生成 BEM 规范中的 Element (元素) 类名
+ * 必须在 Block 混入内部使用
+ * 例如：e(icon) => .er-button__icon
+ * * @param {String} $element - 元素名称，如 'icon', 'title'
+ */
 @mixin e($element) {
   // 给全局变量e赋值为$element
   $E: $element !global;
@@ -30,10 +42,10 @@ $B: null !default;
 }
 
 /**
- * 生成状态类样式 .er-button--primary
- * 适用于主题、尺寸等结构性变体（如 primary / small / round）
- * 
- * @param {String} $modifier - 修饰符名称，如 'primary'
+ * 生成 BEM 规范中的 Modifier (修饰符) 类名
+ * 适用于主题、尺寸等结构性变体
+ * 例如：m(primary) => .er-button--primary
+ * * @param {String} $modifier - 修饰符名称，如 'primary', 'small'
  */
 @mixin m($modifier) {
   $selector: &;
@@ -45,8 +57,11 @@ $B: null !default;
 }
 
 /**
- * 生成状态类样式（如 `is-disabled`）
- * @param {String} $state - 状态名称，如 `'disabled'`
+ * 生成状态类样式
+ * 通常用于表示交互状态（如禁用、激活、加载中）
+ * 例如：when(disabled) => .is-disabled
+ * 注意：状态类通常是挂载在组件根节点上的组合类，或者是全局状态类
+ * * @param {String} $state - 状态名称，如 'disabled', 'loading'
  */
 @mixin when($state) {
   @at-root {

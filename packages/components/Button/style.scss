@@ -99,7 +99,7 @@
   outline: none;
   transition: 0.1s;
   font-weight: var(--#{$namespace}-button-font-weight);
-  user-select: none;
+  -webkit-user-select: none;
   /* 垂直中心对齐 */
   vertical-align: middle;
   -webkit-appearance: none;
