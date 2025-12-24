@@ -14,7 +14,6 @@ const columns = ref<TableColumn[]>([]);
 // 注册列的方法
 const registerColumn = (column: TableColumn) => {
   columns.value.push(column);
-  console.log("注册列:", column, "当前列数:", columns.value.length);
 };
 
 // 提供给子组件使用
@@ -22,14 +21,13 @@ provide("ErTable", {
   registerColumn,
 });
 
-console.log("props.data", props.data);
 
 // 计算表格类名
 const tableClass = computed(() => {
   return [
     "er-table",
     {
-      "er-table--striped": props.stripe,
+      "er-table--stripe": props.stripe,
       "er-table--border": props.border,
     },
   ];
