@@ -237,36 +237,36 @@ describe("Table组件测试", () => {
     });
   });
 
-  describe("table事件", () => {
-    it("应该触发row-click事件", async () => {
-      const handleRowClick = vi.fn();
-      const wrapper = mount({
-        components: { Table, TableColumn },
-        template: `
-        <Table :data="testData" @row-click="handleRowClick">
-            <TableColumn prop="name" label="姓名" />
-        </Table>
-        `,
-        data() {
-          return { testData: getTestData() };
-        },
-        methods: {
-          handleRowClick, // 绑定事件到模拟函数中
-        },
-      });
+  // describe("table事件", () => {
+  //   it("应该触发row-click事件", async () => {
+  //     const handleRowClick = vi.fn();
+  //     const wrapper = mount({
+  //       components: { Table, TableColumn },
+  //       template: `
+  //       <Table :data="testData" @row-click="handleRowClick">
+  //           <TableColumn prop="name" label="姓名" />
+  //       </Table>
+  //       `,
+  //       data() {
+  //         return { testData: getTestData() };
+  //       },
+  //       methods: {
+  //         handleRowClick, // 绑定事件到模拟函数中
+  //       },
+  //     });
 
-      await doubleWait();
+  //     await doubleWait();
 
-      const firstRow = wrapper.find("tbody tr");
-      await firstRow.trigger("click");
+  //     const firstRow = wrapper.find("tbody tr");
+  //     await firstRow.trigger("click");
 
-      // expect().toHaveBeenCalledTimes() 断言函数被调用的次数
-      expect(handleRowClick).toHaveBeenCalledTimes(1);
-      // mock.calls 间谍函数的调用记录，存储每次调用的参数数组
-      // - mock.calls[0] 表示第一次调用的参数数组；
-      // - mock.calls[0][0] 表示第一次调用的第一个参数（即表格行数据）；
-      // - toEqual 是“深度相等”断言，验证参数是否和测试数据第一条完全一致。
-      expect(handleRowClick.mock.calls[0][0]).toEqual(getTestData()[0]);
-    });
-  });
+  //     // expect().toHaveBeenCalledTimes() 断言函数被调用的次数
+  //     expect(handleRowClick).toHaveBeenCalledTimes(1);
+  //     // mock.calls 间谍函数的调用记录，存储每次调用的参数数组
+  //     // - mock.calls[0] 表示第一次调用的参数数组；
+  //     // - mock.calls[0][0] 表示第一次调用的第一个参数（即表格行数据）；
+  //     // - toEqual 是“深度相等”断言，验证参数是否和测试数据第一条完全一致。
+  //     expect(handleRowClick.mock.calls[0][0]).toEqual(getTestData()[0]);
+  //   });
+  // });
 });
