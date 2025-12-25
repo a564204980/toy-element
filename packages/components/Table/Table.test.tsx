@@ -1,7 +1,6 @@
-
 import { ErTable } from ".";
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { doubleWait, getTestData, createBasicTable } from "./table-test-common";
 
 import Table from "./Table.vue";
@@ -32,6 +31,15 @@ describe("Table组件测试", () => {
       // 清理
       wrapper.unmount();
     });
+
+    it("应该支持border属性", async () => {
+      const wrapper = createBasicTable([], {
+        border: true,
+      });
+      await doubleWait();
+
+      expect(wrapper.find(".er-table").classes()).toContain("er-table--border");
+    });
   });
 
   describe("属性配置", () => {
@@ -45,25 +53,29 @@ describe("Table组件测试", () => {
 
     it("应该支持height属性（数字）", async () => {
       const wrapper = createBasicTable(getTestData(), {
-        height: 300
-      })
+        height: 300,
+      });
 
-      await doubleWait()
+      await doubleWait();
 
-      expect(wrapper.find(".er-table").attributes("style")).toContain("height: 300px")
+      expect(wrapper.find(".er-table").attributes("style")).toContain(
+        "height: 300px"
+      );
       wrapper.unmount();
-    })
+    });
 
     it("应该支持height属性（字符串）", async () => {
       const wrapper = createBasicTable(getTestData(), {
-        height: "300px"
-      })
+        height: "300px",
+      });
 
-      await doubleWait()
+      await doubleWait();
 
-      expect(wrapper.find(".er-table").attributes("style")).toContain("height: 300px")
+      expect(wrapper.find(".er-table").attributes("style")).toContain(
+        "height: 300px"
+      );
       wrapper.unmount();
-    })
+    });
   });
 
   describe("空数据处理", () => {
@@ -114,6 +126,42 @@ describe("Table组件测试", () => {
       expect(firstRow.text()).toContain("岳绮罗");
       expect(firstRow.text()).toContain("北京");
     });
+
+    it("应该响应数据变化", async () => {
+      const wrapper = mount({
+        components: { Table, TableColumn },
+        template: `
+            <Table :data="testData">
+                <TableColumn prop="name" label="姓名" />
+            </Table>
+        `,
+        data() {
+          return { testData: [{ name: "张三" }] };
+        },
+      });
+
+      await doubleWait();
+
+      let rows = wrapper
+        .findAll("tbody tr")
+        .filter((row) => !row.classes().includes("er-table__empty-row"));
+
+      expect(rows.length).toBe(1);
+
+      await wrapper.setData({
+        testData: [{ name: "张三" }, { name: "李四" }],
+      });
+
+      await doubleWait();
+
+      rows = wrapper
+        .findAll("tbody tr")
+        .filter((row) => !row.classes().includes("er-table__empty-row"));
+
+      expect(rows.length).toBe(2);
+
+      wrapper.unmount();
+    });
   });
 
   describe("列配置", () => {
@@ -127,19 +175,19 @@ describe("Table组件测试", () => {
           </Table>
         `,
         data() {
-          return { testData: getTestData() }
-        }
-      })
+          return { testData: getTestData() };
+        },
+      });
 
-      await doubleWait()
+      await doubleWait();
 
-      const headers = wrapper.find("thead").findAll("th")
-      expect(headers.length).toBe(2)
-      expect(headers[0].text()).toBe("姓名")
-      expect(headers[1].text()).toBe("地址")
+      const headers = wrapper.find("thead").findAll("th");
+      expect(headers.length).toBe(2);
+      expect(headers[0].text()).toBe("姓名");
+      expect(headers[1].text()).toBe("地址");
 
-      wrapper.unmount()
-    })
+      wrapper.unmount();
+    });
 
     it("列宽应该正确应用", async () => {
       const wrapper = mount({
@@ -150,14 +198,75 @@ describe("Table组件测试", () => {
           </Table>
         `,
         data() {
-          return { testData: getTestData() }
-        }
-      })
+          return { testData: getTestData() };
+        },
+      });
 
-      await doubleWait()
+      await doubleWait();
 
-      const headers = wrapper.find("thead th")
+      const headers = wrapper.find("thead th");
       expect(headers.attributes("style")).toContain("width: 200px");
-    })
-  })
+    });
+
+    it("应该支持center对齐", async () => {
+      const wrapper = mount({
+        components: { Table, TableColumn },
+        template: `
+                <Table :data="testData">
+                <TableColumn prop="name" label="姓名" align="center" />
+                </Table>
+            `,
+        data() {
+          return { testData: getTestData() };
+        },
+
+      });
+
+      await doubleWait();
+
+      const th = wrapper.find("thead th");
+      const td = wrapper.find("tbody td");
+
+      expect(th.exists()).toBe(true);
+      expect(td.exists()).toBe(true);
+
+      expect(th.attributes("style") || "").toContain("text-align: center");
+      expect(td.attributes("style") || "").toContain("text-align: center");
+
+      wrapper.unmount();
+    });
+  });
+
+  describe("table事件", () => {
+    it("应该触发row-click事件", async () => {
+      const handleRowClick = vi.fn();
+      const wrapper = mount({
+        components: { Table, TableColumn },
+        template: `
+        <Table :data="testData" @row-click="handleRowClick">
+            <TableColumn prop="name" label="姓名" />
+        </Table>
+        `,
+        data() {
+          return { testData: getTestData() };
+        },
+        methods: {
+          handleRowClick, // 绑定事件到模拟函数中
+        },
+      });
+
+      await doubleWait();
+
+      const firstRow = wrapper.find("tbody tr");
+      await firstRow.trigger("click");
+
+      // expect().toHaveBeenCalledTimes() 断言函数被调用的次数
+      expect(handleRowClick).toHaveBeenCalledTimes(1);
+      // mock.calls 间谍函数的调用记录，存储每次调用的参数数组
+      // - mock.calls[0] 表示第一次调用的参数数组；
+      // - mock.calls[0][0] 表示第一次调用的第一个参数（即表格行数据）；
+      // - toEqual 是“深度相等”断言，验证参数是否和测试数据第一条完全一致。
+      expect(handleRowClick.mock.calls[0][0]).toEqual(getTestData()[0]);
+    });
+  });
 });

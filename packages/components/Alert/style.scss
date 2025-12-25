@@ -95,22 +95,27 @@
       color: var(--#{$namespace}-color-white);
     }
   }
+}
 
-  @each $val in success, warning, info, danger {
-    @include m($val) {
-      &.#{$namespace}-alert--light {
-        --#{$namespace}-alert-text-color: var(--#{$namespace}-color-#{$val});
-        --#{$namespace}-alert-bg-color: var(
-          --#{$namespace}-color-#{$val}-light-9
-        );
-      }
+.er-alert--success {
+  --#{$namespace}-alert-text-color: var(--#{$namespace}-text-color-primary);
+  background: goldenrod;
+}
+
+@each $val in success, warning, info, danger {
+  @include m($val) {
+    &.#{$namespace}-alert--light {
+      --#{$namespace}-alert-text-color: var(--#{$namespace}-color-#{$val});
+      --#{$namespace}-alert-bg-color: var(
+        --#{$namespace}-color-#{$val}-light-9
+      );
     }
+  }
 
-    @include m($val) {
-      &.#{$namespace}-alert--dark {
-        --#{$namespace}-alert-text-color: var(--#{$namespace}-color-white);
-        --#{$namespace}-alert-bg-color: var(--#{$namespace}-color-#{$val});
-      }
+  @include m($val) {
+    &.#{$namespace}-alert--dark {
+      --#{$namespace}-alert-text-color: var(--#{$namespace}-color-white);
+      --#{$namespace}-alert-bg-color: var(--#{$namespace}-color-#{$val});
     }
   }
 }

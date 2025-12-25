@@ -6,6 +6,7 @@ $state-prefix: "is-" !default;
 
 $B: null !default;
 $E: null !default;
+$E: null !default;
 
 /**
  * 生成 BEM 规范中的 Block (块) 类名
@@ -42,10 +43,10 @@ $E: null !default;
 }
 
 /**
- * 生成 BEM 规范中的 Modifier (修饰符) 类名
- * 适用于主题、尺寸等结构性变体
- * 例如：m(primary) => .er-button--primary
- * * @param {String} $modifier - 修饰符名称，如 'primary', 'small'
+ * 生成 BEM 修饰符类（Modifier），如 `--primary`
+ * 适用于主题、尺寸等结构性变体（如 primary / small / round）
+ * 
+ * @param {String} $modifier - 修饰符名称，如 'primary'
  */
 @mixin m($modifier) {
   $selector: &;

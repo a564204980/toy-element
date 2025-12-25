@@ -9,20 +9,38 @@
   --#{$namespace}-table-stripe-bg-color: #fafafa;
   --#{$namespace}-table-text-color: #606266;
   --#{$namespace}-table-border-radius: 4px;
+  --#{$namespace}-table-bg-color: #fff;
+
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   box-sizing: border-box;
-  font-size: 14px;
-  color: var(--#{$namespace}-table-text-color);
-  background-color: #fff;
-  // 内部表格
-  @include e(inner) {
+  width: 100%;
+  background-color: var(--#{$namespace}-able-bg-colort);
+
+  @include e(inner-wrapper) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  @include e(header-wrapper) {
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  @include e(body-wrapper) {
+    flex: 1;
+    overflow: auto;
+  }
+
+  // 表头样式
+  @include e(header) {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
-  }
-  // 表头样式
-  @include e(header) {
+    table-layout: fixed;
+
     th {
       padding: 12px 0;
       background-color: var(--#{$namespace}-table-header-bg-color);
@@ -31,31 +49,34 @@
       font-size: 14px;
       text-align: left;
       border-bottom: 1px solid var(--#{$namespace}-table-border-color);
-      // &:first-child {
-      //   padding-left: 16px;
-      // }
-      // &:last-child {
-      //   padding-right: 16px;
-      // }
+      &:nth-last-child(2) {
+        border-right: none;
+      }
+    }
+    th.gutter {
+      padding: 0;
+      border: none;
+      background-color: var(--#{$namespace}-table-header-bg-color);
     }
   }
+
   // 表体样式
   @include e(body) {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+
     td {
       padding: 12px 0;
       border-bottom: 1px solid var(--#{$namespace}-table-border-color);
-      // &:first-child {
-      //   padding-left: 16px;
-      // }
-      // &:last-child {
-      //   padding-right: 16px;
-      // }
     }
     // 行悬停效果
     tr:hover {
       background-color: var(--#{$namespace}-table-row-hover-bg-color);
     }
   }
+
   // 空数据样式
   @include e(empty-cell) {
     text-align: center;
@@ -83,6 +104,13 @@
       &:last-child {
         border-right: none;
       }
+    }
+  }
+
+  // 固定高度时
+  &.has-fixed-height {
+    .#{$namespace}-table__inner-wrapper {
+      height: 100%;
     }
   }
 }

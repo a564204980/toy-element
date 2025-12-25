@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { inject, onMounted, getCurrentInstance } from "vue";
 import { tableColumnProps } from "./types";
+import {
+  inject,
+  onMounted,
+  getCurrentInstance,
+  onBeforeUnmount,
+} from "vue";
 
 defineOptions({
   name: "ErTableColumn",
@@ -16,11 +21,13 @@ const table = inject<any>("ErTable");
 
 // 获取组件实例ID
 const instance = getCurrentInstance();
+let columnIndex: number | null = null;
 
 onMounted(() => {
-  console.log("ErTable", table);
+  console.log("子组件")
   if (table && table.registerColumn) {
-    table.registerColumn({
+    console.log("没有调用嘛")
+    columnIndex = table.registerColumn({
       id: instance?.uid.toString() || Math.random().toString(),
       prop: props.prop,
       label: props.label,
@@ -28,6 +35,13 @@ onMounted(() => {
       minWidth: props.minWidth,
       align: props.align,
     });
+  }
+});
+
+// 组件卸载时注销列
+onBeforeUnmount(() => {
+  if (table && table.unregisterColumn && columnIndex !== null) {
+    table.unregisterColumn(columnIndex);
   }
 });
 </script>

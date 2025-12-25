@@ -32,6 +32,20 @@ const tableData = ref([
     address: "深圳市南山区",
     email: "zhaoliu@example.com",
   },
+  {
+    id: 5,
+    name: "赵六",
+    age: 35,
+    address: "深圳市南山区",
+    email: "zhaoliu@example.com",
+  },
+  {
+    id: 6,
+    name: "赵六",
+    age: 35,
+    address: "深圳市南山区",
+    email: "zhaoliu@example.com",
+  },
 ]);
 
 watch(activeNames, (newNames) => {
@@ -42,6 +56,19 @@ const handleAlert = () => {
   closable.value = !closable.value;
   console.log("closable", closable.value);
 };
+
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}: {
+  row: any;
+  rowIndex: number;
+}) => {
+  if (rowIndex === 2) {
+    return "warning-row";
+  }
+  return "";
+};
 </script>
 
 <template>
@@ -51,14 +78,42 @@ const handleAlert = () => {
     >这是内容</er-alert
   >
 
-  <section class="demo-section">
-    <er-table :data="tableData" stripe border>
-      <er-table-column prop="name" label="姓名" width="120px" align="center" />
-      <er-table-column prop="age" label="年龄" width="80px" align="center" />
-      <er-table-column prop="address" label="地址" align="center" />
-      <er-table-column prop="email" label="邮箱" align="center" />
+  <div class="table">
+    <er-table
+      :data="tableData"
+      :row-class-name="tableRowClassName"
+      height="200px"
+      stripe
+      border
+    >
+      <er-table-column
+        label="标题1"
+        prop="name"
+        align="center"
+      ></er-table-column>
+      <er-table-column
+        label="标题2"
+        prop="age"
+        align="center"
+      ></er-table-column>
+      <er-table-column
+        label="标题3"
+        prop="address"
+        align="center"
+      ></er-table-column>
+      <er-table-column
+        label="标题4"
+        prop="email"
+        align="center"
+      ></er-table-column>
     </er-table>
-  </section>
+  </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.table {
+  :deep(.warning-row) {
+    background-color: #fef3c7 !important;
+  }
+}
+</style>

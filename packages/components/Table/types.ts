@@ -3,7 +3,7 @@ import type { ExtractPropTypes, PropType } from "vue";
 // 表格props
 export const tableProps = {
   data: {
-    type: Array as PropType<any[]>,
+    type: Array as PropType<Record<string, any>[]>,
     default: () => [],
   }, // 表格数据
   stripe: Boolean, // 是否显示斑马纹
@@ -12,6 +12,13 @@ export const tableProps = {
     type: [String, Number] as PropType<string | number>,
     default: "",
   }, // 表格高度
+  rowClassName: {
+    // 行状态样式
+    type: [String, Function] as PropType<
+      string | ((data: { row: any; rowIndex: number }) => string)
+    >,
+    default: "",
+  },
 } as const;
 
 export type TableProps = ExtractPropTypes<typeof tableProps>;
