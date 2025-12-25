@@ -5,6 +5,8 @@ import {
   ErCollapse,
   ErCollapseItem,
   ErAlert,
+  ErTable,
+  ErTableColumn,
 } from "@toy-element/components";
 
 import type { Plugin } from "vue";
@@ -16,4 +18,6 @@ export default [
   ErCollapse,
   ErCollapseItem,
   ErAlert,
+  ErTable,
+  ErTableColumn,
 ] as Plugin[];

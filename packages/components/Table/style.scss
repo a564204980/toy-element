@@ -1,0 +1,82 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+@include b(table) {
+  // CSS 变量定义
+  --#{$namespace}-table-border-color: #ebeef5;
+  --#{$namespace}-table-header-bg-color: #f5f7fa;
+  --#{$namespace}-table-header-text-color: #909399;
+  --#{$namespace}-table-row-hover-bg-color: #f5f7fa;
+  --#{$namespace}-table-stripe-bg-color: #fafafa;
+  --#{$namespace}-table-text-color: #606266;
+  --#{$namespace}-table-border-radius: 4px;
+  position: relative;
+  overflow: auto;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--#{$namespace}-table-text-color);
+  background-color: #fff;
+  // 内部表格
+  @include e(inner) {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: var(--er-table-header-bg-color);
+    }
+  }
+  // 表头样式
+  @include e(header) {
+    th {
+      padding: 12px 0;
+      background-color: var(--#{$namespace}-table-header-bg-color);
+      color: var(--#{$namespace}-table-header-text-color);
+      font-weight: 600;
+      font-size: 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--#{$namespace}-table-border-color);
+    }
+  }
+  // 表体样式
+  @include e(body) {
+    td {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--#{$namespace}-table-border-color);
+    }
+    // 行悬停效果
+    tr:hover {
+      background-color: var(--#{$namespace}-table-row-hover-bg-color);
+    }
+  }
+  // 空数据样式
+  @include e(empty-cell) {
+    text-align: center;
+    color: #909399;
+    padding: 40px 0 !important;
+  }
+  // 斑马纹样式
+  @include m(stripe) {
+    .#{$namespace}-table__body {
+      tr:nth-child(even) {
+        background-color: var(--#{$namespace}-table-stripe-bg-color);
+      }
+    }
+  }
+  // 边框样式
+  @include m(border) {
+    border: 1px solid var(--#{$namespace}-table-border-color);
+    border-radius: var(--#{$namespace}-table-border-radius);
+    .#{$namespace}-table__inner {
+      border-radius: var(--#{$namespace}-table-border-radius);
+    }
+    th,
+    td {
+      border-right: 1px solid var(--#{$namespace}-table-border-color);
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}

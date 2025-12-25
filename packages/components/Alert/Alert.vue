@@ -42,8 +42,8 @@ defineExpose<AlertInstance>({
       class="er-alert"
       role="alert"
       :class="{
-        [`er-alert__${type}`]: type,
-        [`er-alert__${effect}`]: effect,
+        [`er-alert--${type}`]: type,
+        [`er-alert--${effect}`]: effect,
         'text-center': center,
       }"
     >
@@ -73,5 +73,5 @@ defineExpose<AlertInstance>({
 </template>
 
 <style scoped>
-@import "./style.css";
+@import "./style.scss";
 </style>

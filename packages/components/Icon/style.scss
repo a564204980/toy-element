@@ -1,0 +1,18 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+@include b(icon) {
+  --#{$namespace}-icon-color: inherit; /* 继承父元素的颜色 */
+  display: inline-flex; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  fill: currentColor; /* 填充当前颜色 */
+  color: var(--#{$namespace}-icon-color);
+  font-size: inherit;
+}
+
+@each $val in primary, info, success, warning, danger {
+  .#{$namespace}-icon--#{$val} {
+    --#{$namespace}-icon-color: var(--#{$namespace}-color-#{$val});
+  }
+}
