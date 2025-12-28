@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { tableColumnProps } from "./types";
-import {
-  inject,
-  onMounted,
-  getCurrentInstance,
-  onBeforeUnmount,
-} from "vue";
+import { inject, onMounted, getCurrentInstance, onBeforeUnmount } from "vue";
 
 defineOptions({
   name: "ErTableColumn",
@@ -24,9 +19,7 @@ const instance = getCurrentInstance();
 let columnIndex: number | null = null;
 
 onMounted(() => {
-  console.log("子组件")
   if (table && table.registerColumn) {
-    console.log("没有调用嘛")
     columnIndex = table.registerColumn({
       id: instance?.uid.toString() || Math.random().toString(),
       prop: props.prop,
@@ -34,6 +27,7 @@ onMounted(() => {
       width: props.width,
       minWidth: props.minWidth,
       align: props.align,
+      fixed: props.fixed,
     });
   }
 });

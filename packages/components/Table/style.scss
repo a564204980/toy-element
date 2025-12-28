@@ -1,5 +1,10 @@
 @use "@toy-element/theme/src/mixins/mixins.scss" as *;
 
+$table-cell-padding: 12px;
+$table-header-font-size: 14px;
+$table-shadow-opacity: rgba(0, 0, 0, 0.15);
+$table-fixed-shadow-width: 8px;
+
 @include b(table) {
   // CSS 变量定义
   --#{$namespace}-table-border-color: #ebeef5;
@@ -15,7 +20,7 @@
   overflow: hidden;
   box-sizing: border-box;
   width: 100%;
-  background-color: var(--#{$namespace}-able-bg-colort);
+  background-color: var(--#{$namespace}-table-bg-color);
 
   @include e(inner-wrapper) {
     position: relative;
@@ -41,19 +46,26 @@
     border-spacing: 0;
     table-layout: fixed;
 
+    tr {
+      line-height: 24px;
+    }
+
     th {
-      padding: 12px 0;
       background-color: var(--#{$namespace}-table-header-bg-color);
       color: var(--#{$namespace}-table-header-text-color);
       font-weight: 600;
-      font-size: 14px;
+      font-size: $table-header-font-size;
       text-align: left;
       border-bottom: 1px solid var(--#{$namespace}-table-border-color);
+
       &:nth-last-child(2) {
         border-right: none;
       }
     }
     th.gutter {
+      position: sticky;
+      right: 0;
+      z-index: 4;
       padding: 0;
       border: none;
       background-color: var(--#{$namespace}-table-header-bg-color);
@@ -68,13 +80,33 @@
     table-layout: fixed;
 
     td {
-      padding: 12px 0;
+      line-height: 24px;
       border-bottom: 1px solid var(--#{$namespace}-table-border-color);
     }
     // 行悬停效果
-    tr:hover {
-      background-color: var(--#{$namespace}-table-row-hover-bg-color);
+    tr {
+      transition: background-color 0.2s ease;
+      &:hover {
+        background-color: var(--#{$namespace}-table-row-hover-bg-color);
+      }
     }
+  }
+
+  // 单元格样式
+  @include e(cell) {
+    padding: $table-cell-padding;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .#{$namespace}-table__header-label,
+  .#{$namespace}-table__cell-content {
+    width: 100%;
+    // white-space: nowrap;
+    overflow: hidden;
+    // text-overflow: ellipsis;
+    transition: background-color 0.2s ease;
+    word-wrap: break-word;
   }
 
   // 空数据样式
@@ -85,9 +117,14 @@
   }
   // 斑马纹样式
   @include m(stripe) {
-    .#{$namespace}-table__body {
+    @include e(body) {
       tr:nth-child(even) {
         background-color: var(--#{$namespace}-table-stripe-bg-color);
+
+        td.is-fixed-left,
+        td.is-fixed-right {
+          background-color: var(--#{$namespace}-table-stripe-bg-color);
+        }
       }
     }
   }
@@ -112,5 +149,50 @@
     .#{$namespace}-table__inner-wrapper {
       height: 100%;
     }
+  }
+
+  th.is-fixed-left,
+  td.is-fixed-left,
+  th.is-fixed-right,
+  td.is-fixed-right {
+    position: sticky;
+    z-index: 10;
+    background-color: var(--#{$namespace}-table-header-bg-color);
+
+    // 嵌套左侧固定列专属样式
+    &.is-fixed-left {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: $table-fixed-shadow-width;
+        transform: translate(100%);
+        box-shadow: inset 10px 0 10px -10px $table-shadow-opacity;
+        pointer-events: none;
+      }
+    }
+
+    // 嵌套右侧固定列专属样式
+    &.is-fixed-right {
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: $table-fixed-shadow-width;
+        transform: translate(-100%);
+        box-shadow: inset -10px 0 10px -10px $table-shadow-opacity;
+        pointer-events: none;
+      }
+    }
+  }
+
+  th.is-fixed-left,
+  th.is-fixed-right {
+    z-index: 3;
+    background-color: var(--#{$namespace}-table-header-bg-color);
   }
 }

@@ -34,6 +34,10 @@ export const tableColumnProps = {
     values: ["left", "center", "right"],
     default: "left",
   }, // 列的对齐方式
+  fixed: {
+    type: [Boolean, String] as PropType<boolean | "left" | "right">,
+    default: false,
+  }, // 固定列
 } as const;
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;

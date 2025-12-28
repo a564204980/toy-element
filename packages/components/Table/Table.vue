@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, provide, computed, onMounted } from "vue";
+import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
+import { parseWidth } from "./utils"
+import { debounce } from "lodash-es"
 
 defineOptions({
   name: "ErTable",
@@ -14,8 +16,15 @@ const props = defineProps(tableProps);
 // 存储列配置
 const columns = ref<TableColumn[]>([]);
 
-// 滚动条宽度
+const hasScrollbar = ref(false);
 const scrollbarWidth = ref(0);
+
+const tableRef = ref<HTMLElement>()
+const tableWidth = ref(0)
+const calculatedColumns = ref<TableColumn[]>([]) // 计算后的列配置
+
+const bodyWrapperRef = ref<HTMLElement>()
+const headerWrapperRef = ref<HTMLElement>()
 
 /**
  * 注册列的方法
@@ -26,11 +35,9 @@ const scrollbarWidth = ref(0);
 const registerColumn = (column: TableColumn, index?: number) => {
   if (index !== undefined) {
     columns.value.splice(index, 0, column);
-    console.log("进的时这里吧1", columns.value)
     return index;
   } else {
     columns.value.push(column);
-    console.log("进的时这里吧2", columns.value)
     return columns.value.length - 1;
   }
 };
@@ -95,32 +102,207 @@ const getRowClass = (row: any, rowIndex: number) => {
   return classes;
 };
 
-// 检测 body 是否有滚动条
-const hasScrollbar = computed(() => {
-  // 需要在 DOM 更新后检测
-  return props.data && props.data.length > 0;
+// 检查是否有滚动条
+const checkScrollbar = () => {
+  if (!bodyWrapperRef.value) {
+    hasScrollbar.value = false;
+    return;
+  }
+
+  hasScrollbar.value = bodyWrapperRef.value.scrollHeight > bodyWrapperRef.value.clientHeight;
+};
+
+// 根据列的fixed属性返回对应的class
+const getCellFixedClass = (column: TableColumn) => {
+  if (column.fixed === true || column.fixed === "left") {
+    return "is-fixed-left"
+  }
+
+  if (column.fixed === "right") {
+    return "is-fixed-right"
+  }
+
+  return ""
+}
+
+// 根据固定列距离左边或右边的距离
+const getCellFixedStyle = (column: TableColumn, columnIndex: number, isHeader: boolean = false) => {
+  if (!column.fixed) return {}
+
+  if (column.fixed === true || column.fixed === "left") {
+    let left = 0
+
+    // 遍历当前之前的所有列
+    for (let i = 0; i < columnIndex; i++) {
+      const col = columns.value[i]
+      if (col.fixed === true || col.fixed === "left") {
+        left += parseWidth(col.width)
+      }
+    }
+
+    return { left: `${left}px` }
+  }
+
+  if (column.fixed === "right") {
+    let right = 0
+
+    for (let i = columnIndex + 1; i < columns.value.length; i++) {
+      const col = columns.value[i]
+      if (col.fixed === "right") {
+        right += parseWidth(col.width)
+      }
+    }
+
+    if (hasScrollbar.value && isHeader) {
+      right += scrollbarWidth.value
+    }
+
+    return { right: `${right}px` };
+  }
+
+  return {};
+}
+
+// 判断是否是最后一个左固定列
+const isLastLeftFixed = (column: TableColumn, index: number): boolean => {
+  if (column.fixed !== true && column.fixed !== "left") return false
+
+  for (let i = index + 1; i < columns.value.length; i++) {
+    if (columns.value[i].fixed === true || columns.value[i].fixed === "left") {
+      return false
+    }
+  }
+
+  return true
+}
+
+// 监听表体滚动事件
+const syncScroll = debounce(() => {
+  if (!headerWrapperRef.value || !bodyWrapperRef.value) return
+
+  const scrollLeft = bodyWrapperRef.value.scrollLeft
+
+  // 同步给表头
+  headerWrapperRef.value.scrollLeft = scrollLeft
+}, 10)
+
+
+/**
+ * 计算列宽
+ */
+const calculateColumnWidths = debounce(() => {
+  if (!tableRef.value) return
+
+  const containerWidth = tableRef.value.offsetWidth
+  tableWidth.value = containerWidth
+
+  // 统计有固定宽度的列和无宽度的列
+  let fixedWidth = 0 // 固定宽度总和
+  let flexCount = 0 // 无宽度列的数量
+  const minFlexWidth = 80;
+
+  columns.value.forEach(col => {
+    if (col.width) {
+      fixedWidth += parseWidth(col.width)
+    } else {
+      flexCount++
+    }
+  })
+
+
+  // 计算剩余空间
+  const remainingWidth = containerWidth - fixedWidth
+
+  // 计算每个弹性列的宽度
+  const flexWidth = flexCount > 0 ? Math.max(Math.floor(remainingWidth / flexCount), minFlexWidth) : 0
+
+  // 分配最终宽度
+  calculatedColumns.value = columns.value.map(col => {
+    if (col.width) {
+      // 保持原有宽度
+      return { ...col };
+    } else {
+      // 分配计算后的宽度
+      return { ...col, width: `${flexWidth}px` };
+    }
+  });
+
+  console.log("calculatedColumns", calculatedColumns.value)
+
+  nextTick(() => {
+    checkScrollbar();
+  })
+}, 100)
+
+watch(() => props.data, async () => {
+  await nextTick();
+  checkScrollbar()
+}, { deep: true })
+
+watch(columns, async () => {
+  await nextTick();
+  calculateColumnWidths();
+}, { deep: true })
+
+onMounted(async () => {
+  scrollbarWidth.value = getScrollBarWidth();  // 获取浏览器滚动条宽度
+
+  nextTick(() => {
+    calculateColumnWidths();
+    checkScrollbar();
+  })
+
+  if (tableRef.value) {
+    const resizeObserver = new ResizeObserver(() => {
+      calculateColumnWidths()
+      checkScrollbar()
+    })
+
+    resizeObserver.observe(tableRef.value)
+
+    onBeforeUnmount(() => {
+      resizeObserver.disconnect();
+    });
+  }
+
+  if (bodyWrapperRef.value) {
+    bodyWrapperRef.value.addEventListener("scroll", syncScroll)
+  }
 });
 
 
-onMounted(() => {
-  scrollbarWidth.value = getScrollBarWidth();
-});
+onBeforeUnmount(() => {
+  if (bodyWrapperRef.value) {
+    bodyWrapperRef.value.removeEventListener("scroll", syncScroll)
+  }
+})
 
 </script>
 
 <template>
-  <div :class="tableClass" :style="tableStyle">
+  <div ref="tableRef" :class="tableClass" :style="tableStyle">
     <div class="er-table__inner-wrapper">
       <!-- 表头 -->
-      <div class="er-table__header-wrapper">
+      <div class="er-table__header-wrapper" ref="headerWrapperRef">
         <table class="er-table__header">
           <colgroup>
-            <col v-for="column in columns" :key="column.id" :width="column.width">
+            <col v-for="column in calculatedColumns" :key="column.id"
+              v-bind="column.width ? { width: column.width } : {}">
+            </col>
+            <col v-if="hasScrollbar" :style="{ width: scrollbarWidth + 'px' }">
             </col>
           </colgroup>
           <thead>
             <tr>
-              <th v-for="column in columns" :key="column.id">{{ column.label }}</th>
+              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellFixedClass(column)"
+                :style="getCellFixedStyle(column, index, true)">
+                <div class="er-table__cell">
+                  <div class="er-table__header-label">
+                    {{ column.label }}
+                  </div>
+                </div>
+                <!-- {{ column.label }} -->
+              </th>
               <th v-if="hasScrollbar" class="gutter" :style="{ width: scrollbarWidth + 'px' }"></th>
             </tr>
           </thead>
@@ -128,27 +310,39 @@ onMounted(() => {
       </div>
 
       <!-- 表体 -->
-      <div class="er-table__body-wrapper">
-        <div class="er-table__body-scrollbar">
-          <table class="er-table__body">
-            <colgroup>
-              <col v-for="column in columns" :key="column.id" :width="column.width">
-              </col>
-            </colgroup>
-            <tbody>
-              <tr v-for="(row, index) in props.data" :key="index">
-                <td v-for="column in columns" :key="column.id" :style="getCellAlign(column.align)">
-                  {{ row[column.prop || ''] }}
-                </td>
-              </tr>
+      <div class="er-table__body-wrapper" ref="bodyWrapperRef">
+        <table class="er-table__body">
+          <colgroup>
+            <col v-for="column in calculatedColumns" :key="column.id"
+              v-bind="column.width ? { width: column.width } : {}">
+            </col>
+          </colgroup>
+          <tbody>
+            <tr v-for="(row, index) in props.data" :key="index">
+              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellFixedClass(column)"
+                :style="{
+                  ...getCellAlign(column.align),
+                  ...getCellFixedStyle(column, colIndex)
+                }">
+                <div class="er-table__cell">
+                  <div class="er-table__cell-content">
+                    {{ row[column.prop || ''] }}
+                  </div>
+                </div>
+                <!-- {{ row[column.prop || ''] }} -->
+              </td>
+            </tr>
 
-              <!-- 空状态 -->
-              <tr v-if="props.data.length === 0">
-                <td :colspan="columns.length">暂无数据</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <!-- 空状态 -->
+            <tr v-if="props.data.length === 0">
+              <td :colspan="calculatedColumns.length">
+                <div class="er-table__cell">
+                  <div class="er-table__cell-content">暂无数据</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <div style="display: none;">

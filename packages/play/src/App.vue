@@ -43,7 +43,8 @@ const tableData = ref([
     id: 6,
     name: "赵六",
     age: 35,
-    address: "深圳市南山区",
+    address:
+      "深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区",
     email: "zhaoliu@example.com",
   },
 ]);
@@ -82,29 +83,43 @@ const tableRowClassName = ({
     <er-table
       :data="tableData"
       :row-class-name="tableRowClassName"
-      height="200px"
       stripe
       border
+      height="400px"
     >
       <er-table-column
         label="标题1"
         prop="name"
         align="center"
+        fixed="left"
+        width="100px"
       ></er-table-column>
       <er-table-column
         label="标题2"
         prop="age"
         align="center"
+        width="400px"
       ></er-table-column>
       <er-table-column
         label="标题3"
         prop="address"
         align="center"
+        width="400px"
       ></er-table-column>
+      <er-table-column label="标题4" prop="email" align="center" width="400px">
+      </er-table-column>
+      <er-table-column label="标题4" prop="email" align="center" width="400px">
+      </er-table-column>
+      <er-table-column label="标题4" prop="email" align="center" width="400px">
+      </er-table-column>
+      <er-table-column label="标题4" prop="email" align="center" width="400px">
+      </er-table-column>
       <er-table-column
         label="标题4"
         prop="email"
         align="center"
+        width="200px"
+        fixed="right"
       ></er-table-column>
     </er-table>
   </div>
