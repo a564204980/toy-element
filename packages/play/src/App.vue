@@ -115,7 +115,7 @@ const tableRowClassName = ({
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
       <er-table-column
-        label="标题4"
+        label="标题5"
         prop="email"
         align="center"
         width="200px"

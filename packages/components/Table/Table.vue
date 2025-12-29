@@ -2,7 +2,7 @@
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
-import { parseWidth } from "./utils"
+import { parseWidth,getFixedColumnsClass } from "./utils"
 import { debounce } from "lodash-es"
 
 defineOptions({
@@ -76,6 +76,16 @@ const tableStyle = computed(() => {
   return {};
 });
 
+// 左固定列列数
+const fixedLeftColumnsLength = computed(() => {
+  return columns.value.filter(col => col.fixed === true || col.fixed === "left").length
+})
+
+// 右固定列列数
+const fixedRightColumnsLength = computed(() => {
+  return columns.value.filter(col => col.fixed === "right").length
+})
+
 // 获取单元格对齐样式
 const getCellAlign = (align?: string) => {
   return align ? { textAlign: align as "left" | "center" | "right" } : {};
@@ -102,7 +112,7 @@ const getRowClass = (row: any, rowIndex: number) => {
   return classes;
 };
 
-// 检查是否有滚动条
+// 检查是否有纵向滚动条
 const checkScrollbar = () => {
   if (!bodyWrapperRef.value) {
     hasScrollbar.value = false;
@@ -112,17 +122,18 @@ const checkScrollbar = () => {
   hasScrollbar.value = bodyWrapperRef.value.scrollHeight > bodyWrapperRef.value.clientHeight;
 };
 
-// 根据列的fixed属性返回对应的class
-const getCellFixedClass = (column: TableColumn) => {
-  if (column.fixed === true || column.fixed === "left") {
-    return "is-fixed-left"
-  }
 
-  if (column.fixed === "right") {
-    return "is-fixed-right"
-  }
 
-  return ""
+const getCellClass = (columnIndex:number, column:TableColumn) => {
+  const classes = getFixedColumnsClass(
+    columnIndex,
+    column,
+    columns.value.length,
+    fixedLeftColumnsLength.value,
+    fixedRightColumnsLength.value
+  );
+
+  return classes.join(" ")
 }
 
 // 根据固定列距离左边或右边的距离
@@ -163,18 +174,7 @@ const getCellFixedStyle = (column: TableColumn, columnIndex: number, isHeader: b
   return {};
 }
 
-// 判断是否是最后一个左固定列
-const isLastLeftFixed = (column: TableColumn, index: number): boolean => {
-  if (column.fixed !== true && column.fixed !== "left") return false
 
-  for (let i = index + 1; i < columns.value.length; i++) {
-    if (columns.value[i].fixed === true || columns.value[i].fixed === "left") {
-      return false
-    }
-  }
-
-  return true
-}
 
 // 监听表体滚动事件
 const syncScroll = debounce(() => {
@@ -209,7 +209,6 @@ const calculateColumnWidths = debounce(() => {
     }
   })
 
-
   // 计算剩余空间
   const remainingWidth = containerWidth - fixedWidth
 
@@ -226,8 +225,6 @@ const calculateColumnWidths = debounce(() => {
       return { ...col, width: `${flexWidth}px` };
     }
   });
-
-  console.log("calculatedColumns", calculatedColumns.value)
 
   nextTick(() => {
     checkScrollbar();
@@ -294,14 +291,13 @@ onBeforeUnmount(() => {
           </colgroup>
           <thead>
             <tr>
-              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellFixedClass(column)"
+              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellClass(index,column)"
                 :style="getCellFixedStyle(column, index, true)">
                 <div class="er-table__cell">
                   <div class="er-table__header-label">
                     {{ column.label }}
                   </div>
                 </div>
-                <!-- {{ column.label }} -->
               </th>
               <th v-if="hasScrollbar" class="gutter" :style="{ width: scrollbarWidth + 'px' }"></th>
             </tr>
@@ -319,7 +315,7 @@ onBeforeUnmount(() => {
           </colgroup>
           <tbody>
             <tr v-for="(row, index) in props.data" :key="index">
-              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellFixedClass(column)"
+              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellClass(index,column)"
                 :style="{
                   ...getCellAlign(column.align),
                   ...getCellFixedStyle(column, colIndex)
@@ -329,7 +325,6 @@ onBeforeUnmount(() => {
                     {{ row[column.prop || ''] }}
                   </div>
                 </div>
-                <!-- {{ row[column.prop || ''] }} -->
               </td>
             </tr>
 
