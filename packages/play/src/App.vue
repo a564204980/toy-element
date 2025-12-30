@@ -73,39 +73,11 @@ const tableRowClassName = ({
 </script>
 
 <template>
-  <er-button @click="handleAlert" type="success">按钮</er-button>
-  <er-icon type="danger" icon="home"></er-icon>
-  <er-alert :closable="true" title="这是标题" center type="warning"
-    >这是内容</er-alert
-  >
-
   <div class="table">
-    <er-table
-      :data="tableData"
-      :row-class-name="tableRowClassName"
-      stripe
-      border
-      height="400px"
-    >
-      <er-table-column
-        label="标题1"
-        prop="name"
-        align="center"
-        fixed="left"
-        width="100px"
-      ></er-table-column>
-      <er-table-column
-        label="标题2"
-        prop="age"
-        align="center"
-        width="400px"
-      ></er-table-column>
-      <er-table-column
-        label="标题3"
-        prop="address"
-        align="center"
-        width="400px"
-      ></er-table-column>
+    <!-- <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="200px">
+      <er-table-column label="标题1" prop="name" align="center" fixed="left" width="100px"></er-table-column>
+      <er-table-column label="标题2" prop="age" align="center" width="400px"></er-table-column>
+      <er-table-column label="标题3" prop="address" align="center" width="400px"></er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
@@ -114,15 +86,18 @@ const tableRowClassName = ({
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
-      <er-table-column
-        label="标题5"
-        prop="email"
-        align="center"
-        width="200px"
-        fixed="right"
-      ></er-table-column>
-    </er-table>
+      <er-table-column label="标题5" prop="email" align="center" width="200px" fixed="right"></er-table-column>
+    </er-table> -->
   </div>
+  <er-scrollbar maxHeight="400px">
+    <div
+      v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
+      :key="item"
+      style="height: 50px; border: 1px solid #123412"
+    >
+      123
+    </div>
+  </er-scrollbar>
 </template>
 
 <style lang="scss" scoped>

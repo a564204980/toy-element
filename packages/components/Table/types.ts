@@ -12,6 +12,10 @@ export const tableProps = {
     type: [String, Number] as PropType<string | number>,
     default: "",
   }, // 表格高度
+  maxHeight: {
+    type: [String, Number] as PropType<string | number>,
+    default: "",
+  },
   rowClassName: {
     // 行状态样式
     type: [String, Function] as PropType<

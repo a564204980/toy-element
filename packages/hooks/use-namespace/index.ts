@@ -53,6 +53,11 @@ export const useNamespace = (block: string, namespaceOverride?: string) => {
     return modifier ? _bem(unref(namespace), block, "", "", modifier) : "";
   };
 
+  const em = (element: string, modifier: string) => {
+    if (!element || !modifier) return "";
+    return _bem(unref(namespace), block, "", element, modifier);
+  };
+
   const is = (name: string, state: boolean | undefined = true) => {
     return name && state ? `${startPrefix}${name}` : "";
   };
@@ -62,6 +67,7 @@ export const useNamespace = (block: string, namespaceOverride?: string) => {
     b,
     e,
     m,
+    em,
     is,
   };
 };

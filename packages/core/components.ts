@@ -7,6 +7,7 @@ import {
   ErAlert,
   ErTable,
   ErTableColumn,
+  ErScrollbar,
 } from "@toy-element/components";
 
 import type { Plugin } from "vue";
@@ -20,4 +21,5 @@ export default [
   ErAlert,
   ErTable,
   ErTableColumn,
+  ErScrollbar,
 ] as Plugin[];

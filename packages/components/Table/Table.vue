@@ -2,7 +2,7 @@
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
-import { parseWidth,getFixedColumnsClass } from "./utils"
+import { parseWidth, getFixedColumnsClass } from "./utils"
 import { debounce } from "lodash-es"
 
 defineOptions({
@@ -73,6 +73,14 @@ const tableStyle = computed(() => {
         typeof props.height === "number" ? `${props.height}px` : props.height,
     };
   }
+
+  if (props.maxHeight) {
+    const heightValue = typeof props.maxHeight === "number" ? `${props.maxHeight}px` : props.maxHeight
+    return {
+      maxHeight: heightValue,
+      height: heightValue
+    }
+  }
   return {};
 });
 
@@ -124,7 +132,7 @@ const checkScrollbar = () => {
 
 
 
-const getCellClass = (columnIndex:number, column:TableColumn) => {
+const getCellClass = (columnIndex: number, column: TableColumn) => {
   const classes = getFixedColumnsClass(
     columnIndex,
     column,
@@ -291,7 +299,7 @@ onBeforeUnmount(() => {
           </colgroup>
           <thead>
             <tr>
-              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellClass(index,column)"
+              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellClass(index, column)"
                 :style="getCellFixedStyle(column, index, true)">
                 <div class="er-table__cell">
                   <div class="er-table__header-label">
@@ -315,7 +323,7 @@ onBeforeUnmount(() => {
           </colgroup>
           <tbody>
             <tr v-for="(row, index) in props.data" :key="index">
-              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellClass(index,column)"
+              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellClass(index, column)"
                 :style="{
                   ...getCellAlign(column.align),
                   ...getCellFixedStyle(column, colIndex)

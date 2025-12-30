@@ -37,6 +37,7 @@ $table-fixed-shadow-width: 8px;
   @include e(body-wrapper) {
     flex: 1;
     overflow: auto;
+    min-height: 0; // 允许 flex 子元素收缩
   }
 
   // 表头样式
