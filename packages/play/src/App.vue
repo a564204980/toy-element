@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { throttle } from "@toy-element/utils";
+
 const activeNames = ref(["a"]);
 const closable = ref(false);
 
@@ -70,6 +72,10 @@ const tableRowClassName = ({
   }
   return "";
 };
+
+const handleClick = throttle(() => {
+  console.log("执行了!", Date.now());
+}, 1000);
 </script>
 
 <template>
@@ -91,13 +97,15 @@ const tableRowClassName = ({
   </div>
   <er-scrollbar maxHeight="400px">
     <div
-      v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
+      v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]"
       :key="item"
       style="height: 50px; border: 1px solid #123412"
     >
       123
     </div>
   </er-scrollbar>
+
+  <er-button @click="handleClick">按钮</er-button>
 </template>
 
 <style lang="scss" scoped>

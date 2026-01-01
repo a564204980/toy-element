@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { scrollbarProps, scrollbarEmits } from "./types";
+import {
+  ref,
+  computed,
+  provide,
+  onMounted,
+  nextTick,
+  onBeforeUnmount,
+} from "vue";
 import { useNamespace } from "@toy-element/hooks";
+import { scrollbarContextKey } from "./constants";
+import { scrollbarProps, scrollbarEmits } from "./types";
+import { throttle } from "@toy-element/utils";
 import bar from "./Bar.vue";
 
 defineOptions({
@@ -19,6 +28,13 @@ const scrollbarRef = ref<HTMLDivElement>();
 
 let wrapScrollTop = 0; // 记录垂直滚动位置
 let wrapScrollLeft = 0; // 记录水平滚动位置
+
+let stopResizeObserver: (() => void) | undefined = undefined;
+
+provide(scrollbarContextKey, {
+  scrollbarElement: scrollbarRef,
+  wrapElement: wrapRef,
+});
 
 const wrapStyle = computed(() => {
   const style: any = {};
@@ -47,12 +63,11 @@ const wrapClass = computed(() => {
   ];
 });
 
-const handleScroll = () => {
+const handleScroll = throttle(() => {
   if (wrapRef.value) {
     wrapScrollTop = wrapRef.value.scrollTop;
     wrapScrollLeft = wrapRef.value.scrollLeft;
 
-    // TODO: 通知 Bar 组件：内容滚动了，更新滚动条位置
     barRef.value?.handleScroll(wrapRef.value);
 
     emit("scroll", {
@@ -60,14 +75,58 @@ const handleScroll = () => {
       scrollTop: wrapScrollTop,
     });
   }
-};
+}, 16);
 
 /**
  * 更新滚动条
  */
 const update = () => {
-  // TODO：通知 Bar 组件重新计算滚动条尺寸
+  barRef.value?.update();
 };
+
+const setScrollTop = (value: number) => {
+  if (wrapRef.value) {
+    wrapRef.value.scrollTop = value;
+  }
+};
+const setScrollLeft = (value: number) => {
+  if (wrapRef.value) {
+    wrapRef.value.scrollLeft = value;
+  }
+};
+
+// 组件挂载后初始化滚动条尺寸
+onMounted(() => {
+  nextTick(() => {
+    update();
+  });
+
+  // 监听内容尺寸变化更新滚动条
+  if (!props.nresize && wrapRef.value) {
+    const resizeObserver = new ResizeObserver(() => {
+      barRef.value?.update();
+    });
+
+    resizeObserver.observe(wrapRef.value);
+
+    stopResizeObserver = () => {
+      resizeObserver.disconnect();
+    };
+  }
+});
+
+onBeforeUnmount(() => {
+  if (stopResizeObserver) {
+    stopResizeObserver();
+  }
+});
+
+defineExpose({
+  update,
+  setScrollTop,
+  setScrollLeft,
+  wrapRef,
+});
 </script>
 
 <template>
@@ -91,6 +150,6 @@ const update = () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 @import "./style.scss";
 </style>
