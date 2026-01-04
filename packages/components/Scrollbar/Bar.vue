@@ -4,7 +4,6 @@ import { inject, ref } from "vue";
 import { barProps } from "./types";
 import { useNamespace } from "@toy-element/hooks";
 import { scrollbarContextKey } from "./constants";
-import { max } from "lodash-es";
 
 defineOptions({
   name: "ErScrollbarBar",
@@ -57,7 +56,7 @@ const update = () => {
   const originalHeight = offsetHeight ** 2 / wrapEl.scrollHeight;
   const originalWidth = offsetWidth ** 2 / wrapEl.scrollWidth;
 
-  // 设置最小尺寸限制
+  // 设置最小尺寸限制，大于等于
   const height = Math.max(originalHeight, props.minSize);
   const width = Math.max(originalWidth, props.minSize);
 
@@ -77,13 +76,16 @@ const update = () => {
   sizeWidth.value = width + GAP < offsetWidth ? `${width}px` : "";
 };
 
+/**
+ * 点击轨道时，计算应该滚动到的位置
+ */
 const handleTrackClick = (e: MouseEvent) => {
   const target = e.currentTarget as HTMLElement;
   const isVertical = target.classList.contains(ns.is("vertical"));
 
   const wrap = scrollbar?.wrapElement;
 
-  if (!wrap) return;
+  if (!wrap || !wrap.value) return;
 
   const wrapEl = wrap.value;
 

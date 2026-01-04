@@ -80,10 +80,33 @@ const handleClick = throttle(() => {
 
 <template>
   <div class="table">
-    <!-- <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="200px">
-      <er-table-column label="标题1" prop="name" align="center" fixed="left" width="100px"></er-table-column>
-      <er-table-column label="标题2" prop="age" align="center" width="400px"></er-table-column>
-      <er-table-column label="标题3" prop="address" align="center" width="400px"></er-table-column>
+    <er-table
+      :data="tableData"
+      :row-class-name="tableRowClassName"
+      stripe
+      border
+      maxHeight="200px"
+    >
+      <er-table-column label="标题1" prop="name" align="center" width="100px">
+        <er-table-column
+          label="嵌套列"
+          prop="name"
+          align="center"
+          width="100px"
+        ></er-table-column>
+      </er-table-column>
+      <er-table-column
+        label="标题2"
+        prop="age"
+        align="center"
+        width="400px"
+      ></er-table-column>
+      <er-table-column
+        label="标题3"
+        prop="address"
+        align="center"
+        width="400px"
+      ></er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
@@ -92,8 +115,14 @@ const handleClick = throttle(() => {
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
-      <er-table-column label="标题5" prop="email" align="center" width="200px" fixed="right"></er-table-column>
-    </er-table> -->
+      <er-table-column
+        label="标题5"
+        prop="email"
+        align="center"
+        width="200px"
+        fixed="right"
+      ></er-table-column>
+    </er-table>
   </div>
   <er-scrollbar maxHeight="400px">
     <div

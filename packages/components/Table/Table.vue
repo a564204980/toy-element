@@ -84,6 +84,25 @@ const tableStyle = computed(() => {
   return {};
 });
 
+const flattenLeafColumns = computed(() => {
+  let result:TableColumn[] = []
+
+  const flatten = (cols:TableColumn[]) => {
+    cols.forEach(col => {
+      if(col.children && col.children.length > 0){
+        flatten(col.children)
+      }else {
+        col.isLeaf = true
+        result.push(col)
+      }
+    })
+  }
+
+  flatten(columns.value)
+
+  return result
+})
+
 // 左固定列列数
 const fixedLeftColumnsLength = computed(() => {
   return columns.value.filter(col => col.fixed === true || col.fixed === "left").length
@@ -98,6 +117,7 @@ const fixedRightColumnsLength = computed(() => {
 const getCellAlign = (align?: string) => {
   return align ? { textAlign: align as "left" | "center" | "right" } : {};
 };
+
 
 /**
  * 获取行的 class 名称
@@ -233,6 +253,8 @@ const calculateColumnWidths = debounce(() => {
       return { ...col, width: `${flexWidth}px` };
     }
   });
+
+  console.log("列配置",calculatedColumns.value)
 
   nextTick(() => {
     checkScrollbar();

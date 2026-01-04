@@ -110,7 +110,7 @@ onMounted(() => {
     resizeObserver.observe(wrapRef.value);
 
     stopResizeObserver = () => {
-      resizeObserver.disconnect();
+      resizeObserver.disconnect(); // 停止监听
     };
   }
 });

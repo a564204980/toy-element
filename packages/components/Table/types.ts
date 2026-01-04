@@ -46,7 +46,13 @@ export const tableColumnProps = {
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;
 
-// 内部列配置（包含运行时数据）
+// 内部每列的配置（包含运行时数据）
 export interface TableColumn extends TableColumnProps {
   id: string;
+  children?: TableColumn[]; // 子列数组，用于嵌套表头
+  level?: number; // 列所在层级
+  colSpan?: number; // 计算后的列跨度
+  rowSpan?: number; // 计算后的行跨度
+  parent?: TableColumn; // 父列引用
+  isLeaf?: boolean; // 是否为子节点
 }

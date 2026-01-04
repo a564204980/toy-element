@@ -113,7 +113,7 @@ describe("Scrollbar - Props传递", () => {
 
     const OriginaResizeObserver = global.ResizeObserver;
     global.ResizeObserver = class ResizeObserver {
-      constructor(callback: Function) {}
+      constructor() {}
       observe() {
         observeCalled = true;
       }
@@ -203,24 +203,92 @@ describe("Scrollbar - 滚动功能", () => {
     wrapper.vm.setScrollLeft(50);
     expect(wrap.scrollLeft).toBe(50);
   });
+});
 
-  // it("当内容尺寸变化时应该调用Bar的update方法", () => {
-  //   let resizeCallback: Function | null = null;
+describe("Scrollbar - ResizeObserver功能", () => {
+  it("当内容尺寸发生变化的时候应该调用Bar的update方法", async () => {
+    let resizeCallback: Function | null = null;
 
-  //   const OriginalResizeObserver = global.ResizeObserver;
-  //   global.ResizeObserver = class ResizeObserver {
-  //     constructor(callback: Function) {
-  //       resizeCallback = callback; // ← 保存回调函数
-  //     }
-  //     observe() {}
-  //     unobserve() {}
-  //     disconnect() {}
-  //   } as any;
+    const OriginalResizeObserver = global.ResizeObserver;
+    global.ResizeObserver = class ResizeObserver {
+      constructor(callback: Function) {
+        resizeCallback = callback;
+      }
 
-  //   expect(resizeCallback).toBeDefined();
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as any;
 
-  //   resizeCallback!();
+    const wrapper = mount(Scrollbar, {
+      props: {
+        height: "200px",
+        nresize: false,
+      },
+      slots: {
+        default: `<div style="height: 1000px">长内容</div>`,
+      },
+    });
 
-  //   global.ResizeObserver = OriginalResizeObserver;
-  // });
+    await wrapper.vm.$nextTick();
+
+    expect(resizeCallback).toBeDefined();
+
+    // 找到Bar组件
+    const barComponent = wrapper.findComponent({ name: "ErScrollbarBar" });
+    expect(barComponent.exists()).toBe(true);
+    expect(barComponent.vm).toBeDefined();
+
+    // 通过组件内部访问barRef
+    const barRef = (wrapper.vm as any).$.refs.barRef;
+
+    expect(barRef).toBeDefined();
+
+    // 创建mock函数并替换barRef的update方法
+    const mockUpdate = vi.fn();
+    const originalUpdate = barRef.update;
+    barRef.update = mockUpdate;
+
+    // 触发ResizeObserver回调，从而调用update方法，!表示非空
+    resizeCallback!();
+
+    // 验证mock函数被调用
+    expect(mockUpdate).toHaveBeenCalled();
+
+    // 恢复原始方法
+    barRef.update = originalUpdate;
+    global.ResizeObserver = OriginalResizeObserver;
+  });
+
+  it("组件销毁时应该调用ResizeObserver的disconnect方法", async () => {
+    const disconnectSpy = vi.fn(); // 创造间谍函数
+
+    const OriginalResizeObserver = global.ResizeObserver;
+    global.ResizeObserver = class ResizeObserver {
+      constructor() {}
+      observe() {}
+      unobserve() {}
+      disconnect() {
+        disconnectSpy();
+      }
+    } as any;
+
+    const wrapper = mount(Scrollbar, {
+      props: {
+        height: "200px",
+        nresize: false,
+      },
+      slots: {
+        default: `<div style="height: 1000px"></div>`,
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    wrapper.unmount();
+
+    expect(disconnectSpy).toBeDefined(); // 断言不是undefined
+
+    global.ResizeObserver = OriginalResizeObserver;
+  });
 });
