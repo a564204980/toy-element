@@ -5,7 +5,6 @@ import { doubleWait, getTestData, createBasicTable } from "./table-test-common";
 
 import Table from "./Table.vue";
 import TableColumn from "./TableColumn.vue";
-import { template } from "lodash-es";
 
 const createTableData = () => [
   { id: 1, name: "岳绮罗", address: "北京" },

@@ -40,3 +40,76 @@ export const getFixedColumnsClass = (
 
   return classes;
 };
+/**
+ * 计算列树的最大深度（层级数）
+ * @param columns - 列配置数组
+ * @param currentLevel - 当前层级
+ * @returns 最大层级数
+ */
+export const getMaxLevel = (
+  columns: TableColumn[],
+  currentLevel = 1
+): number => {
+  let maxLevel = currentLevel;
+
+  columns.forEach((column) => {
+    if (column.children && column.children.length > 0) {
+      const childrenMaxLevel = getMaxLevel(column.children, currentLevel + 1);
+      maxLevel = Math.max(maxLevel, childrenMaxLevel); // 用Math.max始终找最大值
+    }
+  });
+
+  return maxLevel;
+};
+
+/**
+ * 计算列的叶子节点总数，计算所有层级的跨度
+ * @param column - 列配置
+ * @returns 叶子节点总数
+ */
+export const getColSpan = (column: TableColumn): number => {
+  if (!column.children || column.children.length === 0) return 1;
+
+  return column.children.reduce((sum, child) => sum + getColSpan(child), 0);
+};
+
+/**
+ * 将列树结构转换为表头行数组
+ * @param columns - 顶层列配置数组
+ * @returns 二维数组，每个元素代表表头的一行
+ */
+export const convertToRows = (columns: TableColumn[]): TableColumn[][] => {
+  const maxLevel = getMaxLevel(columns);
+  const rows: TableColumn[][] = Array.from({ length: maxLevel }, () => []); // 初始化
+
+  /**
+   * 递归填充行数组
+   * @param cols - 当前层级的列数组
+   * @param level - 当前层级（从 0 开始）
+   */
+  const traverse = (cols: TableColumn[], level: number) => {
+    cols.forEach((column) => {
+      const colSpan = getColSpan(column); // 计算当前列的跨度
+
+      const isLeaf = !column.children || column.children.length === 0; // 是否为叶子节点
+      const rowSpan = isLeaf ? maxLevel - level : 1; // 计算行跨度
+
+      const enhancedColumn: TableColumn = {
+        ...column,
+        colSpan,
+        rowSpan,
+        level,
+      };
+
+      rows[level].push(enhancedColumn);
+
+      if (column.children && column.children.length > 0) {
+        traverse(column.children, level + 1);
+      }
+    });
+  };
+
+  traverse(columns, 0);
+
+  return rows;
+};

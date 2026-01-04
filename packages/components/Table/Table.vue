@@ -2,7 +2,7 @@
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
-import { parseWidth, getFixedColumnsClass } from "./utils"
+import { parseWidth, getFixedColumnsClass,convertToRows,getMaxLevel } from "./utils"
 import { debounce } from "lodash-es"
 
 defineOptions({
@@ -84,6 +84,7 @@ const tableStyle = computed(() => {
   return {};
 });
 
+// 展平后的叶子节点
 const flattenLeafColumns = computed(() => {
   let result:TableColumn[] = []
 
@@ -102,6 +103,12 @@ const flattenLeafColumns = computed(() => {
 
   return result
 })
+
+// 表头行数据（多级表头）
+const headerRows = computed(() => {
+  return convertToRows(columns.value)
+})
+
 
 // 左固定列列数
 const fixedLeftColumnsLength = computed(() => {
@@ -229,7 +236,7 @@ const calculateColumnWidths = debounce(() => {
   let flexCount = 0 // 无宽度列的数量
   const minFlexWidth = 80;
 
-  columns.value.forEach(col => {
+  flattenLeafColumns.value.forEach(col => {
     if (col.width) {
       fixedWidth += parseWidth(col.width)
     } else {
@@ -244,7 +251,7 @@ const calculateColumnWidths = debounce(() => {
   const flexWidth = flexCount > 0 ? Math.max(Math.floor(remainingWidth / flexCount), minFlexWidth) : 0
 
   // 分配最终宽度
-  calculatedColumns.value = columns.value.map(col => {
+  calculatedColumns.value = flattenLeafColumns.value.map(col => {
     if (col.width) {
       // 保持原有宽度
       return { ...col };
@@ -254,7 +261,6 @@ const calculateColumnWidths = debounce(() => {
     }
   });
 
-  console.log("列配置",calculatedColumns.value)
 
   nextTick(() => {
     checkScrollbar();
@@ -295,6 +301,9 @@ onMounted(async () => {
   if (bodyWrapperRef.value) {
     bodyWrapperRef.value.addEventListener("scroll", syncScroll)
   }
+
+  
+console.log("多级表头",headerRows.value)
 });
 
 
