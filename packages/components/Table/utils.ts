@@ -12,6 +12,15 @@ export const parseWidth = (width: string | number | undefined): number => {
   return parseInt(width);
 };
 
+/**
+ * 获取固定列的class名称
+ * @param columnIndex - 列索引
+ * @param column - 列配置
+ * @param totalColumn - 总列数
+ * @param fixedLeftLength - 左固定列数
+ * @param fixedRightLength - 右固定列数
+ * @returns class名称数组
+ */
 export const getFixedColumnsClass = (
   columnIndex: number,
   column: TableColumn,
@@ -40,6 +49,7 @@ export const getFixedColumnsClass = (
 
   return classes;
 };
+
 /**
  * 计算列树的最大深度（层级数）
  * @param columns - 列配置数组
@@ -74,7 +84,7 @@ export const getColSpan = (column: TableColumn): number => {
 };
 
 /**
- * 将列树结构转换为表头行数组
+ * 将列树结构转换为表头行数组，表示表头有多少行
  * @param columns - 顶层列配置数组
  * @returns 二维数组，每个元素代表表头的一行
  */
@@ -99,6 +109,7 @@ export const convertToRows = (columns: TableColumn[]): TableColumn[][] => {
         colSpan,
         rowSpan,
         level,
+        isLeaf, // 标记是否为叶子节点
       };
 
       rows[level].push(enhancedColumn);
@@ -112,4 +123,47 @@ export const convertToRows = (columns: TableColumn[]): TableColumn[][] => {
   traverse(columns, 0);
 
   return rows;
+};
+
+/**
+ * 递归获取当前列的所有叶子节点
+ * @param column - 列配置
+ * @returns 当前行的所有列
+ */
+export const getCurrentColumns = (column: TableColumn): TableColumn[] => {
+  if (column.children && column.children.length > 0) {
+    return column.children.flatMap(getCurrentColumns);
+  } else {
+    return [column];
+  }
+};
+
+/**
+ * 计算多级表头中列在叶子列数组中的真实位置
+ * @param columnIndex - 当前行中的列索引
+ * @param headerRow - 当前表头行的所有列
+ * @param allLeafColumns - 所有叶子列数组
+ * @returns { start: 起始位置, end: 结束位置 }
+ */
+export const getRealColumnPosition = (
+  columnIndex: number,
+  headerRow: TableColumn[],
+  allLeafColumns: TableColumn[]
+) => {
+  const column = headerRow[columnIndex];
+
+  // 获取当前列对应的所有叶子列
+  const curLeafColumns = getCurrentColumns(column);
+
+  console.log("所有叶子列", curLeafColumns);
+
+  // 找到第一个叶子列在所有叶子列中的位置
+  const firstLeafIndex = allLeafColumns.findIndex(
+    (leaf) => leaf.id === curLeafColumns[0].id
+  );
+
+  return {
+    start: firstLeafIndex, // 这一列的第一个叶子列在整个表格中的位置
+    end: firstLeafIndex + curLeafColumns.length - 1, // 这一列的最后一个叶子列在整个表格中的位置
+  };
 };

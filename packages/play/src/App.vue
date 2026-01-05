@@ -80,59 +80,33 @@ const handleClick = throttle(() => {
 
 <template>
   <div class="table">
-    <er-table
-      :data="tableData"
-      :row-class-name="tableRowClassName"
-      stripe
-      border
-      maxHeight="200px"
-    >
-      <er-table-column label="标题1" prop="name" align="center" width="100px">
-        <er-table-column
-          label="嵌套列"
-          prop="name"
-          align="center"
-          width="100px"
-        ></er-table-column>
+    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="200px">
+      <er-table-column label="标题1" prop="name" align="center" width="100px" fixed="left">
+        <er-table-column label="嵌套列" prop="name" align="center" width="100px"></er-table-column>
+        <er-table-column label="嵌套列2" prop="name" align="center" width="100px"></er-table-column>
+        <er-table-column label="嵌套列4" prop="name" align="center" width="100px"></er-table-column>
+        <er-table-column label="嵌套列5" prop="name" align="center" width="100px"></er-table-column>
       </er-table-column>
-      <er-table-column
-        label="标题2"
-        prop="age"
-        align="center"
-        width="400px"
-      ></er-table-column>
-      <er-table-column
-        label="标题3"
-        prop="address"
-        align="center"
-        width="400px"
-      ></er-table-column>
+      <er-table-column label="标题2" prop="age" align="center" width="400px"></er-table-column>
+      <er-table-column label="标题3" prop="address" align="center" width="400px"></er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
+      </er-table-column>
+      <er-table-column label="标题4" prop="email" align="center" width="400px">
+        <er-table-column label="嵌套标题4" prop="email" align="center" width="400px"></er-table-column>
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
       <er-table-column label="标题4" prop="email" align="center" width="400px">
       </er-table-column>
-      <er-table-column label="标题4" prop="email" align="center" width="400px">
-      </er-table-column>
-      <er-table-column
-        label="标题5"
-        prop="email"
-        align="center"
-        width="200px"
-        fixed="right"
-      ></er-table-column>
+      <er-table-column label="标题5" prop="email" align="center" width="200px" fixed="right"></er-table-column>
     </er-table>
   </div>
-  <er-scrollbar maxHeight="400px">
-    <div
-      v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]"
-      :key="item"
-      style="height: 50px; border: 1px solid #123412"
-    >
+  <!-- <er-scrollbar maxHeight="400px">
+    <div v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]" :key="item"
+      style="height: 50px; border: 1px solid #123412">
       123
     </div>
-  </er-scrollbar>
+  </er-scrollbar> -->
 
   <er-button @click="handleClick">按钮</er-button>
 </template>

@@ -2,7 +2,7 @@
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
-import { parseWidth, getFixedColumnsClass,convertToRows,getMaxLevel } from "./utils"
+import { parseWidth, getFixedColumnsClass, convertToRows, getRealColumnPosition, getCurrentColumns } from "./utils"
 import { debounce } from "lodash-es"
 
 defineOptions({
@@ -86,13 +86,13 @@ const tableStyle = computed(() => {
 
 // 展平后的叶子节点
 const flattenLeafColumns = computed(() => {
-  let result:TableColumn[] = []
+  let result: TableColumn[] = []
 
-  const flatten = (cols:TableColumn[]) => {
+  const flatten = (cols: TableColumn[]) => {
     cols.forEach(col => {
-      if(col.children && col.children.length > 0){
+      if (col.children && col.children.length > 0) {
         flatten(col.children)
-      }else {
+      } else {
         col.isLeaf = true
         result.push(col)
       }
@@ -119,6 +119,8 @@ const fixedLeftColumnsLength = computed(() => {
 const fixedRightColumnsLength = computed(() => {
   return columns.value.filter(col => col.fixed === "right").length
 })
+
+
 
 // 获取单元格对齐样式
 const getCellAlign = (align?: string) => {
@@ -158,34 +160,58 @@ const checkScrollbar = () => {
 };
 
 
+/**
+ * 获取单元格的 class 名称
+ * @param columnIndex - 列索引
+ * @param column - 列配置
+ * @param headerRows - 表头行数据
+ * @returns class 名称
+*/
+const getCellClass = (columnIndex: number, column: TableColumn, headerRows: TableColumn[]) => {
 
-const getCellClass = (columnIndex: number, column: TableColumn) => {
+  const { start } = getRealColumnPosition(columnIndex, headerRows, flattenLeafColumns.value)
+
+
   const classes = getFixedColumnsClass(
-    columnIndex,
+    start,
     column,
-    columns.value.length,
+    flattenLeafColumns.value.length,
     fixedLeftColumnsLength.value,
     fixedRightColumnsLength.value
   );
 
+  if (column.isLeaf) {
+    classes.push("is-leaf")
+  }
+
   return classes.join(" ")
 }
 
-// 根据固定列距离左边或右边的距离
-const getCellFixedStyle = (column: TableColumn, columnIndex: number, isHeader: boolean = false) => {
+/**
+ * 获取单元格的fixed样式，距离左边或右边的距离
+ * @param column - 列配置
+ * @param columnIndex - 列索引
+ * @param headerRow - 表头行数据
+ * @param isHeader - 是否是表头
+ * @returns 样式对象
+*/
+const getCellFixedStyle = (column: TableColumn, columnIndex: number, headerRow: TableColumn[], isHeader: boolean = false) => {
   if (!column.fixed) return {}
 
   if (column.fixed === true || column.fixed === "left") {
     let left = 0
-
-    // 遍历当前之前的所有列
+    // 遍历当前行中，当前列之前的所有列，并计算它们实际占用的宽度
     for (let i = 0; i < columnIndex; i++) {
-      const col = columns.value[i]
+      const col = headerRow[i]
       if (col.fixed === true || col.fixed === "left") {
-        left += parseWidth(col.width)
+        // 获取这一列对应的所有叶子列
+        const leafColumns = getCurrentColumns(col)
+        // 累加所有叶子列的宽度
+        leafColumns.forEach(leaf => {
+          left += parseWidth(leaf.width)
+        })
       }
     }
-
     return { left: `${left}px` }
   }
 
@@ -302,8 +328,8 @@ onMounted(async () => {
     bodyWrapperRef.value.addEventListener("scroll", syncScroll)
   }
 
-  
-console.log("多级表头",headerRows.value)
+
+  console.log("多级表头", headerRows.value)
 });
 
 
@@ -329,9 +355,10 @@ onBeforeUnmount(() => {
             </col>
           </colgroup>
           <thead>
-            <tr>
-              <th v-for="(column, index) in calculatedColumns" :key="column.id" :class="getCellClass(index, column)"
-                :style="getCellFixedStyle(column, index, true)">
+            <tr v-for="(row, rowIndex) in headerRows" :key="rowIndex">
+              <th v-for="(column, columnIndex) in row" :key="column.id" :rowspan="column.rowSpan"
+                :colspan="column.colSpan" :class="getCellClass(columnIndex, column, row)"
+                :style="getCellFixedStyle(column, columnIndex, row, true)">
                 <div class="er-table__cell">
                   <div class="er-table__header-label">
                     {{ column.label }}
@@ -353,9 +380,9 @@ onBeforeUnmount(() => {
             </col>
           </colgroup>
           <tbody>
-            <tr v-for="(row, index) in props.data" :key="index">
-              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id" :class="getCellClass(index, column)"
-                :style="{
+            <!-- <tr v-for="(row, index) in props.data" :key="index">
+              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
+                :class="getCellClass(index, column, row)" :style="{
                   ...getCellAlign(column.align),
                   ...getCellFixedStyle(column, colIndex)
                 }">
@@ -365,7 +392,7 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
               </td>
-            </tr>
+            </tr> -->
 
             <!-- 空状态 -->
             <tr v-if="props.data.length === 0">

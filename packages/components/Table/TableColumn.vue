@@ -44,6 +44,7 @@ const unregisterChildColumn = (index: number) => {
 provide("ErTableColumn", {
   registerColumn: registerChildColumn,
   unregisterColumn: unregisterChildColumn,
+  props: props,
 });
 
 onMounted(() => {
@@ -55,7 +56,8 @@ onMounted(() => {
     width: props.width,
     minWidth: props.minWidth,
     align: props.align,
-    fixed: props.fixed,
+    // 子列的 fixed 继承父列：如果子列没设置 fixed，则使用父列的 fixed
+    fixed: props.fixed || (parentColumn?.props?.fixed),
     children: childColumns.value.length > 0 ? childColumns.value : undefined,
     level: parentColumn ? (parentColumn.level ?? 0) + 1 : 0, // 计算当前层级
   };

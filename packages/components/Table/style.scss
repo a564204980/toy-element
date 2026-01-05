@@ -43,12 +43,16 @@ $table-fixed-shadow-width: 8px;
   // 表头样式
   @include e(header) {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
 
     tr {
       line-height: 24px;
+
+      &:not(:first-child) th {
+        box-shadow: 0 -1px 0 0 var(--#{$namespace}-table-border-color);
+      }
     }
 
     th {
@@ -57,11 +61,12 @@ $table-fixed-shadow-width: 8px;
       font-weight: 600;
       font-size: $table-header-font-size;
       text-align: left;
-      border-bottom: 1px solid var(--#{$namespace}-table-border-color);
+      // 默认不显示下边框，避免多级表头出现缝隙
 
-      // &:nth-last-child(2) {
-      //   border-right: none;
-      // }
+      // 只有叶子节点（没有子列的列）才显示下边框
+      &.is-leaf {
+        border-bottom: 1px solid var(--#{$namespace}-table-border-color);
+      }
     }
     th.gutter {
       position: sticky;
@@ -76,7 +81,7 @@ $table-fixed-shadow-width: 8px;
   // 表体样式
   @include e(body) {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
 
@@ -149,19 +154,17 @@ $table-fixed-shadow-width: 8px;
     th,
     td {
       border-right: 1px solid var(--#{$namespace}-table-border-color);
-      &:last-child {
-        border-right: none;
-      }
     }
 
     .is-fixed-left,
-    .is-last-column {
-      border-right: none;
+    .is-last-column,
+    .is-fixed-right.is-first-column {
+      border-right: 1px solid var(--#{$namespace}-table-border-color);
     }
 
-    .is-fixed-right.is-first-column {
-      border-left: none;
-    }
+    // .is-fixed-right.is-first-column {
+    //   border-right: 1px solid var(--#{$namespace}-table-border-color);
+    // }
   }
 
   // 固定高度时
@@ -177,7 +180,7 @@ $table-fixed-shadow-width: 8px;
   td.is-fixed-right {
     position: sticky;
     z-index: 10;
-    background-color: var(--#{$namespace}-table-bg-color);
+    background-color: var(--#{$namespace}-table-bg-color); // td 使用表格背景色
 
     // 嵌套左侧固定列专属样式
     &.is-fixed-left {
@@ -212,7 +215,8 @@ $table-fixed-shadow-width: 8px;
 
   th.is-fixed-left,
   th.is-fixed-right {
-    z-index: 3;
+    z-index: 11;
+    // 表头固定列使用表头背景色
     background-color: var(--#{$namespace}-table-header-bg-color);
   }
 }
