@@ -76,11 +76,17 @@ const tableRowClassName = ({
 const handleClick = throttle(() => {
   console.log("执行了!", Date.now());
 }, 1000);
+
+const currentChange = (row: any, oldRow: any) => {
+  console.log("row", row)
+  console.log("oldRow", oldRow)
+}
 </script>
 
 <template>
   <div class="table">
-    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="400px">
+    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="400px"
+      highlight-current-row @current-change="currentChange">
       <er-table-column label="标题1" prop="name" align="center" width="100px" fixed="left">
         <er-table-column label="嵌套列" prop="name" align="center" width="100px"></er-table-column>
         <er-table-column label="嵌套列2" prop="name" align="center" width="100px"></er-table-column>

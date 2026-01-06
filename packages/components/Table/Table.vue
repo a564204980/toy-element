@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
-import { tableProps, type TableColumn } from "./types";
+import { tableProps, type TableColumn, tableEmits } from "./types";
 import { getScrollBarWidth, throttle } from "@toy-element/utils"
 import { parseWidth, getFixedColumnsClass, convertToRows, getRealColumnPosition, getCurrentColumns } from "./utils"
 import { debounce } from "lodash-es"
@@ -13,7 +13,7 @@ defineOptions({
 
 const props = defineProps(tableProps);
 
-// const emits = defineEmits(tableEmits);
+const emits = defineEmits(tableEmits);
 
 // 存储列配置
 const columns = ref<TableColumn[]>([]);
@@ -28,6 +28,8 @@ const calculatedColumns = ref<TableColumn[]>([]) // 计算后的列配置
 const bodyWrapperRef = ref<HTMLElement>()
 const headerWrapperRef = ref<HTMLElement>()
 const scrollbarRef = ref<InstanceType<typeof ErScrollbar>>()
+
+const currentRow = ref<any>(null) // 当前选中的行
 
 /**
  * 注册列的方法
@@ -216,6 +218,46 @@ const getCellFixedStyle = (column: TableColumn, columnIndex: number, headerRow: 
   return {};
 }
 
+/**
+ * 获取行的 class
+ * @param row - 行数据
+ */
+const getRowClass = (row: any) => {
+  const classes: string[] = []
+
+  if (props.highlightCurrentRow && currentRow.value === row) {
+    classes.push("current-row")
+  }
+
+  return classes.join(" ")
+}
+
+/**
+ * 处理行点击事件
+ * @param row - 被点击的行数据
+*/
+const handleRowClick = (row: any) => {
+  if (!props.highlightCurrentRow) return
+
+  const oldRow = currentRow.value
+  currentRow.value = row
+
+  emits("current-change", row, oldRow)
+}
+
+/**
+ * 设置当前选中的行
+ * @param row - 要选中的行数据，如果为 undefined 则清除选择
+ */
+const setCurrentRow = (row?: any) => {
+  const oldRow = currentRow.value
+  currentRow.value = row || null
+
+  if (props.highlightCurrentRow) {
+    emits("current-change", currentRow.value, oldRow)
+  }
+}
+
 
 
 // 监听表体滚动事件
@@ -314,7 +356,9 @@ defineExpose({
   fixedRightColumnsLength,
   getCellFixedStyle,
   getCellClass,
-  headerRows
+  headerRows,
+  setCurrentRow,
+  currentRow
 });
 
 
@@ -360,7 +404,8 @@ defineExpose({
               </col>
             </colgroup>
             <tbody>
-              <tr v-for="(row, index) in props.data" :key="index">
+              <tr v-for="(row, index) in props.data" :key="index" :class="getRowClass(row)"
+                @click="handleRowClick(row)">
                 <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
                   :class="getCellClass(index, column, calculatedColumns)" :style="{
                     ...getCellAlign(column.align),

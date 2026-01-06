@@ -23,6 +23,10 @@ export const tableProps = {
     >,
     default: "",
   },
+  highlightCurrentRow: {
+    type: Boolean,
+    default: false,
+  }, // 当前行是否高亮
 } as const;
 
 export type TableProps = ExtractPropTypes<typeof tableProps>;
@@ -56,3 +60,9 @@ export interface TableColumn extends TableColumnProps {
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
 }
+
+export const tableEmits = {
+  "current-change": (_currentRow: any, _oldCurrentRow: any) => true,
+};
+
+export type TableEmits = typeof tableEmits;

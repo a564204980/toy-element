@@ -15,6 +15,8 @@ $table-fixed-shadow-width: 8px;
   --#{$namespace}-table-text-color: #606266;
   --#{$namespace}-table-border-radius: 4px;
   --#{$namespace}-table-bg-color: #fff;
+  --#{$namespace}-table-current-row-bg-color: #ecf5ff; // 默认高亮色
+  --#{$namespace}-table-row-hover-bg-color: #f5f7fa; // 悬停颜色
 
   position: relative;
   overflow: hidden;
@@ -97,6 +99,16 @@ $table-fixed-shadow-width: 8px;
           background-color: var(--#{$namespace}-table-row-hover-bg-color);
         }
       }
+    }
+
+    tr.current-row {
+      > td {
+        background-color: var(--er-table-current-row-bg-color);
+      }
+    }
+
+    tr.current-row:hover > td {
+      background-color: var(--er-table-current-row-bg-color) !important;
     }
   }
 
