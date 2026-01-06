@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, type TableColumn } from "./types";
-import { getScrollBarWidth } from "@toy-element/utils"
+import { getScrollBarWidth, throttle } from "@toy-element/utils"
 import { parseWidth, getFixedColumnsClass, convertToRows, getRealColumnPosition, getCurrentColumns } from "./utils"
 import { debounce } from "lodash-es"
+import { ErScrollbar } from "../Scrollbar";
+import type { ScrollEventData } from "../Scrollbar/types"
 
 defineOptions({
   name: "ErTable",
@@ -25,6 +27,7 @@ const calculatedColumns = ref<TableColumn[]>([]) // 计算后的列配置
 
 const bodyWrapperRef = ref<HTMLElement>()
 const headerWrapperRef = ref<HTMLElement>()
+const scrollbarRef = ref<InstanceType<typeof ErScrollbar>>()
 
 /**
  * 注册列的方法
@@ -127,28 +130,6 @@ const getCellAlign = (align?: string) => {
   return align ? { textAlign: align as "left" | "center" | "right" } : {};
 };
 
-
-/**
- * 获取行的 class 名称
- * @param row - 行数据
- * @param rowIndex - 行索引
- * @returns class 名称或对象
- */
-const getRowClass = (row: any, rowIndex: number) => {
-  const classes: any[] = [];
-
-  if (props.rowClassName) {
-    if (typeof props.rowClassName === "function") {
-      const customClass = props.rowClassName({ row, rowIndex });
-      if (customClass) classes.push(customClass);
-    } else {
-      classes.push(props.rowClassName);
-    }
-  }
-
-  return classes;
-};
-
 // 检查是否有纵向滚动条
 const checkScrollbar = () => {
   if (!bodyWrapperRef.value) {
@@ -188,7 +169,7 @@ const getCellClass = (columnIndex: number, column: TableColumn, headerRows: Tabl
 }
 
 /**
- * 获取单元格的fixed样式，距离左边或右边的距离
+ * 固定列样式计算，距离左边或右边的距离
  * @param column - 列配置
  * @param columnIndex - 列索引
  * @param headerRow - 表头行数据
@@ -238,14 +219,12 @@ const getCellFixedStyle = (column: TableColumn, columnIndex: number, headerRow: 
 
 
 // 监听表体滚动事件
-const syncScroll = debounce(() => {
-  if (!headerWrapperRef.value || !bodyWrapperRef.value) return
+const handleScroll = throttle((scrollData: ScrollEventData) => {
+  if (!scrollbarRef.value || !headerWrapperRef.value) return
 
-  const scrollLeft = bodyWrapperRef.value.scrollLeft
-
-  // 同步给表头
-  headerWrapperRef.value.scrollLeft = scrollLeft
-}, 10)
+  // 同步表头滚动
+  headerWrapperRef.value.scrollLeft = scrollData.scrollLeft
+}, 16)
 
 
 /**
@@ -290,12 +269,14 @@ const calculateColumnWidths = debounce(() => {
 
   nextTick(() => {
     checkScrollbar();
+    scrollbarRef.value?.update() // 强制更新一次
   })
 }, 100)
 
 watch(() => props.data, async () => {
   await nextTick();
   checkScrollbar()
+  scrollbarRef.value?.update()
 }, { deep: true })
 
 watch(columns, async () => {
@@ -323,21 +304,19 @@ onMounted(async () => {
       resizeObserver.disconnect();
     });
   }
-
-  if (bodyWrapperRef.value) {
-    bodyWrapperRef.value.addEventListener("scroll", syncScroll)
-  }
-
-
-  console.log("多级表头", headerRows.value)
 });
 
+defineExpose({
+  columns,
+  calculatedColumns,
+  flattenLeafColumns,
+  fixedLeftColumnsLength,
+  fixedRightColumnsLength,
+  getCellFixedStyle,
+  getCellClass,
+  headerRows
+});
 
-onBeforeUnmount(() => {
-  if (bodyWrapperRef.value) {
-    bodyWrapperRef.value.removeEventListener("scroll", syncScroll)
-  }
-})
 
 </script>
 
@@ -373,37 +352,39 @@ onBeforeUnmount(() => {
 
       <!-- 表体 -->
       <div class="er-table__body-wrapper" ref="bodyWrapperRef">
-        <table class="er-table__body">
-          <colgroup>
-            <col v-for="column in calculatedColumns" :key="column.id"
-              v-bind="column.width ? { width: column.width } : {}">
-            </col>
-          </colgroup>
-          <tbody>
-            <!-- <tr v-for="(row, index) in props.data" :key="index">
-              <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
-                :class="getCellClass(index, column, row)" :style="{
-                  ...getCellAlign(column.align),
-                  ...getCellFixedStyle(column, colIndex)
-                }">
-                <div class="er-table__cell">
-                  <div class="er-table__cell-content">
-                    {{ row[column.prop || ''] }}
+        <er-scrollbar ref="scrollbarRef" @scroll="handleScroll">
+          <table class="er-table__body">
+            <colgroup>
+              <col v-for="column in calculatedColumns" :key="column.id"
+                v-bind="column.width ? { width: column.width } : {}">
+              </col>
+            </colgroup>
+            <tbody>
+              <tr v-for="(row, index) in props.data" :key="index">
+                <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
+                  :class="getCellClass(index, column, calculatedColumns)" :style="{
+                    ...getCellAlign(column.align),
+                    ...getCellFixedStyle(column, colIndex, calculatedColumns)
+                  }">
+                  <div class="er-table__cell">
+                    <div class="er-table__cell-content">
+                      {{ row[column.prop || ''] }}
+                    </div>
                   </div>
-                </div>
-              </td>
-            </tr> -->
+                </td>
+              </tr>
 
-            <!-- 空状态 -->
-            <tr v-if="props.data.length === 0">
-              <td :colspan="calculatedColumns.length">
-                <div class="er-table__cell">
-                  <div class="er-table__cell-content">暂无数据</div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              <!-- 空状态 -->
+              <tr v-if="props.data.length === 0">
+                <td :colspan="calculatedColumns.length">
+                  <div class="er-table__cell">
+                    <div class="er-table__cell-content">暂无数据</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </er-scrollbar>
       </div>
     </div>
     <div style="display: none;">

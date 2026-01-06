@@ -93,9 +93,7 @@ $table-fixed-shadow-width: 8px;
     tr {
       transition: background-color 0.2s ease;
       &:hover {
-        background-color: var(--#{$namespace}-table-row-hover-bg-color);
-        td.is-fixed-left,
-        td.is-fixed-right {
+        td {
           background-color: var(--#{$namespace}-table-row-hover-bg-color);
         }
       }

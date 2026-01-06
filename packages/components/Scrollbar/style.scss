@@ -23,7 +23,7 @@
     position: absolute;
     right: 2px;
     bottom: 2px;
-    z-index: 1;
+    z-index: 14;
     border-radius: 4px;
     opacity: 0;
     transition: opacity 120ms ease-out; // 平滑过渡
@@ -49,7 +49,7 @@
       height: 6px;
       left: 2px;
       right: 2px;
-      top: 2px;
+      bottom: 2px;
     }
   }
 

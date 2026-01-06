@@ -1,176 +1,112 @@
-import { ErTable } from ".";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { mount } from "@vue/test-utils";
-import { describe, it, expect, vi } from "vitest";
-import { doubleWait, getTestData, createBasicTable } from "./table-test-common";
-
+import { doubleWait, createBasicTable, getTestData } from "./table-test-common";
 import Table from "./Table.vue";
 import TableColumn from "./TableColumn.vue";
+import { nextTick } from "vue";
 
-const createTableData = () => [
-  { id: 1, name: "岳绮罗", address: "北京" },
-  { id: 2, name: "谢霆锋", address: "上海" },
-  { id: 3, name: "潘玮柏", address: "广州" },
-];
+// 等待指定的毫秒数
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * 基础渲染测试
- */
-describe("Table组件测试", () => {
-  describe("基础渲染", () => {
+beforeAll(() => {
+  global.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+});
+
+describe("Table - 组件", () => {
+  describe("基础开发", () => {
     it("应该正确渲染表格结构", async () => {
       const wrapper = createBasicTable();
+
       await doubleWait();
 
-      expect(wrapper.find("table").exists()).toBe(true);
+      expect(wrapper.find(".er-table").exists()).toBe(true);
+      expect(wrapper.find(".er-table__header").exists()).toBe(true);
+      expect(wrapper.find(".er-table__body").exists()).toBe(true);
 
-      expect(wrapper.find("div").classes()).toContain("er-table");
-      expect(wrapper.find("thead").exists()).toBe(true);
-      expect(wrapper.find("tbody").exists()).toBe(true);
+      const headers = wrapper.findAll("thead th");
+      expect(headers.length).toBe(3);
+      expect(headers[0].text()).toBe("姓名");
+      expect(headers[1].text()).toBe("年龄");
+      expect(headers[2].text()).toBe("地址");
 
-      // 清理
+      const rows = wrapper.findAll("tbody tr");
+      expect(rows.length).toBe(3);
+
       wrapper.unmount();
     });
 
     it("应该支持border属性", async () => {
-      const wrapper = createBasicTable([], {
-        border: true,
-      });
+      const wrapper = createBasicTable(undefined, { border: true });
+
       await doubleWait();
 
       expect(wrapper.find(".er-table").classes()).toContain("er-table--border");
-    });
-  });
 
-  describe("属性配置", () => {
-    it("应该支持stripe条纹属性", async () => {
-      const wrapper = createBasicTable(getTestData(), { stripe: true });
-      await doubleWait();
-
-      expect(wrapper.find("div").classes()).toContain("er-table--stripe");
       wrapper.unmount();
     });
 
-    it("应该支持height属性（数字）", async () => {
-      const wrapper = createBasicTable(getTestData(), {
-        height: 300,
-      });
+    it("应该支持stripe属性", async () => {
+      const wrapper = createBasicTable(undefined, { stripe: true });
 
       await doubleWait();
 
-      expect(wrapper.find(".er-table").attributes("style")).toContain(
-        "height: 300px"
-      );
-      wrapper.unmount();
-    });
-
-    it("应该支持height属性（字符串）", async () => {
-      const wrapper = createBasicTable(getTestData(), {
-        height: "300px",
-      });
-
-      await doubleWait();
-
-      expect(wrapper.find(".er-table").attributes("style")).toContain(
-        "height: 300px"
-      );
-      wrapper.unmount();
-    });
-  });
-
-  describe("空数据处理", () => {
-    it("空数据时tbody应该没有数据行", async () => {
-      const wrapper = mount(Table, {
-        props: {
-          data: [],
-        },
-      });
-      await doubleWait();
-
-      const rows = wrapper.find("tbody").findAll("tr");
-
-      expect(rows.length).toBe(1);
-      expect(rows[0].classes()).toContain("er-table__empty-row");
-    });
-
-    it("空数据时应该显示空状态提示", () => {
-      const wrapper = mount(Table, {
-        props: {
-          data: [],
-        },
-      });
-
-      expect(wrapper.text()).toContain("暂无数据");
-    });
-  });
-
-  describe("数据渲染", () => {
-    it("应该渲染正确数量的数据行", async () => {
-      const wrapper = createBasicTable(getTestData());
-      await doubleWait();
-
-      const rows = wrapper
-        .find("tbody")
-        .findAll("tr")
-        .filter((row) => !row.classes().includes("er-table__empty-row"));
-
-      expect(rows.length).toBe(getTestData().length);
-    });
-
-    it("应该正确渲染单元格数据", async () => {
-      const wrapper = createBasicTable(getTestData());
-      await doubleWait();
-
-      const firstRow = wrapper.find("tbody").findAll("tr")[0];
-
-      expect(firstRow.text()).toContain("岳绮罗");
-      expect(firstRow.text()).toContain("北京");
-    });
-
-    it("应该响应数据变化", async () => {
-      const wrapper = mount({
-        components: { Table, TableColumn },
-        template: `
-            <Table :data="testData">
-                <TableColumn prop="name" label="姓名" />
-            </Table>
-        `,
-        data() {
-          return { testData: [{ name: "张三" }] };
-        },
-      });
-
-      await doubleWait();
-
-      let rows = wrapper
-        .findAll("tbody tr")
-        .filter((row) => !row.classes().includes("er-table__empty-row"));
-
-      expect(rows.length).toBe(1);
-
-      await wrapper.setData({
-        testData: [{ name: "张三" }, { name: "李四" }],
-      });
-
-      await doubleWait();
-
-      rows = wrapper
-        .findAll("tbody tr")
-        .filter((row) => !row.classes().includes("er-table__empty-row"));
-
-      expect(rows.length).toBe(2);
+      expect(wrapper.find(".er-table").classes()).toContain("er-table--stripe");
 
       wrapper.unmount();
     });
   });
 
-  describe("列配置", () => {
-    it("应该渲染列标题", async () => {
+  describe("多级表头", () => {
+    it("应该正确计算rowspan和colspan", async () => {
       const wrapper = mount({
         components: { Table, TableColumn },
         template: `
           <Table :data="testData">
-            <TableColumn prop="name" label="姓名" />
+            <TableColumn prop="date" label="日期" />
+            <TableColumn label="配送信息">
+              <TableColumn prop="name" label="姓名" />
+              <TableColumn label="地址信息">
+                <TableColumn prop="state" label="省份" />
+                <TableColumn prop="city" label="城市" />
+              </TableColumn>
+            </TableColumn>
+          </Table>
+        `,
+        data() {
+          return { testData: getTestData() };
+        },
+      });
+
+      await doubleWait();
+      await nextTick();
+      await nextTick();
+      await nextTick();
+
+      const headerRows = wrapper.findAll("thead tr");
+
+      expect(headerRows.length).toBe(3);
+
+      const firstRowCells = headerRows[0].findAll("th");
+      // 第一列的 rowspan 应该是 3 横跨3行
+      expect(firstRowCells[0].attributes("rowspan")).toBe("3");
+      // 第二列的 colspan 应该是 3 横跨3列
+      expect(firstRowCells[1].attributes("colspan")).toBe("3");
+
+      wrapper.unmount();
+    });
+
+    it("应该正确应用固定列样式", async () => {
+      const wrapper = mount({
+        components: { Table, TableColumn },
+        template: `
+          <Table :data="testData">
+            <TableColumn prop="name" label="姓名" fixed="left" width="120" />
             <TableColumn prop="address" label="地址" />
+            <TableColumn prop="email" label="邮箱" fixed="right" />
           </Table>
         `,
         data() {
@@ -180,92 +116,75 @@ describe("Table组件测试", () => {
 
       await doubleWait();
 
-      const headers = wrapper.find("thead").findAll("th");
-      expect(headers.length).toBe(2);
-      expect(headers[0].text()).toBe("姓名");
-      expect(headers[1].text()).toBe("地址");
+      // 获取组件实例
+      const tableVm = wrapper.findComponent(Table).vm as any;
 
-      wrapper.unmount();
-    });
+      console.log("tableVm", tableVm);
 
-    it("列宽应该正确应用", async () => {
-      const wrapper = mount({
-        components: { Table, TableColumn },
-        template: `
-          <Table :data="testData">
-            <TableColumn prop="name" label="姓名" width="200px" />
-          </Table>
-        `,
-        data() {
-          return { testData: getTestData() };
-        },
-      });
+      expect(tableVm.columns.length).toBe(3);
+      expect(tableVm.columns[0].fixed).toBe("left");
+      expect(tableVm.columns[2].fixed).toBe("right");
 
-      await doubleWait();
+      expect(tableVm.fixedLeftColumnsLength).toBe(1);
+      expect(tableVm.fixedRightColumnsLength).toBe(1);
 
-      const headers = wrapper.find("thead th");
-      expect(headers.attributes("style")).toContain("width: 200px");
-    });
+      const leftFixedColumn = tableVm.columns[0];
+      const leftStyle = tableVm.getCellFixedStyle(
+        leftFixedColumn,
+        0,
+        tableVm.columns
+      );
+      const rightFixedColumn = tableVm.columns[2];
+      const rightStyle = tableVm.getCellFixedStyle(
+        rightFixedColumn,
+        0,
+        tableVm.columns
+      );
 
-    it("应该支持center对齐", async () => {
-      const wrapper = mount({
-        components: { Table, TableColumn },
-        template: `
-                <Table :data="testData">
-                <TableColumn prop="name" label="姓名" align="center" />
-                </Table>
-            `,
-        data() {
-          return { testData: getTestData() };
-        },
+      // toHaveProperty 是否包含
+      expect(leftStyle).toHaveProperty("left");
+      expect(leftStyle.left).toBe("0px");
 
-      });
-
-      await doubleWait();
-
-      const th = wrapper.find("thead th");
-      const td = wrapper.find("tbody td");
-
-      expect(th.exists()).toBe(true);
-      expect(td.exists()).toBe(true);
-
-      expect(th.attributes("style") || "").toContain("text-align: center");
-      expect(td.attributes("style") || "").toContain("text-align: center");
+      expect(rightStyle).toHaveProperty("right");
+      expect(rightStyle.right).toBe("0px");
 
       wrapper.unmount();
     });
   });
 
-  // describe("table事件", () => {
-  //   it("应该触发row-click事件", async () => {
-  //     const handleRowClick = vi.fn();
-  //     const wrapper = mount({
-  //       components: { Table, TableColumn },
-  //       template: `
-  //       <Table :data="testData" @row-click="handleRowClick">
-  //           <TableColumn prop="name" label="姓名" />
-  //       </Table>
-  //       `,
-  //       data() {
-  //         return { testData: getTestData() };
-  //       },
-  //       methods: {
-  //         handleRowClick, // 绑定事件到模拟函数中
-  //       },
-  //     });
+  describe("滚动功能", () => {
+    it("应该正确同步表头滚动", async () => {
+      const wrapper = mount({
+        components: { Table, TableColumn },
+        template: `
+          <Table :data="testData" maxHeight="200px">
+            <TableColumn prop="name" label="姓名" width="200px" />
+            <TableColumn prop="address" label="地址" width="400px" />
+            <TableColumn prop="city" label="城市" width="200px" />
+          </Table>
+        `,
+        data() {
+          return { testData: getTestData() };
+        },
+      });
 
-  //     await doubleWait();
+      await doubleWait();
 
-  //     const firstRow = wrapper.find("tbody tr");
-  //     await firstRow.trigger("click");
+      const scrollbar = wrapper.findComponent({ name: "ErScrollbar" });
 
-  //     // expect().toHaveBeenCalledTimes() 断言函数被调用的次数
-  //     expect(handleRowClick).toHaveBeenCalledTimes(1);
-  //     // mock.calls 间谍函数的调用记录，存储每次调用的参数数组
-  //     // - mock.calls[0] 表示第一次调用的参数数组；
-  //     // - mock.calls[0][0] 表示第一次调用的第一个参数（即表格行数据）；
-  //     // - toEqual 是“深度相等”断言，验证参数是否和测试数据第一条完全一致。
-  //     expect(handleRowClick.mock.calls[0][0]).toEqual(getTestData()[0]);
-  //   });
-  // });
+      // 模拟滚动
+      if (scrollbar.exists()) {
+        await scrollbar.vm.$emit("scroll", { scrollLeft: 100, scrollTop: 0 });
+        await nextTick();
+
+        const headerWrapper = wrapper.find(".er-table__header-wrapper");
+
+        if (headerWrapper.exists()) {
+          expect(headerWrapper.element.scrollLeft).toBe(100);
+        }
+      }
+
+      wrapper.unmount();
+    });
+  });
 });

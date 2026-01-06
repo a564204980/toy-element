@@ -71,6 +71,8 @@ export const scrollbarEmits = {
 };
 
 export type scrollbarEmits = ExtractPropTypes<typeof scrollbarEmits>;
+// 事件参数类型，提取参数类型[{ scrollTop: number; scrollLeft: number }]
+export type ScrollEventData = Parameters<typeof scrollbarEmits.scroll>[0];
 
 export const barProps = {
   /**

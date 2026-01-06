@@ -80,7 +80,7 @@ const handleClick = throttle(() => {
 
 <template>
   <div class="table">
-    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="200px">
+    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="400px">
       <er-table-column label="标题1" prop="name" align="center" width="100px" fixed="left">
         <er-table-column label="嵌套列" prop="name" align="center" width="100px"></er-table-column>
         <er-table-column label="嵌套列2" prop="name" align="center" width="100px"></er-table-column>

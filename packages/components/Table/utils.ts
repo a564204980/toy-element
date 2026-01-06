@@ -155,8 +155,6 @@ export const getRealColumnPosition = (
   // 获取当前列对应的所有叶子列
   const curLeafColumns = getCurrentColumns(column);
 
-  console.log("所有叶子列", curLeafColumns);
-
   // 找到第一个叶子列在所有叶子列中的位置
   const firstLeafIndex = allLeafColumns.findIndex(
     (leaf) => leaf.id === curLeafColumns[0].id
