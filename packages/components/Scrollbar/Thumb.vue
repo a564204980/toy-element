@@ -107,9 +107,6 @@ const handleMouseUp = () => {
 </script>
 
 <template>
-  <div
-    :class="['er-scrollbar__thumb', { 'is-vertical': vertical }]"
-    :style="thumbStyle"
-    @mousedown="handleMouseDown"
-  ></div>
+  <div :class="['er-scrollbar__thumb', { 'is-vertical': vertical }]" :style="thumbStyle" @mousedown="handleMouseDown">
+  </div>
 </template>

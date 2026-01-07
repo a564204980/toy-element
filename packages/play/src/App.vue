@@ -36,19 +36,12 @@ const tableData = ref([
   },
   {
     id: 5,
-    name: "赵六",
+    name: "赵七",
     age: 35,
     address: "深圳市南山区",
     email: "zhaoliu@example.com",
   },
-  {
-    id: 6,
-    name: "赵六",
-    age: 35,
-    address:
-      "深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区深圳市南山区",
-    email: "zhaoliu@example.com",
-  },
+
 ]);
 
 watch(activeNames, (newNames) => {
@@ -85,26 +78,22 @@ const currentChange = (row: any, oldRow: any) => {
 
 <template>
   <div class="table">
-    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="400px"
+    <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="300px"
       highlight-current-row @current-change="currentChange">
-      <er-table-column label="标题1" prop="name" align="center" width="100px" fixed="left">
-        <er-table-column label="嵌套列" prop="name" align="center" width="100px"></er-table-column>
-        <er-table-column label="嵌套列2" prop="name" align="center" width="100px"></er-table-column>
-        <er-table-column label="嵌套列4" prop="name" align="center" width="100px"></er-table-column>
-        <er-table-column label="嵌套列5" prop="name" align="center" width="100px"></er-table-column>
+      <er-table-column type="index" :index="10"></er-table-column>
+      <er-table-column label="标题1" prop="name" align="center" fixed="left">
+        <er-table-column label="嵌套列" prop="name" align="center"></er-table-column>
+
       </er-table-column>
-      <er-table-column label="标题2" prop="age" align="center" width="400px"></er-table-column>
-      <er-table-column label="标题3" prop="address" align="center" width="400px"></er-table-column>
-      <er-table-column label="标题4" prop="email" align="center" width="400px">
-      </er-table-column>
-      <er-table-column label="标题4" prop="email" align="center" width="400px">
-        <er-table-column label="嵌套标题4" prop="email" align="center" width="400px"></er-table-column>
-      </er-table-column>
-      <er-table-column label="标题4" prop="email" align="center" width="400px">
-      </er-table-column>
-      <er-table-column label="标题4" prop="email" align="center" width="400px">
-      </er-table-column>
-      <er-table-column label="标题5" prop="email" align="center" width="200px" fixed="right"></er-table-column>
+      <er-table-column label="标题2" width="600px"></er-table-column>
+      <er-table-column label="标题3" width="600px"></er-table-column>
+      <er-table-column label="标题4" width="600px"></er-table-column>
+      <er-table-column label="标题5" width="600px" fixed="right"></er-table-column>
+
+
+
+
+
     </er-table>
   </div>
   <!-- <er-scrollbar maxHeight="400px">
@@ -114,7 +103,7 @@ const currentChange = (row: any, oldRow: any) => {
     </div>
   </er-scrollbar> -->
 
-  <er-button @click="handleClick">按钮</er-button>
+
 </template>
 
 <style lang="scss" scoped>

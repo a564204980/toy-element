@@ -38,14 +38,24 @@ export const tableColumnProps = {
   width: String, // 列的宽度
   minWidth: String, // 列的最小宽度
   align: {
+    // 列的对齐方式
     type: String as PropType<"left" | "center" | "right">,
     values: ["left", "center", "right"],
     default: "left",
-  }, // 列的对齐方式
+  },
   fixed: {
+    // 固定列
     type: [Boolean, String] as PropType<boolean | "left" | "right">,
     default: false,
-  }, // 固定列
+  },
+  type: {
+    // 列类型
+    type: String as PropType<"index" | "selection" | "expand">,
+  },
+  index: {
+    // 索引起始值或计算函数
+    type: [Number, Function] as PropType<number | ((index: number) => number)>,
+  },
 } as const;
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;
@@ -59,6 +69,8 @@ export interface TableColumn extends TableColumnProps {
   rowSpan?: number; // 计算后的行跨度
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
+  type?: "index" | "selection" | "expand"; // 索引列 | 选择列 | 展开列
+  index?: number | ((index: number) => number);
 }
 
 export const tableEmits = {

@@ -60,7 +60,10 @@ onMounted(() => {
     fixed: props.fixed || (parentColumn?.props?.fixed),
     children: childColumns.value.length > 0 ? childColumns.value : undefined,
     level: parentColumn ? (parentColumn.level ?? 0) + 1 : 0, // 计算当前层级
+    type: props.type,
+    index: props.index,
   };
+
 
   // 是嵌套列
   if (parentColumn && parentColumn.registerColumn) {

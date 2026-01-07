@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Thumb from "./Thumb.vue";
-import { inject, ref } from "vue";
+import { inject, nextTick, ref } from "vue";
 import { barProps } from "./types";
 import { useNamespace } from "@toy-element/hooks";
 import { scrollbarContextKey } from "./constants";
@@ -22,6 +22,7 @@ const ratioX = ref(1); // 水平滑块移动比例
 const ratioY = ref(1); // 垂直滑块移动比例
 
 const GAP = 4; // 滑块与边缘的间距
+const THRESHOLD = 10; // 溢出阈值
 
 /**
  * 当内容滚动时，计算滚动条应该移动到的位置
@@ -31,12 +32,11 @@ const handleScroll = (wrap: HTMLDivElement) => {
   const offsetHeight = wrap.offsetHeight - GAP;
   const offsetWidth = wrap.offsetWidth - GAP;
 
-  // 计算滑块应该移动的百分比
-  let moveYValue = ((wrap.scrollTop * 100) / offsetHeight) * ratioY.value;
-  let moveXValue = ((wrap.scrollLeft * 100) / offsetWidth) * ratioX.value;
 
-  moveY.value = Math.max(0, Math.min(100, moveYValue));
-  moveX.value = Math.max(0, Math.min(100, moveXValue));
+  // 计算滑块应该移动的百分比
+  moveY.value = ((wrap.scrollTop * 100) / offsetHeight) * ratioY.value;
+  moveX.value = ((wrap.scrollLeft * 100) / offsetWidth) * ratioX.value;
+
 };
 
 const update = () => {
@@ -51,6 +51,7 @@ const update = () => {
   // 容器的可视高度和宽度
   const offsetHeight = wrapEl.offsetHeight - GAP;
   const offsetWidth = wrapEl.offsetWidth - GAP;
+
 
   // 计算滑块的原始高度和宽度
   const originalHeight = offsetHeight ** 2 / wrapEl.scrollHeight;
@@ -72,8 +73,9 @@ const update = () => {
 
   // 设置滑块尺寸
   // 只有当需要滚动时才显示滑块
-  sizeHeight.value = GAP + height < offsetHeight ? `${height}px` : "";
-  sizeWidth.value = width + GAP < offsetWidth ? `${width}px` : "";
+  sizeHeight.value = GAP + height + THRESHOLD < offsetHeight ? `${height}px` : "";
+  sizeWidth.value = width + GAP + THRESHOLD < offsetWidth ? `${width}px` : "";
+
 };
 
 /**
@@ -132,34 +134,15 @@ defineExpose({
 
 <template>
   <!-- 轨道容器 -->
-  <div
-    v-if="sizeHeight"
-    :class="[ns.e('bar'), ns.is('vertical'), { 'is-always': always }]"
-    @mousedown="handleTrackClick"
-  >
-    <!-- 水平滚动条 -->
-    <Thumb
-      :move="moveY"
-      :ratio="ratioY"
-      :size="sizeHeight"
-      :always="always"
-      vertical
-      @mousedown.stop
-    />
+  <div v-if="sizeHeight" :class="[ns.e('bar'), ns.is('vertical'), { 'is-always': always }]"
+    @mousedown="handleTrackClick">
+    <!-- 垂直滚动条 -->
+    <Thumb :move="moveY" :ratio="ratioY" :size="sizeHeight" :always="always" vertical @mousedown.stop />
   </div>
   <!-- 轨道容器 -->
-  <div
-    v-if="sizeWidth"
-    :class="[ns.e('bar'), ns.is('horizontal'), { 'is-always': always }]"
-    @mousedown="handleTrackClick"
-  >
-    <!-- 垂直滚动条 -->
-    <Thumb
-      :move="moveX"
-      :ratio="ratioX"
-      :size="sizeWidth"
-      :always="always"
-      @mousedown.stop
-    />
+  <div v-if="sizeWidth" :class="[ns.e('bar'), ns.is('horizontal'), { 'is-always': always }]"
+    @mousedown="handleTrackClick">
+    <!-- 水平滚动条 -->
+    <Thumb :move="moveX" :ratio="ratioX" :size="sizeWidth" :always="always" @mousedown.stop />
   </div>
 </template>
