@@ -8,7 +8,8 @@ import {
   useColumns,
   useScrollbar,
   useFixed,
-  useCurrentRow
+  useCurrentRow,
+  useSelection
 } from "./composables"
 
 defineOptions({
@@ -18,8 +19,6 @@ defineOptions({
 const props = defineProps(tableProps);
 
 const emits = defineEmits(tableEmits);
-
-
 
 const tableRef = ref<HTMLElement>()
 
@@ -71,6 +70,11 @@ const {
   setCurrentRow,
 } = useCurrentRow({
   highlightCurrentRow: props.highlightCurrentRow,
+  emit: emits,
+})
+
+const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAllSelection } = useSelection({
+  data: () => props.data,
   emit: emits,
 })
 
@@ -186,9 +190,15 @@ defineExpose({
                 :colspan="column.colSpan" :class="getCellClass(columnIndex, column, row)"
                 :style="getCellFixedStyle(column, columnIndex, row, true)">
                 <div class="er-table__cell">
-                  <div class="er-table__header-label">
-                    {{ column.label || (column.type === "index" ? "序号" : "") }}
-                  </div>
+                  <template v-if="column.type === 'selection'">
+                    <input type="checkbox" class="er-table__checkbox" :indeterminate="isIndeterminate"
+                      :checked="isAllSelected" @change="toggleAllSelection" />
+                  </template>
+                  <template v-else>
+                    <div class="er-table__header-label">
+                      {{ column.label || (column.type === "index" ? "序号" : "") }}
+                    </div>
+                  </template>
                 </div>
               </th>
               <th v-if="hasScrollbar" class="gutter" :style="{ width: scrollbarWidth + 'px' }"></th>
@@ -217,15 +227,18 @@ defineExpose({
                   }">
                   <div class="er-table__cell">
                     <div class="er-table__cell-content">
-                      {{
-                        column.type === "index"
-                          ? (typeof column.index === 'function'
-                            ? column.index(index)
-                            : typeof column.index === 'number'
-                              ? column.index + index
-                              : index + 1)
-                          : row[column.prop || '']
-                      }}
+                      <template v-if="column.type === 'selection'">
+                        <input type="checkbox" class="er-table__row-checkbox"
+                          :disabled="column.selectable ? !column.selectable(row, index) : false"
+                          :checked="isSelected(row)" @change="toggleRowSelection(row)" />
+                      </template>
+                      <template v-else-if="column.type === 'index'">
+                        {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
+                          index : index + 1) }}
+                      </template>
+                      <template v-else>
+                        {{ row[column.prop || ''] }}
+                      </template>
                     </div>
                   </div>
                 </td>

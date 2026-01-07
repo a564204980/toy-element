@@ -56,6 +56,15 @@ export const tableColumnProps = {
     // 索引起始值或计算函数
     type: [Number, Function] as PropType<number | ((index: number) => number)>,
   },
+  selectable: {
+    // 是否可选
+    type: Function as PropType<(row: any, index: number) => boolean>,
+  },
+  reserveSelection: {
+    // 是否保留选择
+    type: Boolean,
+    default: false,
+  },
 } as const;
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;
@@ -69,12 +78,14 @@ export interface TableColumn extends TableColumnProps {
   rowSpan?: number; // 计算后的行跨度
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
-  type?: "index" | "selection" | "expand"; // 索引列 | 选择列 | 展开列
-  index?: number | ((index: number) => number);
 }
 
+// 表格方法
 export const tableEmits = {
   "current-change": (_currentRow: any, _oldCurrentRow: any) => true,
+  "selection-change": (_selection: any[]) => true, // 选择项发生变化时触发
+  select: (_selection: any[], _row: any) => true,
+  "select-all": (_selection: any[]) => true,
 };
 
 export type TableEmits = typeof tableEmits;

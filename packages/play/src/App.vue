@@ -66,20 +66,21 @@ const tableRowClassName = ({
   return "";
 };
 
-const handleClick = throttle(() => {
-  console.log("执行了!", Date.now());
-}, 1000);
 
 const currentChange = (row: any, oldRow: any) => {
-  console.log("row", row)
-  console.log("oldRow", oldRow)
+}
+
+const handleSelectAll = (data: any) => {
+  console.log("data", data)
 }
 </script>
 
 <template>
   <div class="table">
     <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="300px"
-      highlight-current-row @current-change="currentChange">
+      highlight-current-row @current-change="currentChange" @selection-change="(val: any) => console.log('选中:', val)"
+      @select-all="handleSelectAll">
+      <er-table-column :selectable="(row: any) => row.id === 1" type="selection"></er-table-column>
       <er-table-column type="index" :index="10"></er-table-column>
       <er-table-column label="标题1" prop="name" align="center" fixed="left">
         <er-table-column label="嵌套列" prop="name" align="center"></er-table-column>

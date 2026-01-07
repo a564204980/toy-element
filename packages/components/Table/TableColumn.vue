@@ -62,6 +62,8 @@ onMounted(() => {
     level: parentColumn ? (parentColumn.level ?? 0) + 1 : 0, // 计算当前层级
     type: props.type,
     index: props.index,
+    selectable: props.selectable,
+    reserveSelection: props.reserveSelection,
   };
 
 
