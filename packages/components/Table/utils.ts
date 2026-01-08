@@ -165,3 +165,61 @@ export const getRealColumnPosition = (
     end: firstLeafIndex + curLeafColumns.length - 1, // 这一列的最后一个叶子列在整个表格中的位置
   };
 };
+
+/**
+ * 通用排序函数
+ * @param array - 要排序的数组
+ * @param sortKey - 排序字段名
+ * @param order - 排序方向 'ascending' | 'descending'
+ * @param sortMethod - 自定义比较函数（可选）
+ * @param sortBy - 指定排序时使用的属性或函数（可选）
+ */
+export const orderBy = <T extends Record<string, any>>(
+  array: T[],
+  sortKey: string,
+  order: "ascending" | "descending",
+  sortMethod?: (a: T, b: T) => number,
+  sortBy?: string | ((row: T, index: number) => any) | string[]
+): T[] => {
+  if (!sortKey && !sortMethod && !sortBy) {
+    return array;
+  }
+
+  // 1升序，-1降序
+  const reverse = order === "descending" ? -1 : 1;
+
+  // 用于比较的键值
+  const getKey = (item: T, index: number) => {
+    if (sortBy) {
+      if (typeof sortBy === "function") {
+        return sortBy(item, index);
+      }
+
+      if (typeof sortBy === "string") {
+        return item[sortBy];
+      }
+
+      if (Array.isArray(sortBy)) {
+        return sortBy.map((key) => item[key]);
+      }
+    }
+
+    return item[sortKey];
+  };
+
+  const sortData = [...array].sort((a, b) => {
+    if (sortMethod) {
+      return sortMethod(a, b) * reverse;
+    }
+    const valA = getKey(a, array.indexOf(a));
+    const valB = getKey(b, array.indexOf(b));
+    // 比较逻辑
+    if (valA < valB) return -1 * reverse;
+    if (valA > valB) return 1 * reverse;
+    return 0;
+  });
+
+  console.log("sortData", sortData);
+
+  return sortData;
+};

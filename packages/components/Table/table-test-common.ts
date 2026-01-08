@@ -47,3 +47,18 @@ export const createBasicTable = (data = getTestData(), props = {}) => {
     },
   });
 };
+
+// describe('排序功能', () => {
+//   it('点击列头应该触发排序', async () => {
+//     // 测试基础排序
+//   });
+//   it('应该支持 default-sort', async () => {
+//     // 测试默认排序
+//   });
+//   it('sortable="custom" 应该触发 sort-change 事件但不排序数据', async () => {
+//     // 测试远程排序
+//   });
+//   it('应该支持 sort-method 自定义排序', async () => {
+//     // 测试自定义排序
+//   });
+// });

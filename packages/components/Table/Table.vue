@@ -11,6 +11,7 @@ import {
   useCurrentRow,
   useSelection
 } from "./composables"
+import { useSort } from "./composables/useSort";
 
 defineOptions({
   name: "ErTable",
@@ -79,6 +80,14 @@ const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAl
   emit: emits,
   // 因为calculatedColumns是延迟执行的，所以这里要用箭头函数包装一下延迟返回
   selectable: () => calculatedColumns.value.find(col => col.type === 'selection')?.selectable,
+})
+
+
+const { sortedData, handleSort } = useSort({
+  data: () => props.data,
+  columns: () => calculatedColumns.value,
+  defaultSort: computed(() => props.defaultSort),
+  emit: emits
 })
 
 
@@ -192,7 +201,7 @@ defineExpose({
               <th v-for="(column, columnIndex) in row" :key="column.id" :rowspan="column.rowSpan"
                 :colspan="column.colSpan" :class="getCellClass(columnIndex, column, row)"
                 :style="getCellFixedStyle(column, columnIndex, row, true)">
-                <div class="er-table__cell">
+                <div class="er-table__cell" @click="column.sortable && handleSort(column)">
                   <template v-if="column.type === 'selection'">
                     <!-- <input type="checkbox" class="er-table__checkbox" :indeterminate="isIndeterminate"
                       :checked="isAllSelected" @change="toggleAllSelection" /> -->
@@ -232,7 +241,7 @@ defineExpose({
               </col>
             </colgroup>
             <tbody>
-              <tr v-for="(row, index) in props.data" :key="index" :class="getRowClass(row)"
+              <tr v-for="(row, index) in sortedData" :key="index" :class="getRowClass(row)"
                 @click="handleRowClick(row)">
                 <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
                   :class="getCellClass(colIndex, column, calculatedColumns)" :style="{

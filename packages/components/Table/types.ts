@@ -24,9 +24,17 @@ export const tableProps = {
     default: "",
   },
   highlightCurrentRow: {
+    // 当前行是否高亮
     type: Boolean,
     default: false,
-  }, // 当前行是否高亮
+  },
+  defaultSort: {
+    // 默认排序
+    type: Object as PropType<{
+      prop: string; // 字段名
+      order: "ascending" | "descending"; // 排序方式
+    }>,
+  },
 } as const;
 
 export type TableProps = ExtractPropTypes<typeof tableProps>;
@@ -65,6 +73,26 @@ export const tableColumnProps = {
     type: Boolean,
     default: false,
   },
+  sortable: {
+    // 是否排序，custom为远程排序
+    type: [Boolean, String] as PropType<boolean | "custom">,
+    default: false,
+  },
+  sortMethod: {
+    // 自定义排序方法
+    type: Function as PropType<(a: any, b: any) => number>,
+  },
+  sortBy: {
+    // 指定排序时使用的属性
+    type: [String, Function, Array] as PropType<
+      string | ((row: any, index: number) => string) | string[]
+    >,
+  },
+  sortOrders: {
+    // 排序循序
+    type: Array as PropType<("ascending" | "descending" | null)[]>,
+    default: () => ["ascending", "descending", null],
+  },
 } as const;
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;
@@ -78,6 +106,7 @@ export interface TableColumn extends TableColumnProps {
   rowSpan?: number; // 计算后的行跨度
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
+  order?: "ascending" | "descending" | null; // 当前排序状态
 }
 
 // 表格方法
@@ -86,6 +115,12 @@ export const tableEmits = {
   "selection-change": (_selection: any[]) => true, // 选择项发生变化时触发
   select: (_selection: any[], _row: any) => true,
   "select-all": (_selection: any[]) => true,
+  "sort-change": (_sortInfo: {
+    // 排序发生变化时触发
+    column: any;
+    prop: string;
+    order: "ascending" | "descending" | null;
+  }) => true,
 };
 
 export type TableEmits = typeof tableEmits;

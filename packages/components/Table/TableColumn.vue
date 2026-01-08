@@ -64,6 +64,8 @@ onMounted(() => {
     index: props.index,
     selectable: props.selectable,
     reserveSelection: props.reserveSelection,
+    sortable: props.sortable,
+    sortOrders: props.sortOrders,
   };
 
 
