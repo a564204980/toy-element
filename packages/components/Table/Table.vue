@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, useId, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, tableEmits } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
 
@@ -20,8 +20,9 @@ const props = defineProps(tableProps);
 
 const emits = defineEmits(tableEmits);
 
-const tableRef = ref<HTMLElement>()
+const checkboxId = useId()
 
+const tableRef = ref<HTMLElement>()
 const bodyWrapperRef = ref<HTMLElement>()
 const headerWrapperRef = ref<HTMLElement>()
 const scrollbarRef = ref<InstanceType<typeof ErScrollbar>>()
@@ -45,7 +46,7 @@ const {
   calculateColumnWidths,
 } = useColumns({
   tableRef,
-  onColumnWidthsCalculated: () => {  // ✅ 传入回调
+  onColumnWidthsCalculated: () => {
     checkScrollbar();
     scrollbarRef.value?.update();
   }
@@ -76,6 +77,8 @@ const {
 const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAllSelection } = useSelection({
   data: () => props.data,
   emit: emits,
+  // 因为calculatedColumns是延迟执行的，所以这里要用箭头函数包装一下延迟返回
+  selectable: () => calculatedColumns.value.find(col => col.type === 'selection')?.selectable,
 })
 
 
@@ -191,8 +194,20 @@ defineExpose({
                 :style="getCellFixedStyle(column, columnIndex, row, true)">
                 <div class="er-table__cell">
                   <template v-if="column.type === 'selection'">
-                    <input type="checkbox" class="er-table__checkbox" :indeterminate="isIndeterminate"
-                      :checked="isAllSelected" @change="toggleAllSelection" />
+                    <!-- <input type="checkbox" class="er-table__checkbox" :indeterminate="isIndeterminate"
+                      :checked="isAllSelected" @change="toggleAllSelection" /> -->
+                    <label class="er-checkbox">
+                      <span class="er-checkbox__input" :class="{
+                        'is-checked': isAllSelected,
+                        'is-indeterminate': isIndeterminate,
+                        'is-disabled': false
+                      }">
+                        <input :id="checkboxId" name="table-select-all" type="checkbox" class="er-checkbox__original"
+                          :checked="isAllSelected" @change="toggleAllSelection" />
+                        <span class="er-checkbox__inner"></span>
+                      </span>
+
+                    </label>
                   </template>
                   <template v-else>
                     <div class="er-table__header-label">
@@ -228,9 +243,20 @@ defineExpose({
                   <div class="er-table__cell">
                     <div class="er-table__cell-content">
                       <template v-if="column.type === 'selection'">
-                        <input type="checkbox" class="er-table__row-checkbox"
+                        <!-- <input type="checkbox" class="er-table__row-checkbox"
                           :disabled="column.selectable ? !column.selectable(row, index) : false"
-                          :checked="isSelected(row)" @change="toggleRowSelection(row)" />
+                          :checked="isSelected(row)" @change="toggleRowSelection(row)" /> -->
+                        <label class="er-checkbox">
+                          <span class="er-checkbox__input" :class="{
+                            'is-checked': isSelected(row),
+                            'is-disabled': column.selectable && !column.selectable(row, index)
+                          }">
+                            <input type="checkbox" class="er-checkbox__original"
+                              :disabled="column.selectable && !column.selectable(row, index)" :checked="isSelected(row)"
+                              @change="toggleRowSelection(row)" />
+                            <span class="er-checkbox__inner"></span>
+                          </span>
+                        </label>
                       </template>
                       <template v-else-if="column.type === 'index'">
                         {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
@@ -264,5 +290,6 @@ defineExpose({
 </template>
 
 <style scoped>
-@import "./style.scss";
+@import "./scss/style.scss";
+@import "./scss/checkbox.scss"
 </style>

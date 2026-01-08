@@ -1,0 +1,116 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+$checkbox-input-width: 14px;
+$checkbox-input-height: 14px;
+$checkbox-border-radius: 2px;
+
+@include b(checkbox) {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  @include e(input) {
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    display: inline-flex;
+    position: relative;
+
+    @include when(checked) {
+      .#{$namespace}-checkbox__inner {
+        background-color: var(--#{$namespace}-color-primary);
+        border-color: var(--#{$namespace}-color-primary);
+
+        // 选中状态
+        &::after {
+          transform: translate(-45%, -60%) rotate(45deg) scaleY(1);
+          border-color: #fff;
+        }
+      }
+    }
+
+    @include when(indeterminate) {
+      .#{$namespace}-checkbox__inner {
+        background-color: var(--#{$namespace}-color-primary);
+        border-color: var(--#{$namespace}-color-primary);
+
+        &::before {
+          content: "";
+          position: absolute;
+          display: block;
+          background-color: #fff;
+          height: 2px;
+          transform: scale(0.5);
+          left: 0;
+          right: 0;
+          top: 5px;
+        }
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    // 禁用状态
+    @include when(disabled) {
+      cursor: not-allowed;
+
+      .#{$namespace}-checkbox__inner {
+        background-color: var(--#{$namespace}-fill-color-light);
+        border-color: var(--#{$namespace}-border-color);
+        cursor: pointer;
+      }
+
+      &::after {
+        border-color: var(--#{$namespace}-text-color-placeholder);
+      }
+    }
+  }
+
+  // 复选框外观
+  @include e(inner) {
+    display: inline-block;
+    position: relative;
+    border: 1px solid var(--#{$namespace}-border-color);
+    border-radius: $checkbox-border-radius;
+    box-sizing: border-box;
+    width: $checkbox-input-width;
+    height: $checkbox-input-height;
+    background-color: #fff;
+    transition: border-color 0.25s, background-color 0.25s;
+
+    &:hover {
+      border-color: var(--#{$namespace}-color-primary);
+    }
+
+    // 勾选符号-未勾选状态
+    &::after {
+      box-sizing: content-box;
+      content: "";
+      border: 1px solid transparent;
+      border-left: 0;
+      border-top: 0;
+      height: 7px;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-45%, -60%) rotate(45deg) scaleY(0);
+      width: 3px;
+      transition: transform 0.15s ease-in 0.05s;
+      transform-origin: center;
+    }
+  }
+
+  // 隐藏原生 input
+  @include e(original) {
+    opacity: 0;
+    outline: none;
+    position: absolute;
+    margin: 0;
+    width: 0;
+    height: 0;
+    z-index: -1;
+  }
+}

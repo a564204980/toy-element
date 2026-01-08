@@ -78,9 +78,8 @@ const handleSelectAll = (data: any) => {
 <template>
   <div class="table">
     <er-table :data="tableData" :row-class-name="tableRowClassName" stripe border maxHeight="300px"
-      highlight-current-row @current-change="currentChange" @selection-change="(val: any) => console.log('选中:', val)"
-      @select-all="handleSelectAll">
-      <er-table-column :selectable="(row: any) => row.id === 1" type="selection"></er-table-column>
+      highlight-current-row @current-change="currentChange" @select-all="handleSelectAll">
+      <er-table-column type="selection"></er-table-column>
       <er-table-column type="index" :index="10"></er-table-column>
       <er-table-column label="标题1" prop="name" align="center" fixed="left">
         <er-table-column label="嵌套列" prop="name" align="center"></er-table-column>

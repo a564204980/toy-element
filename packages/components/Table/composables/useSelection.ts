@@ -3,14 +3,13 @@ import { computed, ref } from "vue";
 export interface UseSelectionOptions {
   data: () => any[];
   emit: (...args: any[]) => void;
-  selectable?: (row: any, index: number) => boolean;
+  selectable?: () => ((row: any, index: number) => boolean) | undefined; // 是否选中
 }
 
 export const useSelection = (options: UseSelectionOptions) => {
-  const { data, emit } = options;
+  const { data, emit, selectable } = options;
 
   const selection = ref<any[]>([]); // 已选中的数据
-  const selectableFn = ref<((row: any, index: number) => boolean) | null>(null); // 某行是否可选中
 
   /**
    * 判断某一行是否被选中
@@ -44,15 +43,14 @@ export const useSelection = (options: UseSelectionOptions) => {
     const rows = data();
     if (rows.length === 0) return false;
 
-    // every()方法测试数组中的所有元素是否都通过了指定函数的测试
-    // return rows.every((row) => selection.value.includes(row));
-
     // 过滤出可选中的行
+    const selectableFn = selectable?.();
     const selectableRows = rows.filter((row, index) => {
-      return !selectableFn.value || selectableFn.value(row, index);
+      return !selectableFn || selectableFn(row, index);
     });
 
-    if (selectableRows.length === 0) return;
+    if (selectableRows.length === 0) return false;
+    // 测试数组中的所有元素是否都通过某个条件
     return selectableRows.every((row) => selection.value.includes(row));
   });
 
@@ -61,10 +59,13 @@ export const useSelection = (options: UseSelectionOptions) => {
    */
   const isIndeterminate = computed(() => {
     const rows = data();
+    const selectableFn = selectable?.();
     const selectableRows = rows.filter((row, index) => {
-      return !selectableFn.value || selectableFn.value(row, index);
+      return !selectableFn || selectableFn(row, index);
     });
-    const selectedCount = selection.value.length;
+    const selectedCount = selection.value.filter((row) =>
+      selectableRows.includes(row)
+    ).length;
     return selectedCount > 0 && selectedCount < selectableRows.length;
   });
 
@@ -76,21 +77,15 @@ export const useSelection = (options: UseSelectionOptions) => {
     if (isAllSelected.value) {
       selection.value = [];
     } else {
+      const selectableFn = selectable?.();
       const selectableRows = rows.filter((row, index) => {
-        return !selectableFn.value || selectableFn.value(row, index);
+        return !selectableFn || selectableFn(row, index);
       });
       selection.value = [...selectableRows];
     }
 
     emit("select-all", [...selection.value]);
     emit("selection-change", [...selection.value]);
-  };
-
-  /**
-   * 设置某一行是否可选中
-   */
-  const setSelectable = (fn: ((row: any, index: number) => boolean) | null) => {
-    selectableFn.value = fn;
   };
 
   const clearSelection = () => {
@@ -105,7 +100,6 @@ export const useSelection = (options: UseSelectionOptions) => {
     isAllSelected,
     isIndeterminate,
     toggleAllSelection,
-    setSelectable,
     clearSelection,
   };
 };
