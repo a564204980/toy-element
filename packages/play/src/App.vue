@@ -78,8 +78,7 @@ const handleSelectAll = (data: any) => {
 <template>
   <div class="table">
     <er-table :data="tableData" :defaultSort="{ prop: 'age', order: 'descending' }" :row-class-name="tableRowClassName"
-      stripe border maxHeight="300px" highlight-current-row @current-change="currentChange"
-      @select-all="handleSelectAll">
+      stripe border highlight-current-row @current-change="currentChange" @select-all="handleSelectAll">
       <er-table-column type="selection"></er-table-column>
       <er-table-column type="index" :index="10"></er-table-column>
       <er-table-column label="标题1" prop="name" align="center" fixed="left">

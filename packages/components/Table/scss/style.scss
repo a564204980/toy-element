@@ -116,6 +116,9 @@ $table-fixed-shadow-width: 8px;
     padding: $table-cell-padding;
     width: 100%;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 
     &.is-index {
       text-align: center;
@@ -124,7 +127,15 @@ $table-fixed-shadow-width: 8px;
     }
   }
 
-  .#{$namespace}-table__header-label,
+  .#{$namespace}-table__header-label {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // 文字过长显示省略号
+    transition: background-color 0.2s ease;
+    word-wrap: break-word;
+  }
+
   .#{$namespace}-table__cell-content {
     width: 100%;
     // white-space: nowrap;

@@ -83,7 +83,7 @@ const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAl
 })
 
 
-const { sortedData, handleSort } = useSort({
+const { sortedData, handleSort, sortProp, sortOrder } = useSort({
   data: () => props.data,
   columns: () => calculatedColumns.value,
   defaultSort: computed(() => props.defaultSort),
@@ -219,9 +219,21 @@ defineExpose({
                     </label>
                   </template>
                   <template v-else>
-                    <div class="er-table__header-label">
+                    <span class="er-table__header-label">
                       {{ column.label || (column.type === "index" ? "序号" : "") }}
-                    </div>
+                    </span>
+
+                    <!-- 排序图标 -->
+                    <span v-if="column.sortable" class="caret-wrapper">
+
+                      <i class="sort-caret ascending" :class="{
+                        'is-active': sortProp === column.prop && sortOrder === 'ascending'
+                      }"></i>
+                      <i class="sort-caret descending" :class="{
+                        'is-active': sortProp === column.prop && sortOrder === 'descending'
+                      }"></i>
+
+                    </span>
                   </template>
                 </div>
               </th>
@@ -300,5 +312,6 @@ defineExpose({
 
 <style scoped>
 @import "./scss/style.scss";
-@import "./scss/checkbox.scss"
+@import "./scss/checkbox.scss";
+@import "./scss/sort.scss"
 </style>

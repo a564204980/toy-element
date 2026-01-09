@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Thumb from "./Thumb.vue";
-import { inject, nextTick, ref } from "vue";
+import { inject, ref } from "vue";
 import { barProps } from "./types";
 import { useNamespace } from "@toy-element/hooks";
 import { scrollbarContextKey } from "./constants";

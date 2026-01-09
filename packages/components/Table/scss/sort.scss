@@ -1,0 +1,53 @@
+@use "@toy-element/theme/src/mixins/mixins.scss" as *;
+
+$sort-caret-size: 5px; // 大小
+$sort-caret-spacing: 2px;
+
+@include b(table) {
+  .caret-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    height: 14px;
+    width: 24px;
+    vertical-align: middle;
+    cursor: pointer;
+    overflow: initial; // 避免超出部分被隐藏
+    position: relative;
+
+    // 排序箭头基础样式
+    .sort-caret {
+      width: 0;
+      height: 0;
+      border: solid $sort-caret-size transparent;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      &.ascending {
+        border-bottom-color: var(--#{$namespace}-text-color-placeholder);
+        top: 0px;
+      }
+
+      &.descending {
+        border-top-color: var(--#{$namespace}-text-color-placeholder);
+        top: 14px;
+      }
+
+      @include when(active) {
+        &.ascending {
+          border-bottom-color: var(--#{$namespace}-color-primary);
+        }
+
+        &.descending {
+          border-top-color: var(--#{$namespace}-color-primary);
+        }
+      }
+    }
+  }
+
+  @include e(header-label) {
+    display: inline-block;
+  }
+}
