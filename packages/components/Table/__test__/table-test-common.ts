@@ -1,7 +1,7 @@
 import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
-import Table from "./Table.vue";
-import TableColumn from "./TableColumn.vue";
+import Table from "../Table.vue";
+import TableColumn from "../TableColumn.vue";
 
 /**
  * 双重等待函数
@@ -48,17 +48,14 @@ export const createBasicTable = (data = getTestData(), props = {}) => {
   });
 };
 
-// describe('排序功能', () => {
-//   it('点击列头应该触发排序', async () => {
-//     // 测试基础排序
-//   });
-//   it('应该支持 default-sort', async () => {
-//     // 测试默认排序
-//   });
-//   it('sortable="custom" 应该触发 sort-change 事件但不排序数据', async () => {
-//     // 测试远程排序
-//   });
-//   it('应该支持 sort-method 自定义排序', async () => {
-//     // 测试自定义排序
-//   });
-// });
+// 等待表体单元格渲染完成
+export const waitForTableBody = async (wrapper: any, maxAttempts = 20) => {
+  for (let i = 0; i < maxAttempts; i++) {
+    await nextTick();
+    const cells = wrapper.findAll(".er-table__cell-content");
+    if (cells.length > 0) {
+      return cells;
+    }
+  }
+  throw new Error("Table body cells not rendered");
+};
