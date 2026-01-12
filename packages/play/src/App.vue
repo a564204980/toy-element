@@ -87,7 +87,13 @@ const handleSelectAll = (data: any) => {
       </er-table-column>
       <er-table-column prop="name" label="姓名" sortable />
       <er-table-column prop="age" label="年龄" width="600px"></er-table-column>
-      <er-table-column label="标题4" width="600px"></er-table-column>
+      <er-table-column label="标题4" width="600px">
+        <template #default="{ row, $index }">
+          <div style="color: blue;">
+            第 {{ $index + 1 }} 行 - 新内容: {{ row.name }}
+          </div>
+        </template>
+      </er-table-column>
       <er-table-column label="标题5" width="600px" fixed="right"></er-table-column>
 
 

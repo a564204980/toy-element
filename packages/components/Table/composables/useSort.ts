@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch, type Ref } from "vue";
+import { computed, ref, watch, type Ref } from "vue";
 import type { TableColumn, TableProps } from "../types";
 import { orderBy } from "../utils";
 

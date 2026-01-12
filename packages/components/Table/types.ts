@@ -1,4 +1,4 @@
-import type { ExtractPropTypes, PropType } from "vue";
+import type { ExtractPropTypes, PropType, Slot } from "vue";
 
 // 表格props
 export const tableProps = {
@@ -97,7 +97,7 @@ export const tableColumnProps = {
 
 export type TableColumnProps = ExtractPropTypes<typeof tableColumnProps>;
 
-// 内部每列的配置（包含运行时数据）
+// 内部每列的配置（包含运行时数据，如果是组件内部自动处理的就放在这里）
 export interface TableColumn extends TableColumnProps {
   id: string;
   children?: TableColumn[]; // 子列数组，用于嵌套表头
@@ -107,6 +107,7 @@ export interface TableColumn extends TableColumnProps {
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
   order?: "ascending" | "descending" | null; // 当前排序状态
+  renderSlot?: Slot;
 }
 
 // 表格方法

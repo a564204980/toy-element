@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
+import { provide, ref, useSlots } from "vue";
 import { tableColumnProps, type TableColumn } from "./types";
 import { inject, onMounted, getCurrentInstance, onBeforeUnmount } from "vue";
 
 defineOptions({
   name: "ErTableColumn",
 });
+
+const slots = useSlots()
 
 const props = defineProps(tableColumnProps);
 
@@ -66,6 +68,7 @@ onMounted(() => {
     reserveSelection: props.reserveSelection,
     sortable: props.sortable,
     sortOrders: props.sortOrders,
+    renderSlot: slots.default
   };
 
 

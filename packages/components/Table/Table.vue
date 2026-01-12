@@ -99,6 +99,16 @@ provide("ErTable", {
   unregisterColumn,
 })
 
+// 给slot插槽使用
+const store = computed(() => ({
+  states: {
+    currentRow: currentRow.value,
+    selection: [],
+    sortProp: sortProp.value,
+    sortOrder: sortOrder.value,
+  }
+}))
+
 // 计算表格类名
 const tableClass = computed(() => {
   return [
@@ -284,7 +294,16 @@ defineExpose({
                           index : index + 1) }}
                       </template>
                       <template v-else>
-                        {{ row[column.prop || ''] }}
+                        <!-- 自定义插槽内容 -->
+                        <template v-if="column.renderSlot">
+                          <component :is="{
+                            render: () => column.renderSlot!({ row, column, $index: index, store })
+                          }" />
+                        </template>
+                        <!-- 默认显示 -->
+                        <template v-else>
+                          {{ row[column.prop || ""] }}
+                        </template>
                       </template>
                     </div>
                   </div>
