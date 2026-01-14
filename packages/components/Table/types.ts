@@ -1,4 +1,4 @@
-import type { ExtractPropTypes, PropType, Slot } from "vue";
+import type { ExtractPropTypes, PropType, VNode } from "vue";
 
 // 表格props
 export const tableProps = {
@@ -107,7 +107,12 @@ export interface TableColumn extends TableColumnProps {
   parent?: TableColumn; // 父列引用
   isLeaf?: boolean; // 是否为子节点
   order?: "ascending" | "descending" | null; // 当前排序状态
-  renderSlot?: Slot;
+  renderCell?: (scope: {
+    row: any;
+    column: TableColumn;
+    $index: number;
+    store: any;
+  }) => VNode[];
 }
 
 // 表格方法

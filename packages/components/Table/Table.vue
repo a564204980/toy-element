@@ -295,9 +295,9 @@ defineExpose({
                       </template>
                       <template v-else>
                         <!-- 自定义插槽内容 -->
-                        <template v-if="column.renderSlot">
+                        <template v-if="column.renderCell">
                           <component :is="{
-                            render: () => column.renderSlot!({ row, column, $index: index, store })
+                            render: () => column.renderCell!({ row, column, $index: index, store })
                           }" />
                         </template>
                         <!-- 默认显示 -->
