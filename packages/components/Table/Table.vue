@@ -2,7 +2,7 @@
 import { ref, watch, useId, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { tableProps, tableEmits } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
-
+import { useExpand } from "./composables/useExpand"
 import { ErScrollbar } from "../Scrollbar";
 import {
   useColumns,
@@ -89,6 +89,10 @@ const { sortedData, handleSort, sortProp, sortOrder } = useSort({
   defaultSort: computed(() => props.defaultSort),
   emit: emits
 })
+
+const { expandedRows,
+  isRowExpanded,
+  toggleRowExpansion } = useExpand({ emit: emits, rowKey: 'id' })
 
 
 
@@ -224,7 +228,9 @@ defineExpose({
   getCellClass,
   headerRows,
   setCurrentRow,
-  currentRow
+  currentRow,
+  isRowExpanded,
+  toggleRowExpansion
 })
 
 </script>
@@ -335,6 +341,11 @@ defineExpose({
                       <template v-else-if="column.type === 'index'">
                         {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
                           index : index + 1) }}
+                      </template>
+                      <!-- 展开行 -->
+                      <template v-else-if="column.type === 'expand'">
+                        <i class="er-table__expand-icon" :class="{ 'is-expanded': isRowExpanded(row) }"
+                          @click="toggleRowExpansion(row)"></i>
                       </template>
                       <template v-else>
                         <!-- 自定义插槽内容 -->

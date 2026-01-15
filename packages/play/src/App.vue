@@ -38,7 +38,13 @@ const getSummaries = ({ columns, data }) => {
 </script>
 <template>
   <er-table :data="tableData" show-summary :summary-method="getSummaries">
-    <er-table-column prop="name" label="商品名称" />
+    <er-table-column prop="name" label="商品名称" type="expand">
+      <template #default="{ row }">
+        <div style="padding: 20px; background: #f0f0f0;">
+          <p>详情：{{ row.detail }}</p>
+        </div>
+      </template>
+    </er-table-column>
     <er-table-column prop="count" label="数量" />
     <er-table-column prop="price" label="价格" fixed="right" />
   </er-table>

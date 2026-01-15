@@ -158,6 +158,7 @@ export const tableEmits = {
     prop: string;
     order: "ascending" | "descending" | null;
   }) => true,
+  "expand-change": (_row: any, _expanded: boolean) => true,
 };
 
 export type TableEmits = typeof tableEmits;
