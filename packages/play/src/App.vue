@@ -1,121 +1,45 @@
-<script setup lang="ts">
-import { ref, watch } from "vue";
-import { throttle } from "@toy-element/utils";
-
-const activeNames = ref(["a"]);
-const closable = ref(false);
-
+<script setup>
+import { ref } from 'vue'
 const tableData = ref([
-  {
-    id: 1,
-    name: "张三",
-    age: 25,
-    address: "北京市朝阳区",
-    email: "zhangsan@example.com",
-  },
-  {
-    id: 2,
-    name: "李四",
-    age: 30,
-    address: "上海市浦东新区",
-    email: "lisi@example.com",
-  },
-  {
-    id: 3,
-    name: "王五",
-    age: 28,
-    address: "广州市天河区",
-    email: "wangwu@example.com",
-  },
-  {
-    id: 4,
-    name: "赵六",
-    age: 35,
-    address: "深圳市南山区",
-    email: "zhaoliu@example.com",
-  },
-  {
-    id: 5,
-    name: "赵七",
-    age: 35,
-    address: "深圳市南山区",
-    email: "zhaoliu@example.com",
-  },
+  { name: '商品1', count: 10, price: 100 },
+  { name: '商品2', count: 5, price: 200 },
+  { name: '商品3', count: 8, price: 150 }
+])
+// 自定义合计方法
+const getSummaries = ({ columns, data }) => {
+  const sums = []
 
-]);
+  columns.forEach((column, index) => {
+    if (index === 0) {
+      sums[index] = '总价'
+      return
+    }
 
-watch(activeNames, (newNames) => {
-  console.log("watch触发了", newNames);
-});
+    if (column.prop === 'count') {
+      // 数量：求和
+      const total = data.reduce((sum, item) => sum + item.count, 0)
+      sums[index] = `共 ${total} 件`
+      return
+    }
 
-const handleAlert = () => {
-  closable.value = !closable.value;
-  console.log("closable", closable.value);
-};
+    if (column.prop === 'price') {
+      // 价格：求平均值
+      const total = data.reduce((sum, item) => sum + item.price, 0)
+      const avg = total / data.length
+      sums[index] = `均价 ${avg.toFixed(2)}`
+      return
+    }
 
-const tableRowClassName = ({
-  row,
-  rowIndex,
-}: {
-  row: any;
-  rowIndex: number;
-}) => {
-  if (rowIndex === 2) {
-    return "warning-row";
-  }
-  return "";
-};
+    sums[index] = '-'
+  })
 
-
-const currentChange = (row: any, oldRow: any) => {
-}
-
-const handleSelectAll = (data: any) => {
-  console.log("data", data)
+  return sums
 }
 </script>
-
 <template>
-  <div class="table">
-    <er-table :data="tableData" :defaultSort="{ prop: 'age', order: 'descending' }" :row-class-name="tableRowClassName"
-      stripe border highlight-current-row @current-change="currentChange" @select-all="handleSelectAll">
-      <er-table-column type="selection"></er-table-column>
-      <er-table-column type="index" :index="10"></er-table-column>
-      <er-table-column label="标题1" prop="name" align="center" fixed="left">
-        <er-table-column label="嵌套列" prop="name" align="center"></er-table-column>
-
-      </er-table-column>
-      <er-table-column prop="name" label="姓名" sortable />
-      <er-table-column prop="age" label="年龄" width="600px"></er-table-column>
-      <er-table-column label="标题4" width="600px">
-        <template #default="{ row, $index }">
-          <div style="color: blue;">
-            第 {{ $index + 1 }} 行 - 新内容: {{ row.name }}
-          </div>
-        </template>
-      </er-table-column>
-      <er-table-column label="标题5" width="600px" fixed="right"></er-table-column>
-
-
-
-
-
-    </er-table>
-  </div>
-  <!-- <er-scrollbar maxHeight="400px">
-    <div v-for="item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]" :key="item"
-      style="height: 50px; border: 1px solid #123412">
-      123
-    </div>
-  </er-scrollbar> -->
-
-
+  <er-table :data="tableData" show-summary :summary-method="getSummaries">
+    <er-table-column prop="name" label="商品名称" />
+    <er-table-column prop="count" label="数量" />
+    <er-table-column prop="price" label="价格" fixed="right" />
+  </er-table>
 </template>
-
-<style lang="scss" scoped>
-.table {
-  :deep(.warning-row) {
-    background-color: #fef3c7 !important;
-  }
-}
-</style>

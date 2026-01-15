@@ -2,42 +2,68 @@ import type { ExtractPropTypes, PropType, VNode } from "vue";
 
 // 表格props
 export const tableProps = {
+  // 表格数据
   data: {
     type: Array as PropType<Record<string, any>[]>,
     default: () => [],
-  }, // 表格数据
-  stripe: Boolean, // 是否显示斑马纹
-  border: Boolean, // 是否显示纵向边框
+  },
+  // 是否显示斑马纹
+  stripe: Boolean,
+  // 是否显示纵向边框
+  border: Boolean,
   height: {
     type: [String, Number] as PropType<string | number>,
     default: "",
-  }, // 表格高度
+  },
+  // 表格高度
   maxHeight: {
     type: [String, Number] as PropType<string | number>,
     default: "",
   },
+  // 行状态样式
   rowClassName: {
-    // 行状态样式
     type: [String, Function] as PropType<
       string | ((data: { row: any; rowIndex: number }) => string)
     >,
     default: "",
   },
+  // 当前行是否高亮
   highlightCurrentRow: {
-    // 当前行是否高亮
     type: Boolean,
     default: false,
   },
+  // 默认排序
   defaultSort: {
-    // 默认排序
     type: Object as PropType<{
       prop: string; // 字段名
       order: "ascending" | "descending"; // 排序方式
     }>,
   },
+  // 是否显示表尾合计行
+  showSummary: {
+    type: Boolean,
+    default: false,
+  },
+  // 合计行的文本
+  sumText: {
+    type: String,
+    default: "合计",
+  },
+  summaryMethod: {
+    type: Function as PropType<SummaryMethod>,
+  },
 } as const;
 
 export type TableProps = ExtractPropTypes<typeof tableProps>;
+
+// 合计方法的参数类型
+export interface SummaryMethodParams {
+  columns: TableColumn[];
+  data: any[];
+}
+
+// 合计方法类型
+export type SummaryMethod = (params: SummaryMethodParams) => (string | VNode)[];
 
 // 列配置props
 export const tableColumnProps = {
@@ -112,6 +138,11 @@ export interface TableColumn extends TableColumnProps {
     column: TableColumn;
     $index: number;
     store: any;
+  }) => VNode[];
+  renderHeader?: (scope: {
+    row: any;
+    column: TableColumn;
+    $index: number;
   }) => VNode[];
 }
 

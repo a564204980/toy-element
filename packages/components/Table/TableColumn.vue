@@ -1,5 +1,5 @@
 <script lang="ts">
-import { provide, ref, defineComponent, h, Fragment } from "vue";
+import { provide, ref, defineComponent, h } from "vue";
 import { tableColumnProps, type TableColumn } from "./types";
 import { inject, onMounted, getCurrentInstance, onBeforeUnmount } from "vue";
 
@@ -65,10 +65,11 @@ export default defineComponent({
         reserveSelection: props.reserveSelection,
         sortable: props.sortable,
         sortOrders: props.sortOrders,
-        renderCell: slots.default
+        renderCell: slots.default, // 收集插槽内容
+        renderHeader: slots.header, // 收集表头插槽内容
       };
 
-
+      // 注册列配置
       // 是嵌套列
       if (parentColumn && parentColumn.registerColumn) {
         // 注册到父列的children
@@ -97,6 +98,8 @@ export default defineComponent({
      * 但是这里需要获取插槽函数返回的VNode数组，
      * 所以需要手动调用插槽函数，这样就可以过滤掉undefined的数据，变成可控
     */
+    // 调用插槽渲染函数，获取插槽返回的内容
+    // 用假数据调用插槽函数
     const defaultSlot = this.$slots.default?.({
       row: {},
       column: {},

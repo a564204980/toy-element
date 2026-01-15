@@ -8,19 +8,18 @@ import { nextTick } from "vue";
 // 第一个参数是要mock的模块名，第二个参数是mock内容
 vi.mock("lodash-es", async () => {
   // 获取原始的、未被 mock 的 lodash-es 模块
-  const actual = await vi.importActual("lodash-es")
+  const actual = await vi.importActual("lodash-es");
   return {
     ...actual,
     debounce: (fn: Function) => fn, // // 只覆盖debounce
-  }
-})
-
+  };
+});
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
-    observe() { }
-    unobserve() { }
-    disconnect() { }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   };
 });
 
@@ -197,7 +196,6 @@ describe("Table - 组件", () => {
   });
 });
 
-
 describe("排序功能", () => {
   it("可排序列应该渲染排序图标", async () => {
     const wrapper = mount({
@@ -209,18 +207,18 @@ describe("排序功能", () => {
         </Table>
       `,
       data() {
-        return { testData: getTestData() }
-      }
-    })
+        return { testData: getTestData() };
+      },
+    });
 
-    await doubleWait()
+    await doubleWait();
 
-    expect(wrapper.find(".caret-wrapper").exists()).toBe(true)
-    expect(wrapper.find(".sort-caret.ascending").exists()).toBe(true)
-    expect(wrapper.find(".sort-caret.descending").exists()).toBe(true)
+    expect(wrapper.find(".caret-wrapper").exists()).toBe(true);
+    expect(wrapper.find(".sort-caret.ascending").exists()).toBe(true);
+    expect(wrapper.find(".sort-caret.descending").exists()).toBe(true);
 
-    wrapper.unmount()
-  })
+    wrapper.unmount();
+  });
 
   it("点击列头应该触发排序", async () => {
     const wrapper = mount({
@@ -232,30 +230,28 @@ describe("排序功能", () => {
       `,
       data() {
         return {
-          testData: [
-            { age: 30 },
-            { age: 20 },
-            { age: 25 },
-          ]
-        }
-      }
-    })
+          testData: [{ age: 30 }, { age: 20 }, { age: 25 }],
+        };
+      },
+    });
 
-    await doubleWait()
+    await doubleWait();
 
-    const th = wrapper.find('th');
-    await th.find(".er-table__cell").trigger("click")
-    await nextTick()
+    const th = wrapper.find("th");
+    await th.find(".er-table__cell").trigger("click");
+    await nextTick();
 
-    expect(wrapper.find('.sort-caret.ascending').classes()).toContain('is-active');
+    expect(wrapper.find(".sort-caret.ascending").classes()).toContain(
+      "is-active"
+    );
 
-    const cells = wrapper.findAll("tbody td")
-    expect(cells[0].text()).toBe("20")
-    expect(cells[1].text()).toBe("25")
-    expect(cells[2].text()).toBe("30")
+    const cells = wrapper.findAll("tbody td");
+    expect(cells[0].text()).toBe("20");
+    expect(cells[1].text()).toBe("25");
+    expect(cells[2].text()).toBe("30");
 
-    wrapper.unmount()
-  })
+    wrapper.unmount();
+  });
 
   it("多次点击应该循环切换排序状态", async () => {
     const wrapper = mount({
@@ -270,21 +266,25 @@ describe("排序功能", () => {
       },
     });
 
-    await doubleWait()
-    const cell = wrapper.find(".er-table__cell")
+    await doubleWait();
+    const cell = wrapper.find(".er-table__cell");
 
-    await cell.trigger("click")
-    await nextTick()
-    expect(wrapper.find(".sort-caret.ascending").classes()).toContain("is-active")
+    await cell.trigger("click");
+    await nextTick();
+    expect(wrapper.find(".sort-caret.ascending").classes()).toContain(
+      "is-active"
+    );
 
-    await cell.trigger("click")
-    await nextTick()
-    expect(wrapper.find(".sort-caret.descending").classes()).toContain("is-active")
+    await cell.trigger("click");
+    await nextTick();
+    expect(wrapper.find(".sort-caret.descending").classes()).toContain(
+      "is-active"
+    );
 
-    await cell.trigger("click")
-    await nextTick()
-    expect(wrapper.find(".is-active").exists()).toBe(false)
-  })
+    await cell.trigger("click");
+    await nextTick();
+    expect(wrapper.find(".is-active").exists()).toBe(false);
+  });
 
   it("应该支持default-sort", async () => {
     const wrapper = mount({
@@ -298,26 +298,28 @@ describe("排序功能", () => {
       data() {
         return {
           testData: [
-            { name: 'A', age: 20 },
-            { name: 'B', age: 30 },
-            { name: 'C', age: 25 },
-          ]
-        }
-      }
-    })
+            { name: "A", age: 20 },
+            { name: "B", age: 30 },
+            { name: "C", age: 25 },
+          ],
+        };
+      },
+    });
 
-    await doubleWait()
+    await doubleWait();
 
-    expect(wrapper.find(".sort-caret.descending.is-active").exists()).toBe(true)
+    expect(wrapper.find(".sort-caret.descending.is-active").exists()).toBe(
+      true
+    );
 
-    const cells = wrapper.findAll("tbody tr td:nth-child(2)")
-    expect(cells[0].text()).toBe("30")
-    expect(cells[1].text()).toBe("25")
-    expect(cells[2].text()).toBe("20")
-  })
+    const cells = wrapper.findAll("tbody tr td:nth-child(2)");
+    expect(cells[0].text()).toBe("30");
+    expect(cells[1].text()).toBe("25");
+    expect(cells[2].text()).toBe("20");
+  });
 
   it("排序时应该触发sort-change事件", async () => {
-    const sortCallback = vi.fn()
+    const sortCallback = vi.fn();
     const wrapper = mount({
       components: { Table, TableColumn },
       template: `
@@ -330,34 +332,30 @@ describe("排序功能", () => {
       },
       methods: {
         handleSort(payload: any) {
-          sortCallback(payload)
-        }
-      }
-    })
+          sortCallback(payload);
+        },
+      },
+    });
 
-    await doubleWait()
-    await wrapper.find(".er-table__cell").trigger("click")
-    await nextTick()
+    await doubleWait();
+    await wrapper.find(".er-table__cell").trigger("click");
+    await nextTick();
 
-    expect(sortCallback).toHaveBeenCalledTimes(1)
+    expect(sortCallback).toHaveBeenCalledTimes(1);
     // 模拟函数被调用时传入的参数
     expect(sortCallback).toHaveBeenCalledWith(
       // 预期传入的对象参数需要满足的条件
       expect.objectContaining({
         prop: "age",
-        order: "ascending"
+        order: "ascending",
       })
-    )
+    );
 
-    wrapper.unmount()
-  })
+    wrapper.unmount();
+  });
 
   it('sortable="custom" 应该触发事件但不排序数据', async () => {
-    const originalData = [
-      { age: 30 },
-      { age: 20 },
-      { age: 25 },
-    ];
+    const originalData = [{ age: 30 }, { age: 20 }, { age: 25 }];
 
     const wrapper = mount({
       components: { Table, TableColumn },
@@ -370,19 +368,111 @@ describe("排序功能", () => {
         return { testData: [...originalData] };
       },
       methods: {
-        handleSort() { },
+        handleSort() {},
       },
     });
     await doubleWait();
-    await wrapper.find('.er-table__cell').trigger('click');
+    await wrapper.find(".er-table__cell").trigger("click");
     await nextTick();
 
     // 保持原顺序
-    const cells = wrapper.findAll('tbody td');
-    expect(cells[0].text()).toBe('30');
-    expect(cells[1].text()).toBe('20');
-    expect(cells[2].text()).toBe('25');
+    const cells = wrapper.findAll("tbody td");
+    expect(cells[0].text()).toBe("30");
+    expect(cells[1].text()).toBe("20");
+    expect(cells[2].text()).toBe("25");
 
     wrapper.unmount();
   });
-})
+});
+
+describe("插槽功能", () => {
+  it("应该正确渲染默认插槽内容", async () => {
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+        <Table :data="testData">
+          <TableColumn prop="name" label="姓名">
+            <template #default="{ row }">
+              <span class="custom-name">自定义: {{ row.name }}</span>
+            </template>
+          </TableColumn>
+          <TableColumn prop="age" label="年龄" />
+        </Table>
+      `,
+      data() {
+        return {
+          testData: [
+            { name: "张三", age: 25 },
+            { name: "李四", age: 30 },
+          ],
+        };
+      },
+    });
+
+    await doubleWait();
+
+    const customCells = wrapper.findAll(".custom-name");
+    expect(customCells.length).toBe(2);
+    expect(customCells[0].text()).toBe("自定义: 张三");
+    expect(customCells[1].text()).toBe("自定义: 李四");
+
+    const ageCells = wrapper.findAll("tbody tr td:nth-child(2)");
+    expect(ageCells[0].text()).toBe("25");
+    expect(ageCells[1].text()).toBe("30");
+
+    wrapper.unmount();
+  });
+
+  it("应该向插槽传递完整的参数", async () => {
+    const slotProps = vi.fn();
+
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+      <Table :data="testData">
+        <TableColumn prop="name" label="姓名">
+          <template #default="slotData">
+            {{ captureSlotProps(slotData) }}
+            <span>{{ slotData.row.name }}</span>
+          </template>
+        </TableColumn>
+      </Table>
+    `,
+      data() {
+        return {
+          testData: [{ name: "测试用户", age: 28 }],
+        };
+      },
+      methods: {
+        captureSlotProps(data: any) {
+          slotProps(data);
+          return "";
+        },
+      },
+    });
+    await doubleWait();
+
+    expect(slotProps).toHaveBeenCalled();
+
+    // 获取插槽内容
+    const passedProps =
+      slotProps.mock.calls[slotProps.mock.calls.length - 1][0];
+
+    expect(passedProps).toHaveProperty("row");
+    expect(passedProps).toHaveProperty("column");
+    expect(passedProps).toHaveProperty("$index");
+    expect(passedProps).toHaveProperty("store");
+
+    // row参数是否正确，toEqual是用比较两个值是否相等严格类型
+    expect(passedProps.row).toEqual({ name: "测试用户", age: 28 });
+
+    expect(passedProps.column).toHaveProperty("prop", "name");
+    expect(passedProps.column).toHaveProperty("label", "姓名");
+
+    expect(passedProps.$index).toBe(0);
+
+    expect(passedProps.store).toHaveProperty("states");
+
+    wrapper.unmount();
+  });
+});

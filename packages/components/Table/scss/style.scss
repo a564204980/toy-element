@@ -109,6 +109,19 @@ $table-fixed-shadow-width: 8px;
         background-color: var(--er-table-current-row-bg-color);
       }
     }
+
+    tfoot {
+      tr {
+        background-color: #fafafa;
+        font-weight: bold;
+
+        td.is-fixed-right,
+        td.is-fixed-left {
+          background-color: #fafafa;
+          font-weight: bold;
+        }
+      }
+    }
   }
 
   // 单元格样式

@@ -144,6 +144,42 @@ const getCellAlign = (align?: string) => {
   return align ? { textAlign: align as "left" | "center" | "right" } : {};
 };
 
+// 计算合计行数据
+const summaryData = computed(() => {
+  if (!props.showSummary) return []
+
+  if (props.summaryMethod) {
+    return props.summaryMethod({
+      columns: calculatedColumns.value,
+      data: props.data
+    })
+  }
+
+  const sums: (string | number)[] = []
+
+  calculatedColumns.value.forEach((column, columnIndex) => {
+    if (columnIndex === 0) {
+      sums[columnIndex] = props.sumText || ""
+      return
+    }
+
+
+    if (!column.prop) {
+      sums[columnIndex] = ""
+      return
+    }
+
+    const values = props.data.map(item => Number(item[column.prop!]))
+    const sum = values.reduce((preve, curr) => {
+      const value = Number(curr)
+      return isNaN(value) ? preve : preve + value
+    }, 0)
+
+    sums[columnIndex] = isNaN(sum) ? "" : sum
+  })
+
+  return sums
+})
 
 
 
@@ -229,9 +265,16 @@ defineExpose({
                     </label>
                   </template>
                   <template v-else>
-                    <span class="er-table__header-label">
-                      {{ column.label || (column.type === "index" ? "序号" : "") }}
-                    </span>
+                    <template v-if="column.renderHeader">
+                      <component :is="{
+                        render: () => column.renderHeader!({ row, column, $index: columnIndex })
+                      }" />
+                    </template>
+                    <template v-else>
+                      <span class="er-table__header-label">
+                        {{ column.label || (column.type === "index" ? "序号" : "") }}
+                      </span>
+                    </template>
 
                     <!-- 排序图标 -->
                     <span v-if="column.sortable" class="caret-wrapper">
@@ -319,6 +362,23 @@ defineExpose({
                 </td>
               </tr>
             </tbody>
+            <!-- 合计行 -->
+            <tfoot v-if="showSummary">
+              <tr>
+                <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
+                  :class="getCellClass(colIndex, column, calculatedColumns)" :style="{
+                    ...getCellAlign(column.align),
+                    ...getCellFixedStyle(column, colIndex, calculatedColumns)
+
+                  }">
+                  <div class="er-table__cell">
+                    <div class="er-table__cell-content">
+                      {{ summaryData[colIndex] }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </er-scrollbar>
       </div>
