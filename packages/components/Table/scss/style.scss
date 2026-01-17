@@ -269,4 +269,63 @@ $table-fixed-shadow-width: 8px;
     // 表头固定列使用表头背景色
     background-color: var(--#{$namespace}-table-header-bg-color);
   }
+
+  @include e(expand-icon) {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+
+    &:hover {
+      color: var(--#{$namespace}-color-primary);
+    }
+
+    i {
+      font-size: 12px;
+
+      &.arrow-right::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-right: 1px solid var(--#{$namespace}-table-text-color);
+        border-bottom: 1px solid var(--#{$namespace}-table-text-color);
+        transform: rotate(-45deg);
+        transition: transform 0.3s;
+      }
+      &.arrow-down::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-right: 1px solid var(--#{$namespace}-table-text-color);
+        border-bottom: 1px solid var(--#{$namespace}-table-text-color);
+        transform: rotate(45deg);
+        transition: transform 0.3s;
+      }
+    }
+  }
+
+  // 展开行
+  @include e(expand-row) {
+    background-color: var(--#{$namespace}-fill-color-lighter);
+
+    &:hover td {
+      background-color: var(--#{$namespace}-fill-color-lighter);
+    }
+  }
+
+  // 展开单元格
+  @include e(expand-cell) {
+    padding: 20px;
+  }
+
+  // 展开内容容器
+  @include e(expand-content) {
+    width: 100%;
+  }
 }

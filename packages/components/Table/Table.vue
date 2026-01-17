@@ -312,57 +312,76 @@ defineExpose({
               </col>
             </colgroup>
             <tbody>
-              <tr v-for="(row, index) in sortedData" :key="index" :class="getRowClass(row)"
-                @click="handleRowClick(row)">
-                <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
-                  :class="getCellClass(colIndex, column, calculatedColumns)" :style="{
-                    ...getCellAlign(column.align),
-                    ...getCellFixedStyle(column, colIndex, calculatedColumns)
+              <template v-for="(row, index) in sortedData" :key="index">
+                <!-- 数据行 -->
+                <tr :class="getRowClass(row)" @click="handleRowClick(row)">
+                  <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
+                    :class="getCellClass(colIndex, column, calculatedColumns)" :style="{
+                      ...getCellAlign(column.align),
+                      ...getCellFixedStyle(column, colIndex, calculatedColumns)
 
-                  }">
-                  <div class="er-table__cell">
-                    <div class="er-table__cell-content">
-                      <template v-if="column.type === 'selection'">
-                        <!-- <input type="checkbox" class="er-table__row-checkbox"
+                    }">
+                    <div class="er-table__cell">
+                      <div class="er-table__cell-content">
+                        <template v-if="column.type === 'selection'">
+                          <!-- <input type="checkbox" class="er-table__row-checkbox"
                           :disabled="column.selectable ? !column.selectable(row, index) : false"
                           :checked="isSelected(row)" @change="toggleRowSelection(row)" /> -->
-                        <label class="er-checkbox">
-                          <span class="er-checkbox__input" :class="{
-                            'is-checked': isSelected(row),
-                            'is-disabled': column.selectable && !column.selectable(row, index)
-                          }">
-                            <input type="checkbox" class="er-checkbox__original"
-                              :disabled="column.selectable && !column.selectable(row, index)" :checked="isSelected(row)"
-                              @change="toggleRowSelection(row)" />
-                            <span class="er-checkbox__inner"></span>
-                          </span>
-                        </label>
-                      </template>
-                      <template v-else-if="column.type === 'index'">
-                        {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
-                          index : index + 1) }}
-                      </template>
-                      <!-- 展开行 -->
-                      <template v-else-if="column.type === 'expand'">
-                        <i class="er-table__expand-icon" :class="{ 'is-expanded': isRowExpanded(row) }"
-                          @click="toggleRowExpansion(row)"></i>
-                      </template>
-                      <template v-else>
-                        <!-- 自定义插槽内容 -->
-                        <template v-if="column.renderCell">
+                          <label class="er-checkbox">
+                            <span class="er-checkbox__input" :class="{
+                              'is-checked': isSelected(row),
+                              'is-disabled': column.selectable && !column.selectable(row, index)
+                            }">
+                              <input type="checkbox" class="er-checkbox__original"
+                                :disabled="column.selectable && !column.selectable(row, index)"
+                                :checked="isSelected(row)" @change="toggleRowSelection(row)" />
+                              <span class="er-checkbox__inner"></span>
+                            </span>
+                          </label>
+                        </template>
+                        <template v-else-if="column.type === 'index'">
+                          {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
+                            index : index + 1) }}
+                        </template>
+                        <template v-else-if="column.type === 'expand'">
+                          <!-- 展开按钮 -->
+                          <button class="er-table__expand-icon" @click.stop="toggleRowExpansion(row)">
+                            <i :class="isRowExpanded(row) ? 'arrow-down' : 'arrow-right'"></i>
+                          </button>
+                        </template>
+                        <template v-else>
+                          <!-- 自定义插槽内容 -->
+                          <template v-if="column.renderCell">
+                            <component :is="{
+                              render: () => column.renderCell!({ row, column, $index: index, store })
+                            }" />
+                          </template>
+                          <!-- 默认显示 -->
+                          <template v-else>
+                            {{ row[column.prop || ""] }}
+                          </template>
+                        </template>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 展开行内容 -->
+                <tr v-if="isRowExpanded(row)" class="er-table__expand-row">
+                  <!-- 需要合并整行 -->
+                  <td :colspan="calculatedColumns.length" class="er-table__expand-cell">
+                    <div class="er-table__expand-content">
+                      <template v-for="column in calculatedColumns" :key="column.id">
+                        <template v-if="column.type === 'expand'">
                           <component :is="{
                             render: () => column.renderCell!({ row, column, $index: index, store })
                           }" />
                         </template>
-                        <!-- 默认显示 -->
-                        <template v-else>
-                          {{ row[column.prop || ""] }}
-                        </template>
                       </template>
                     </div>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              </template>
 
               <!-- 空状态 -->
               <tr v-if="props.data.length === 0">

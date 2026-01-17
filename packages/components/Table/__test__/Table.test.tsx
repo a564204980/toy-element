@@ -139,13 +139,13 @@ describe("Table - 组件", () => {
       const leftStyle = tableVm.getCellFixedStyle(
         leftFixedColumn,
         0,
-        tableVm.columns
+        tableVm.columns,
       );
       const rightFixedColumn = tableVm.columns[2];
       const rightStyle = tableVm.getCellFixedStyle(
         rightFixedColumn,
         0,
-        tableVm.columns
+        tableVm.columns,
       );
 
       // toHaveProperty 是否包含
@@ -242,7 +242,7 @@ describe("排序功能", () => {
     await nextTick();
 
     expect(wrapper.find(".sort-caret.ascending").classes()).toContain(
-      "is-active"
+      "is-active",
     );
 
     const cells = wrapper.findAll("tbody td");
@@ -272,13 +272,13 @@ describe("排序功能", () => {
     await cell.trigger("click");
     await nextTick();
     expect(wrapper.find(".sort-caret.ascending").classes()).toContain(
-      "is-active"
+      "is-active",
     );
 
     await cell.trigger("click");
     await nextTick();
     expect(wrapper.find(".sort-caret.descending").classes()).toContain(
-      "is-active"
+      "is-active",
     );
 
     await cell.trigger("click");
@@ -309,7 +309,7 @@ describe("排序功能", () => {
     await doubleWait();
 
     expect(wrapper.find(".sort-caret.descending.is-active").exists()).toBe(
-      true
+      true,
     );
 
     const cells = wrapper.findAll("tbody tr td:nth-child(2)");
@@ -348,7 +348,7 @@ describe("排序功能", () => {
       expect.objectContaining({
         prop: "age",
         order: "ascending",
-      })
+      }),
     );
 
     wrapper.unmount();
@@ -472,6 +472,206 @@ describe("插槽功能", () => {
     expect(passedProps.$index).toBe(0);
 
     expect(passedProps.store).toHaveProperty("states");
+
+    wrapper.unmount();
+  });
+});
+
+describe("展开行功能", () => {
+  it("应该正确渲染展开列和展开按钮", async () => {
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+        <Table :data="testData">
+          <TableColumn type="expand">
+            <template #default="{ row }">
+              <div class="expand-content">
+                <p>详细信息：{{ row.name }}</p>
+              </div>
+            </template>
+          </TableColumn>
+          <TableColumn prop="name" label="姓名" />
+          <TableColumn prop="address" label="地址" />
+        </Table>
+      `,
+      data() {
+        return {
+          testData: [
+            { id: 1, name: "张三", address: "北京" },
+            { id: 2, name: "李四", address: "上海" },
+          ],
+        };
+      },
+    });
+
+    await doubleWait();
+
+    const expandButtons = wrapper.findAll(".er-table__expand-icon");
+    expect(expandButtons.length).toBe(2);
+
+    const firstButton = expandButtons[0];
+    expect(firstButton.find(".arrow-right").exists()).toBe(true);
+    expect(firstButton.find(".arrow-down").exists()).toBe(false);
+
+    wrapper.unmount();
+  });
+
+  it("点击展开按钮应该显示展开内容", async () => {
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+        <Table :data="testData">
+          <TableColumn type="expand">
+            <template #default="{ row }">
+              <div class="expand-content">
+                <p>姓名：{{ row.name }}</p>
+                <p>地址：{{ row.address }}</p>
+              </div>
+            </template>
+          </TableColumn>
+          <TableColumn prop="name" label="姓名" />
+        </Table>
+      `,
+      data() {
+        return {
+          testData: [{ id: 1, name: "张三", address: "北京市朝阳区" }],
+        };
+      },
+    });
+
+    await doubleWait();
+
+    expect(wrapper.find(".er-table__expand-row").exists()).toBe(false);
+
+    const expandButton = wrapper.find(".er-table__expand-icon");
+    await expandButton.trigger("click");
+    await doubleWait();
+
+    const expandRow = wrapper.find(".er-table__expand-row");
+    expect(expandRow.exists()).toBe(true);
+    expect(expandRow.text()).toContain("张三");
+    expect(expandRow.text()).toContain("北京市朝阳区");
+
+    expect(expandButton.find(".arrow-right").exists()).toBe(false);
+    expect(expandButton.find(".arrow-down").exists()).toBe(true);
+
+    wrapper.unmount();
+  });
+
+  it("展开行应该横跨所有列", async () => {
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+      <Table :data="testData">
+        <TableColumn type="expand">
+          <template #default="{ row }">
+            <div>展开内容</div>
+          </template>
+        </TableColumn>
+        <TableColumn prop="name" label="姓名" />
+        <TableColumn prop="age" label="年龄" />
+        <TableColumn prop="address" label="地址" />
+      </Table>
+    `,
+      data() {
+        return {
+          testData: [{ id: 1, name: "张三", age: 25, address: "北京" }],
+        };
+      },
+    });
+    await doubleWait();
+
+    await wrapper.find(".er-table__expand-icon").trigger("click");
+    await nextTick();
+
+    const expandCell = wrapper.find(
+      ".er-table__expand-row .er-table__expand-cell",
+    );
+    expect(expandCell.exists()).toBe(true);
+
+    const colspan = expandCell.attributes("colspan");
+    expect(colspan).toBe("4");
+  });
+
+  it("展开/收起时应该触发expand-change事件", async () => {
+    const expandCallback = vi.fn();
+
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+      <Table :data="testData" @expand-change="handleExpandChange">
+        <TableColumn type="expand">
+          <template #default="{ row }">
+            <div>展开内容</div>
+          </template>
+        </TableColumn>
+        <TableColumn prop="name" label="姓名" />
+      </Table>
+    `,
+      data() {
+        return {
+          testData: [{ id: 1, name: "张三" }],
+        };
+      },
+      methods: {
+        handleExpandChange(row: any, expanded: boolean) {
+          expandCallback(row, expanded);
+        },
+      },
+    });
+
+    await doubleWait();
+
+    await wrapper.find(".er-table__expand-icon").trigger("click");
+    await nextTick();
+
+    expect(expandCallback).toHaveBeenCalledTimes(1);
+
+    expect(expandCallback).toHaveBeenCalledWith({ id: 1, name: "张三" }, true);
+
+    await wrapper.find(".er-table__expand-icon").trigger("click");
+    await nextTick();
+
+    expect(expandCallback).toHaveBeenCalledTimes(2);
+    expect(expandCallback).toHaveBeenCalledWith({ id: 1, name: "张三" }, false);
+
+    wrapper.unmount();
+  });
+
+  it("应该通过组件实例访问展开状态", async () => {
+    const wrapper = mount({
+      components: { Table, TableColumn },
+      template: `
+        <Table :data="testData" ref="tableRef">
+          <TableColumn type="expand">
+            <template #default="{ row }">
+              <div>展开内容</div>
+            </template>
+          </TableColumn>
+          <TableColumn prop="name" label="姓名" />
+        </Table>
+      `,
+      data() {
+        return {
+          testData: [
+            { id: 1, name: "张三" },
+            { id: 2, name: "李四" },
+          ],
+        };
+      },
+    });
+
+    await nextTick();
+
+    const tableVm = wrapper.findComponent(Table).vm as any;
+    // 初始状态没有展开
+    expect(tableVm.isRowExpanded({ id: 1, name: "张三" })).toBe(false);
+
+    tableVm.toggleRowExpansion({ id: 1, name: "张三" });
+    await nextTick();
+
+    expect(tableVm.isRowExpanded({ id: 1, name: "张三" })).toBe(true);
+    expect(wrapper.find(".er-table__expand-row").exists()).toBe(true);
 
     wrapper.unmount();
   });

@@ -71,51 +71,51 @@ export const tableColumnProps = {
   label: String, // 列头 label
   width: String, // 列的宽度
   minWidth: String, // 列的最小宽度
+  // 列的对齐方式
   align: {
-    // 列的对齐方式
     type: String as PropType<"left" | "center" | "right">,
     values: ["left", "center", "right"],
     default: "left",
   },
+  // 固定列
   fixed: {
-    // 固定列
     type: [Boolean, String] as PropType<boolean | "left" | "right">,
     default: false,
   },
+  // 列类型
   type: {
-    // 列类型
     type: String as PropType<"index" | "selection" | "expand">,
   },
+  // 索引起始值或计算函数
   index: {
-    // 索引起始值或计算函数
     type: [Number, Function] as PropType<number | ((index: number) => number)>,
   },
+  // 是否可选
   selectable: {
-    // 是否可选
     type: Function as PropType<(row: any, index: number) => boolean>,
   },
+  // 是否保留选择
   reserveSelection: {
-    // 是否保留选择
     type: Boolean,
     default: false,
   },
+  // 是否排序，custom为远程排序
   sortable: {
-    // 是否排序，custom为远程排序
     type: [Boolean, String] as PropType<boolean | "custom">,
     default: false,
   },
+  // 自定义排序方法
   sortMethod: {
-    // 自定义排序方法
     type: Function as PropType<(a: any, b: any) => number>,
   },
+  // 指定排序时使用的属性
   sortBy: {
-    // 指定排序时使用的属性
     type: [String, Function, Array] as PropType<
       string | ((row: any, index: number) => string) | string[]
     >,
   },
+  // 排序循序
   sortOrders: {
-    // 排序循序
     type: Array as PropType<("ascending" | "descending" | null)[]>,
     default: () => ["ascending", "descending", null],
   },

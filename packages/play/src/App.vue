@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 const tableData = ref([
-  { name: '商品1', count: 10, price: 100 },
-  { name: '商品2', count: 5, price: 200 },
-  { name: '商品3', count: 8, price: 150 }
+  { name: '商品1', count: 10, price: 100, id: 1 },
+  { name: '商品2', count: 5, price: 200, id: 2 },
+  { name: '商品3', count: 8, price: 150, id: 3 }
 ])
 // 自定义合计方法
 const getSummaries = ({ columns, data }) => {
@@ -37,15 +37,20 @@ const getSummaries = ({ columns, data }) => {
 }
 </script>
 <template>
-  <er-table :data="tableData" show-summary :summary-method="getSummaries">
-    <er-table-column prop="name" label="商品名称" type="expand">
+  <er-table :data="tableData" @expand-change="(row, isExpanded) => console.log(row, isExpanded)">
+    <er-table-column type="expand">
       <template #default="{ row }">
-        <div style="padding: 20px; background: #f0f0f0;">
-          <p>详情：{{ row.detail }}</p>
+        <div style="padding: 20px; background: #f0f9ff; border-left: 4px solid #3b82f6;">
+          <h4 style="margin: 0 0 10px 0;">商品详情</h4>
+          <p><strong>名称：</strong>{{ row.name }}</p>
+          <p><strong>数量：</strong>{{ row.count }} 件</p>
+          <p><strong>价格：</strong>¥{{ row.price }}</p>
+          <p><strong>总价：</strong>¥{{ row.count * row.price }}</p>
         </div>
       </template>
     </er-table-column>
+    <er-table-column prop="name" label="商品名称" />
     <er-table-column prop="count" label="数量" />
-    <er-table-column prop="price" label="价格" fixed="right" />
+    <er-table-column prop="price" label="价格" />
   </er-table>
 </template>
