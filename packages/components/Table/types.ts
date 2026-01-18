@@ -52,6 +52,45 @@ export const tableProps = {
   summaryMethod: {
     type: Function as PropType<SummaryMethod>,
   },
+  // 行数据的key
+  rowKey: {
+    type: [String, Function] as PropType<string | ((row: any) => string)>,
+    default: "",
+  },
+  // 树形配置
+  treeProps: {
+    type: Object as PropType<{
+      children?: string; // 指定子节点数据的字段名，默认查找children字段
+      hasChildren?: string; // 指定是否有子节点的标识字段，用于懒加载，点击时在加载数据，子节点数据暂时没有
+    }>,
+    default: () => ({ children: "children", hasChildren: "hasChildren" }),
+  },
+  // 是否懒加载
+  lazy: {
+    type: Boolean,
+    default: false,
+  },
+  // 懒加载函数
+  load: {
+    type: Function as PropType<
+      (row: any, treeNode: any, resolve: (data: any[]) => void) => void
+    >,
+  },
+  // 缩进大小
+  indent: {
+    type: Number,
+    default: 16,
+  },
+  // 默认展开所有行
+  defaultExpandAll: {
+    type: Boolean,
+    default: false,
+  },
+  // 默认展开的行，通过row-key数组指定
+  expandRowKeys: {
+    type: Array as PropType<(string | number)[]>,
+    default: () => [],
+  },
 } as const;
 
 export type TableProps = ExtractPropTypes<typeof tableProps>;
