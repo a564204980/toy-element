@@ -13,6 +13,7 @@ import {
 } from "./composables"
 import { useSort } from "./composables/useSort";
 import { useTree } from "./composables/useTree";
+import { ErIcon } from "../Icon";
 
 defineOptions({
   name: "ErTable",
@@ -111,7 +112,6 @@ const { flattenedData,
 // 最终渲染的数据
 const displayData = computed(() => {
   if (props.rowKey) {
-    console.log("树形数据", flattenedData.value)
     return flattenedData.value
   }
 
@@ -395,10 +395,11 @@ defineExpose({
                             <span v-if="hasChildren(row)" class="er-table__tree-expand-icon"
                               @click.stop="toggleTreeExpansion(row)">
                               <template v-if="getTreeNode(row)?.loading">
-                                <i class="er-table__icon-loading"></i>
+                                <ErIcon icon="spinner" spin class="er-table__tree-loading"></ErIcon>
                               </template>
                               <template v-else>
-                                <i :class="getTreeNode(row)?.expanded ? 'arrow-down' : 'arrow-right'"></i>
+                                <i class="tree-arrow"
+                                  :class="getTreeNode(row)?.expanded ? 'arrow-down' : 'arrow-right'"></i>
                               </template>
                             </span>
                             <span v-else class="er-table__placeholder"></span>

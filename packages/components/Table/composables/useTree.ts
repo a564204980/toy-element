@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, ref, triggerRef, watch } from "vue";
 import { debugWarn } from "@toy-element/utils";
 
 export interface TreeNode {
@@ -28,11 +28,11 @@ export const useTree = (options: UseTreeOptions) => {
 
   // 子节点字段
   const childrenField = computed(
-    () => options.treeProps()?.children || "children",
+    () => options.treeProps()?.children || "children"
   );
 
   const hasChildrenField = computed(
-    () => options?.treeProps()?.hasChildren || "hasChildren",
+    () => options?.treeProps()?.hasChildren || "hasChildren"
   );
 
   /**
@@ -126,9 +126,6 @@ export const useTree = (options: UseTreeOptions) => {
     const data = options.data();
     if (!data || data.length === 0) return [];
 
-    treeData.value = {};
-    normalize(data);
-
     return getTreeData(data);
   });
 
@@ -168,7 +165,6 @@ export const useTree = (options: UseTreeOptions) => {
     }
 
     treeNode.expanded = !treeNode.expanded;
-
     options.emit("expand-change", row, treeNode.expanded);
   };
 
@@ -180,6 +176,7 @@ export const useTree = (options: UseTreeOptions) => {
     if (!treeNode || !options.load) return;
 
     treeNode.loading = true;
+    triggerRef(treeData);
 
     return new Promise<void>((resolve) => {
       // 调用外部提供的load方法
@@ -192,11 +189,24 @@ export const useTree = (options: UseTreeOptions) => {
 
         // 构建子节点数据
         normalize(children, treeNode.level + 1);
-
+        triggerRef(treeData);
         resolve();
       });
     });
   };
+
+  watch(
+    () => options.data(),
+    (data) => {
+      if (!data || data.length === 0) {
+        treeData.value = {};
+        return;
+      }
+      treeData.value = {};
+      normalize(data);
+    },
+    { immediate: true, deep: true }
+  );
 
   return {
     treeData,
