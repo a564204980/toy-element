@@ -19,6 +19,7 @@ export const useExpand = (options: UseExpandOptions) => {
 
   // 切换
   const toggleRowExpansion = (row: any) => {
+    console.log("我点击的是切换");
     const key = row[rowKey];
 
     // 收起

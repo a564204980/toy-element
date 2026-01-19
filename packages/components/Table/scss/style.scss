@@ -328,4 +328,65 @@ $table-fixed-shadow-width: 8px;
   @include e(expand-content) {
     width: 100%;
   }
+
+  // 缩进
+  @include e(indent) {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  // 展开图标
+  @include e(tree-expand-icon) {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+
+    i {
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      transition: transform 0.2s;
+    }
+
+    .arrow-right {
+      border-left-color: #606266;
+      border-right-width: 0;
+      margin-left: 3px;
+    }
+
+    .arrow-down {
+      border-top-color: #606266;
+      border-bottom-width: 0;
+      margin-top: 3px;
+    }
+  }
+
+  // 占位符
+  @include e(placeholder) {
+    display: inline-block;
+    width: 24px;
+  }
+
+  @include e(icon-loading) {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #409eff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotating 1s linear infinite;
+  }
+
+  @keyframes rotating {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, useId, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
-import { tableProps, tableEmits } from "./types";
+import { tableProps, tableEmits, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
 import { useExpand } from "./composables/useExpand"
 import { ErScrollbar } from "../Scrollbar";
@@ -12,6 +12,7 @@ import {
   useSelection
 } from "./composables"
 import { useSort } from "./composables/useSort";
+import { useTree } from "./composables/useTree";
 
 defineOptions({
   name: "ErTable",
@@ -92,16 +93,37 @@ const { sortedData, handleSort, sortProp, sortOrder } = useSort({
 
 const { expandedRows,
   isRowExpanded,
-  toggleRowExpansion } = useExpand({ emit: emits, rowKey: 'id' })
+  toggleRowExpansion, } = useExpand({ emit: emits, rowKey: 'id' })
 
+const { flattenedData,
+  getRowKey: getTreeRowKey, toggleRowExpansion: toggleTreeExpansion, hasChildren, getTreeNode } = useTree({
+    data: () => props.data,
+    rowKey: () => props.rowKey,
+    treeProps: () => props.treeProps,
+    lazy: () => props.lazy,
+    load: props.load,
+    indent: () => props.indent,
+    defaultExpandAll: () => props.defaultExpandAll,
+    expandRowKeys: () => props.expandRowKeys,
+    emit: emits
+  })
 
+// 最终渲染的数据
+const displayData = computed(() => {
+  if (props.rowKey) {
+    console.log("树形数据", flattenedData.value)
+    return flattenedData.value
+  }
 
+  return sortedData.value
+})
 
 // 提供给子组件使用
 provide("ErTable", {
   registerColumn,
   unregisterColumn,
 })
+
 
 // 给slot插槽使用
 const store = computed(() => ({
@@ -123,6 +145,20 @@ const tableClass = computed(() => {
     },
   ];
 });
+
+// 判断是否是第一个数据列，用于显示树形图标
+const isFirstColumn = (column: TableColumn) => {
+  const firstDataColumn = calculatedColumns.value.find(col => !["selection", "index", "expand"].includes(col.type || ""))
+  return column.id === firstDataColumn?.id
+}
+
+// 获取缩进大小
+const getIndentSize = (row: any) => {
+  const treeNode = getTreeNode(row)
+  return treeNode ? treeNode.level * props.indent : 0
+}
+
+
 
 // 计算表格样式
 const tableStyle = computed(() => {
@@ -184,6 +220,9 @@ const summaryData = computed(() => {
 
   return sums
 })
+
+
+
 
 
 
@@ -312,7 +351,7 @@ defineExpose({
               </col>
             </colgroup>
             <tbody>
-              <template v-for="(row, index) in sortedData" :key="index">
+              <template v-for="(row, index) in displayData" :key="index">
                 <!-- 数据行 -->
                 <tr :class="getRowClass(row)" @click="handleRowClick(row)">
                   <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
@@ -350,6 +389,20 @@ defineExpose({
                           </button>
                         </template>
                         <template v-else>
+                          <!-- 树形展开图标 -->
+                          <span v-if="props.rowKey && isFirstColumn(column)" class="er-table__indent"
+                            :style="{ paddingLeft: getIndentSize(row) + 'px' }">
+                            <span v-if="hasChildren(row)" class="er-table__tree-expand-icon"
+                              @click.stop="toggleTreeExpansion(row)">
+                              <template v-if="getTreeNode(row)?.loading">
+                                <i class="er-table__icon-loading"></i>
+                              </template>
+                              <template v-else>
+                                <i :class="getTreeNode(row)?.expanded ? 'arrow-down' : 'arrow-right'"></i>
+                              </template>
+                            </span>
+                            <span v-else class="er-table__placeholder"></span>
+                          </span>
                           <!-- 自定义插槽内容 -->
                           <template v-if="column.renderCell">
                             <component :is="{
