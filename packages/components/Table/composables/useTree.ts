@@ -28,11 +28,11 @@ export const useTree = (options: UseTreeOptions) => {
 
   // 子节点字段
   const childrenField = computed(
-    () => options.treeProps()?.children || "children"
+    () => options.treeProps()?.children || "children",
   );
 
   const hasChildrenField = computed(
-    () => options?.treeProps()?.hasChildren || "hasChildren"
+    () => options?.treeProps()?.hasChildren || "hasChildren",
   );
 
   /**
@@ -62,6 +62,8 @@ export const useTree = (options: UseTreeOptions) => {
    * 初始化treeData数据
    */
   const normalize = (data: any[], level: number = 0) => {
+    if (!options.rowKey()) return;
+
     data.forEach((row) => {
       const key = getRowKey(row);
       if (key === "") return;
@@ -195,6 +197,59 @@ export const useTree = (options: UseTreeOptions) => {
     });
   };
 
+  /**
+   * 展开所有节点
+   */
+  const expandAllTreeNodes = () => {
+    Object.keys(treeData.value).forEach((key) => {
+      if (treeData.value[key].children.length > 0) {
+        treeData.value[key].expanded = true;
+      }
+    });
+    triggerRef(treeData);
+  };
+
+  /**
+   * 折叠所有节点
+   */
+  const collapseAllTreeNodes = () => {
+    Object.keys(treeData.value).forEach((key) => {
+      treeData.value[key].expanded = false;
+    });
+    triggerRef(treeData);
+  };
+
+  /**
+   * 获取所有展开的行
+   */
+  const getExpandedRows = () => {
+    const expandedKeys = Object.keys(treeData.value).filter(
+      (key) => treeData.value[key].expanded,
+    );
+
+    // 从原始数据中找到对应的行
+    const findRowByKey = (data: any[], targetKey: string | number): any => {
+      for (const row of data) {
+        const key = getRowKey(row);
+        if (String(key) === String(targetKey)) {
+          return row;
+        }
+
+        const children = row[childrenField.value];
+        if (Array.isArray(children)) {
+          const found = findRowByKey(children, targetKey);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    };
+
+    return expandedKeys
+      .map((key) => findRowByKey(options.data(), key))
+      .filter(Boolean);
+  };
+
   watch(
     () => options.data(),
     (data) => {
@@ -205,7 +260,7 @@ export const useTree = (options: UseTreeOptions) => {
       treeData.value = {};
       normalize(data);
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
   );
 
   return {
@@ -215,5 +270,8 @@ export const useTree = (options: UseTreeOptions) => {
     hasChildren,
     getTreeNode,
     toggleRowExpansion,
+    expandAllTreeNodes,
+    collapseAllTreeNodes,
+    getExpandedRows,
   };
 };

@@ -97,17 +97,24 @@ const { expandedRows,
   toggleRowExpansion, } = useExpand({ emit: emits, rowKey: 'id' })
 
 const { flattenedData,
-  getRowKey: getTreeRowKey, toggleRowExpansion: toggleTreeExpansion, hasChildren, getTreeNode } = useTree({
-    data: () => props.data,
-    rowKey: () => props.rowKey,
-    treeProps: () => props.treeProps,
-    lazy: () => props.lazy,
-    load: props.load,
-    indent: () => props.indent,
-    defaultExpandAll: () => props.defaultExpandAll,
-    expandRowKeys: () => props.expandRowKeys,
-    emit: emits
-  })
+  getRowKey: getTreeRowKey,
+  toggleRowExpansion: toggleTreeExpansion,
+  hasChildren,
+  getTreeNode,
+  expandAllTreeNodes,
+  collapseAllTreeNodes,
+  getExpandedRows
+} = useTree({
+  data: () => props.data,
+  rowKey: () => props.rowKey,
+  treeProps: () => props.treeProps,
+  lazy: () => props.lazy,
+  load: props.load,
+  indent: () => props.indent,
+  defaultExpandAll: () => props.defaultExpandAll,
+  expandRowKeys: () => props.expandRowKeys,
+  emit: emits
+})
 
 // 最终渲染的数据
 const displayData = computed(() => {
@@ -269,7 +276,11 @@ defineExpose({
   setCurrentRow,
   currentRow,
   isRowExpanded,
-  toggleRowExpansion
+  toggleRowExpansion,
+  toggleTreeExpansion,
+  expandAllTreeNodes,
+  collapseAllTreeNodes,
+  getExpandedRows
 })
 
 </script>
@@ -389,7 +400,7 @@ defineExpose({
                           </button>
                         </template>
                         <template v-else>
-                          <!-- 树形展开图标 -->
+                          <!-- 树形节点 -->
                           <span v-if="props.rowKey && isFirstColumn(column)" class="er-table__indent"
                             :style="{ paddingLeft: getIndentSize(row) + 'px' }">
                             <span v-if="hasChildren(row)" class="er-table__tree-expand-icon"

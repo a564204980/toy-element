@@ -676,3 +676,170 @@ describe("展开行功能", () => {
     wrapper.unmount();
   });
 });
+
+const treeData = [
+  {
+    id: 1,
+    name: "浙江省",
+    count: 100,
+    children: [
+      { id: 11, name: "杭州市", count: 50 },
+      { id: 12, name: "宁波市", count: 50 },
+    ],
+  },
+  {
+    id: 2,
+    name: "江苏省",
+    count: 200,
+    children: [
+      { id: 21, name: "南京市", count: 100 },
+      { id: 22, name: "苏州市", count: 100 },
+    ],
+  },
+];
+
+const lazyData = [
+  { id: 1, name: "节点1", hasChildren: true },
+  { id: 2, name: "节点2", hasChildren: true },
+];
+
+describe("Tree", () => {
+  it("应该正确渲染树形数据", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} row-key="id">
+            <TableColumn prop="name" label="姓名" />
+            <TableColumn prop="count" label="数量" />
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait();
+
+    const rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(2);
+
+    const treeIcon = wrapper.findAll(".er-table__tree-expand-icon");
+    expect(treeIcon.length).toBe(2);
+
+    wrapper.unmount();
+  });
+
+  it("点击图标后，子节点应该显示/隐藏", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} row-key="id">
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait();
+
+    let rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(2);
+
+    const firstIcon = wrapper.find(".er-table__tree-expand-icon");
+    await firstIcon.trigger("click");
+    await nextTick();
+
+    rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(4);
+
+    const indents = wrapper.findAll(".er-table__indent");
+    expect(indents.length).toBeGreaterThan(0); // 大于0
+
+    await firstIcon.trigger("click");
+    await nextTick();
+
+    rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(2);
+
+    wrapper.unmount();
+  });
+
+  it("展开/折叠时应该触发事件", async () => {
+    const onExpandChange = vi.fn();
+
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} row-key="id" onExpand-change={onExpandChange}>
+            <TableColumn prop="name" label="名称"></TableColumn>
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait();
+
+    const firstIcon = wrapper.find(".er-table__tree-expand-icon");
+    await firstIcon.trigger("click");
+    await nextTick();
+
+    expect(onExpandChange).toHaveBeenCalled();
+    expect(onExpandChange).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 1 }), // row
+      true, // expanded
+    );
+
+    wrapper.unmount();
+  });
+
+  it("设置default-expand-all之后，所有节点应该展开", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} rowKey="id" defaultExpandAll>
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait();
+
+    const rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(6);
+
+    wrapper.unmount();
+  });
+
+  it("只展开指定的节点", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table
+            data={treeData}
+            rowKey="id"
+            expandRowKeys={[1]} // 只展开 id=1 的节点
+          >
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait();
+
+    const rows = wrapper.findAll(".er-table__body tbody tr");
+    expect(rows.length).toBe(4);
+
+    wrapper.unmount();
+  });
+
+  it("点击懒加载节点，应该调用load函数", async () => {
+    const loadFn = vi.fn((row, treeNode, resolve) => {
+      setTimeout(() => {
+        resolve([
+          { id: `${row.id}-1`, name: `${row.name}的子节点1` },
+          { id: `${row.id}-2`, name: `${row.name}的子节点2` },
+        ]);
+      }, 100);
+    });
+  });
+});
