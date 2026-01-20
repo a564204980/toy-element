@@ -17,9 +17,9 @@ vi.mock("lodash-es", async () => {
 
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe() { }
+    unobserve() { }
+    disconnect() { }
   };
 });
 
@@ -368,7 +368,7 @@ describe("排序功能", () => {
         return { testData: [...originalData] };
       },
       methods: {
-        handleSort() {},
+        handleSort() { },
       },
     });
     await doubleWait();
@@ -836,10 +836,233 @@ describe("Tree", () => {
     const loadFn = vi.fn((row, treeNode, resolve) => {
       setTimeout(() => {
         resolve([
-          { id: `${row.id}-1`, name: `${row.name}的子节点1` },
-          { id: `${row.id}-2`, name: `${row.name}的子节点2` },
+          { id: 1, name: `节点1` },
+          { id: 2, name: `节点2` },
         ]);
       }, 100);
     });
+
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={lazyData} rowKey="id" lazy load={loadFn}>
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+
+    await doubleWait()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(2);
+
+    const firstIcon = wrapper.find(".er-table__tree-expand-icon")
+    await firstIcon.trigger("click")
+    await nextTick()
+
+    expect(loadFn).toHaveBeenCalledTimes(1)
+    expect(loadFn).toHaveBeenCalledWith(expect.objectContaining(
+      { id: 1, name: "节点1" },
+    ),
+      expect.any(Object),
+      expect.any(Function))
+
+
+    // 等待150ms
+    await new Promise(resolve => setTimeout(resolve, 150))
+    await nextTick()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(2)
+
+    wrapper.unmount()
   });
+
+  it("应该支持tree-props自定义字段", async () => {
+    const customData = [
+      {
+        id: 1, name: "父节点", childNodes: [
+          { id: 11, name: "子节点1" },
+          { id: 12, name: "子节点2" }
+        ]
+      }
+    ]
+
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={customData} row-key="id" tree-props={{ children: "childNodes" }}>
+            <TableColumn prop="name" label="名称"></TableColumn>
+          </Table>
+        )
+      }
+    })
+
+    await doubleWait()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(1)
+    await wrapper.find(".er-table__tree-expand-icon").trigger("click")
+    await nextTick()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(3)
+
+    wrapper.unmount()
+  })
+
+  it("应该通过toggleRowExpansion方法控制展开状态", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} row-key="id">
+            <TableColumn prop="name" label="名称"></TableColumn>
+          </Table>
+        )
+      }
+    })
+
+    await doubleWait()
+
+    const tableVm = wrapper.findComponent(Table).vm as any
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(2)
+
+    tableVm.toggleRowExpansion(treeData[0])
+    await doubleWait()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(3)
+
+    tableVm.toggleRowExpansion(treeData[0])
+    await doubleWait()
+
+    expect(wrapper.findAll(".er-table__body tbody tr").length).toBe(2)
+
+    wrapper.unmount()
+  })
+
+  it('应该支持 expandAllTreeNodes 展开所有节点', async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} rowKey="id">
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+    await doubleWait();
+    const tableVm = wrapper.findComponent(Table).vm as any;
+
+    expect(wrapper.findAll('.er-table__body tbody tr').length).toBe(2);
+
+    tableVm.expandAllTreeNodes();
+    await nextTick();
+
+    expect(wrapper.findAll('.er-table__body tbody tr').length).toBe(6);
+  });
+
+
+  it('应该支持 collapseAllTreeNodes 折叠所有节点', async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} rowKey="id" defaultExpandAll>
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+    await doubleWait();
+    const tableVm = wrapper.findComponent(Table).vm as any;
+
+    expect(wrapper.findAll('.er-table__body tbody tr').length).toBe(6);
+
+    tableVm.collapseAllTreeNodes();
+    await nextTick();
+
+    expect(wrapper.findAll('.er-table__body tbody tr').length).toBe(2);
+  });
+
+  it('应该通过 getExpandedRows 获取展开的行', async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} rowKey="id" expandRowKeys={[1]}>
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        );
+      },
+    });
+    await doubleWait();
+    const tableVm = wrapper.findComponent(Table).vm as any;
+
+    const expandedRows = tableVm.getExpandedRows();
+
+    expect(expandedRows.length).toBe(1);
+    expect(expandedRows[0].id).toBe(1);
+  });
+
+  it("应该正确渲染树形缩进", async () => {
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeData} rowKey="id" defaultExpandAll indent={20}>
+            <TableColumn prop="name" label="名称" />
+          </Table>
+        )
+      }
+    })
+
+    await doubleWait()
+
+    const indents = wrapper.findAll(".er-table__indent")
+
+    expect(indents.length).toBeGreaterThan(0)
+
+    const hasChildrenIndent = indents.some(indent => indent.attributes("style")?.includes("padding-left: 20px"))
+    expect(hasChildrenIndent).toBe(true)
+
+    wrapper.unmount()
+  })
+
+  it("懒加载时应该显示loading状态", async () => {
+    const loadFn = vi.fn((row, treeNode, resolve) => {
+      setTimeout(() => {
+        resolve([
+          { id: 1, name: `节点1` },
+          { id: 2, name: `节点2` },
+        ]);
+      }, 100);
+    });
+
+    const treeLoadData = [
+      {
+        id: 1,
+        name: "浙江省",
+        hasChildren: true
+      }
+    ];
+
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <Table data={treeLoadData} row-key="id" load={loadFn} lazy>
+            <TableColumn prop="name" label="名称"></TableColumn>
+          </Table>
+        )
+      }
+    })
+
+    await doubleWait()
+
+    await wrapper.find('.er-table__tree-expand-icon').trigger('click');
+    await nextTick()
+
+    expect(wrapper.find(".er-table__tree-loading").exists()).toBe(true)
+
+    await new Promise(resolve => setTimeout(resolve, 1100));
+    await nextTick();
+
+    expect(wrapper.find(".er-table__tree-loading").exists()).toBe(false)
+
+    wrapper.unmount()
+  })
 });
