@@ -82,6 +82,8 @@ const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAl
   emit: emits,
   // 因为calculatedColumns是延迟执行的，所以这里要用箭头函数包装一下延迟返回
   selectable: () => calculatedColumns.value.find(col => col.type === 'selection')?.selectable,
+  treeProps: () => props.treeProps,
+  rowKey: () => props.rowKey,
 })
 
 
@@ -280,7 +282,7 @@ defineExpose({
   toggleTreeExpansion,
   expandAllTreeNodes,
   collapseAllTreeNodes,
-  getExpandedRows
+  getExpandedRows,
 })
 
 </script>

@@ -110,8 +110,6 @@ export default defineComponent({
 
     const children: any[] = []
 
-    console.log("defaultSlot", defaultSlot)
-
     defaultSlot.forEach((node: any) => {
       if (node.type?.name === "ErTableColumn") {
         children.push(node)

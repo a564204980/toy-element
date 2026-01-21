@@ -62,8 +62,13 @@ export const tableProps = {
     type: Object as PropType<{
       children?: string; // 指定子节点数据的字段名，默认查找children字段
       hasChildren?: string; // 指定是否有子节点的标识字段，用于懒加载，点击时在加载数据，子节点数据暂时没有
+      checkStrictly?: boolean; // 是否是严格模式用于关联子节点
     }>,
-    default: () => ({ children: "children", hasChildren: "hasChildren" }),
+    default: () => ({
+      children: "children",
+      hasChildren: "hasChildren",
+      checkStrictly: false, // 默认关联模式
+    }),
   },
   // 是否懒加载
   lazy: {

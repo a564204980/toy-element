@@ -8,6 +8,7 @@ export interface TreeNode {
   lazy?: boolean; // 是否懒加载节点
   loaded?: boolean; // 懒加载数据是否已加载
   loading?: boolean; // 是否正在加载中
+  parentKey?: string | number | null; // 父节点key
 }
 
 export interface UseTreeOptions {
@@ -53,7 +54,18 @@ export const useTree = (options: UseTreeOptions) => {
   /**
    * 判断是否需要默认展开
    */
-  const shouldExpand = (key: string | number): boolean => {
+  const shouldExpand = (key: string | number, row: any): boolean => {
+    const hasChildrenFlag = row[hasChildrenField.value];
+
+    // 如果是懒加载节点，且没有子节点，不展开
+    if (
+      options.lazy() &&
+      hasChildrenFlag &&
+      !row[childrenField.value]?.length
+    ) {
+      return false;
+    }
+
     if (options.defaultExpandAll()) return true;
     return options.expandRowKeys().includes(key);
   };
@@ -61,7 +73,11 @@ export const useTree = (options: UseTreeOptions) => {
   /**
    * 初始化treeData数据
    */
-  const normalize = (data: any[], level: number = 0) => {
+  const normalize = (
+    data: any[],
+    level: number = 0,
+    parentKey: string | number | null = null,
+  ) => {
     if (!options.rowKey()) return;
 
     data.forEach((row) => {
@@ -73,15 +89,16 @@ export const useTree = (options: UseTreeOptions) => {
 
       treeData.value[key] = {
         level,
-        expanded: shouldExpand(key),
+        expanded: shouldExpand(key, row),
         children: children ? children.map(getRowKey) : [], // 等价于children.map((child) => getRowKey(child)
         lazy: options.lazy() && hasChildrenFlag,
         loaded: false, // 是否已经加载完成
         loading: false, // 是否正在加载
+        parentKey, // 父节点key
       };
 
       if (Array.isArray(children) && children.length > 0) {
-        normalize(children, level + 1);
+        normalize(children, level + 1, key);
       }
     });
   };
@@ -220,6 +237,29 @@ export const useTree = (options: UseTreeOptions) => {
   };
 
   /**
+   * 根据 key 从原始数据中查找行
+   */
+  const findRowByKey = (
+    targetKey: string | number,
+    data: any[] = options.data(),
+  ): any => {
+    for (const row of data) {
+      const key = getRowKey(row);
+      if (String(key) === String(targetKey)) {
+        return row;
+      }
+
+      const children = row[childrenField.value];
+      if (Array.isArray(children)) {
+        const found = findRowByKey(targetKey, children);
+        if (found) return found;
+      }
+    }
+
+    return null;
+  };
+
+  /**
    * 获取所有展开的行
    */
   const getExpandedRows = () => {
@@ -227,27 +267,54 @@ export const useTree = (options: UseTreeOptions) => {
       (key) => treeData.value[key].expanded,
     );
 
-    // 从原始数据中找到对应的行
-    const findRowByKey = (data: any[], targetKey: string | number): any => {
-      for (const row of data) {
-        const key = getRowKey(row);
-        if (String(key) === String(targetKey)) {
-          return row;
-        }
-
-        const children = row[childrenField.value];
-        if (Array.isArray(children)) {
-          const found = findRowByKey(children, targetKey);
-          if (found) return found;
-        }
-      }
-
-      return null;
-    };
-
     return expandedKeys
-      .map((key) => findRowByKey(options.data(), key))
+      .map((key) => findRowByKey(key, options.data()))
       .filter(Boolean);
+  };
+
+  /**
+   * 获取节点的父节点 key
+   */
+  const getParentKey = (row: any): string | number | null => {
+    const key = getRowKey(row);
+    return treeData.value[key]?.parentKey ?? null;
+  };
+
+  /**
+   * 获取节点的所有子孙节点（递归）
+   */
+  const getAllDescendants = (row: any): any[] => {
+    const result: any[] = [];
+    const children = row[childrenField.value];
+
+    if (Array.isArray(children)) {
+      children.forEach((child: any) => {
+        result.push(child);
+        result.push(...getAllDescendants(child));
+      });
+    }
+
+    return result;
+  };
+
+  /**
+   * 获取节点的所有祖先节点（从父到根）
+   */
+  const getAllAncestors = (row: any): any[] => {
+    const result: any[] = [];
+    let currentKey = getParentKey(row);
+
+    while (currentKey !== null) {
+      const parentRow = findRowByKey(row);
+      if (parentRow) {
+        result.push(parentRow);
+        currentKey = getParentKey(row);
+      } else {
+        break;
+      }
+    }
+
+    return result;
   };
 
   watch(
@@ -273,5 +340,8 @@ export const useTree = (options: UseTreeOptions) => {
     expandAllTreeNodes,
     collapseAllTreeNodes,
     getExpandedRows,
+    getParentKey,
+    getAllAncestors,
+    childrenField,
   };
 };
