@@ -59,3 +59,21 @@ export const waitForTableBody = async (wrapper: any, maxAttempts = 20) => {
   }
   throw new Error("Table body cells not rendered");
 };
+
+/**
+ * 手动触发表格列宽计算并等待完成
+ * 用于测试中确保 calculatedColumns 被正确计算
+ * @param wrapper - 包含 Table 组件的 wrapper
+ * @returns Table 组件的 vm 实例
+ */
+export const triggerTableColumnCalculation = async (wrapper: any) => {
+  const tableVm = wrapper.findComponent(Table).vm as any;
+
+  // 手动触发列宽计算
+  tableVm.calculateColumnWidths();
+
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  await nextTick();
+
+  return tableVm;
+};
