@@ -13,6 +13,7 @@ import {
 } from "./composables"
 import { useSort } from "./composables/useSort";
 import { useTree } from "./composables/useTree";
+import { useSpan } from "./composables/useSpan";
 import { ErIcon } from "../Icon";
 
 defineOptions({
@@ -117,6 +118,22 @@ const { flattenedData,
   expandRowKeys: () => props.expandRowKeys,
   emit: emits
 })
+
+// 合并单元格
+const { getCellSpan, shouldHideCell } = useSpan({ spanMethod: props.spanMethod })
+
+const getCellBinding = (row: any, column: any, rowIndex: number, colIndex: number) => {
+  const { rowspan, colspan } = getCellSpan(row, column, rowIndex, colIndex)
+
+  if (shouldHideCell(rowspan, colspan)) {
+    return { style: { display: 'none' } }
+  }
+
+  return {
+    rowspan: rowspan > 1 ? rowspan : undefined,
+    colspan: colspan > 1 ? colspan : undefined,
+  }
+}
 
 // 最终渲染的数据
 const displayData = computed(() => {
@@ -229,6 +246,7 @@ const summaryData = computed(() => {
 
   return sums
 })
+
 
 
 
@@ -372,7 +390,7 @@ defineExpose({
                       ...getCellAlign(column.align),
                       ...getCellFixedStyle(column, colIndex, calculatedColumns)
 
-                    }">
+                    }" v-bind="getCellBinding(row, column, index, colIndex)">
                     <div class="er-table__cell">
                       <div class="er-table__cell-content">
                         <template v-if="column.type === 'selection'">

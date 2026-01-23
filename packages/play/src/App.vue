@@ -3,22 +3,26 @@ import { nextTick, onMounted, ref } from 'vue'
 
 const tableRef = ref()
 const lazyData = ref([
-  {
-    id: 1, name: '节点1',
-    hasChildren: true
-  },
-  {
-    id: 2, name: '节点2', children: [
-      { id: 21, name: '节点2-1' },
-      { id: 22, name: '节点2-2' },
-      {
-        id: 23, name: '节点2-2', children: [
-          { id: 231, name: '节点2-3-1' },
-          { id: 232, name: '节点2-3-2' }
-        ]
-      }
-    ]
-  }
+  // {
+  //   id: 1, name: '节点1',
+  //   hasChildren: true
+  // },
+  // {
+  //   id: 2, name: '节点2', count: 10, children: [
+  //     { id: 21, name: '节点2-1', count: 10 },
+  //     { id: 22, name: '节点2-2', count: 20 },
+  //     {
+  //       id: 23, name: '节点2-2', children: [
+  //         { id: 231, name: '节点2-3-1', count: 30 },
+  //         { id: 232, name: '节点2-3-2', count: 60 }
+  //       ]
+  //     }
+  //   ]
+  // },
+  { id: 3, name: "节点3", count: 20 },
+  { id: 4, name: "节点4", count: 20 },
+  { id: 5, name: "节点5", count: 20 },
+  { id: 6, name: "节点6", count: 20 },
 ])
 // 模拟异步加载
 const loadChildren = (row, treeNode, resolve) => {
@@ -52,9 +56,10 @@ const testCheckStrictly = () => {
   const row = {
     id: 1,
     name: '父节点',
+    count: 10,
     children: [
-      { id: 11, name: '子节点1' },
-      { id: 12, name: '子节点2' }
+      { id: 11, name: '子节点1', count: 30 },
+      { id: 12, name: '子节点2', count: 60 }
     ]
   };
   // 模拟严格模式
@@ -73,18 +78,36 @@ const testCheckStrictly = () => {
   // 输出: ['父节点', '子节点1', '子节点2']
 };
 
+const tableData = [
+  { orderId: 'ORD001', product: '苹果', quantity: 10 },
+  { orderId: 'ORD001', product: '香蕉', quantity: 5 },
+  { orderId: 'ORD001', product: '橙子', quantity: 8 },
+  { orderId: 'ORD002', product: '西瓜', quantity: 3 },
+  { orderId: 'ORD002', product: '葡萄', quantity: 15 },
+]
+
+const spanMethod = ({ rowIndex, columnIndex }) => {
+  // 只在第一行处理
+  if (rowIndex === 0) {
+    if (columnIndex === 0) {
+      // 第1列横向占据2列
+      return { rowspan: 1, colspan: 2 }
+    } else if (columnIndex === 1) {
+      // 第2列隐藏
+      return { rowspan: 0, colspan: 0 }
+    }
+  }
+}
+
 onMounted(() => {
   console.log("2222", tableRef.value)
 })
 </script>
 <template>
-  <er-table ref="tableRef" default-expand-all :data="lazyData" row-key="id" :lazy="true" :load="loadChildren"
-    :tree-props="{ children: 'children', hasChildren: 'hasChildren', checkStrictly: false }" @expand-change="(row, expanded) => {
-      console.log(row, expanded)
-    }" @selection-change="handleSelectionChange">
-    <er-table-column type="selection" width="55" />
-    <er-table-column prop="name" label="名称" />
-    <er-table-column prop="count" label="数量" />
+  <er-table ref="tableRef" :data="tableData" :span-method="spanMethod" border>
+    <er-table-column prop="orderId" label="订单ID" />
+    <er-table-column prop="product" label="产品" />
+    <er-table-column prop="quantity" label="数量" />
   </er-table>
   <er-button type="primary" @click="handleColoseExpanded">点击关闭</er-button>
   <er-button type="danger" @click="handleExpandedRows">查看已展开的节点</er-button>

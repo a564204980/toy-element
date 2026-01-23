@@ -1,5 +1,18 @@
 import type { ExtractPropTypes, PropType, VNode } from "vue";
 
+// 合并方法的参数类型
+export interface SpanMethodProps {
+  row: any;
+  column: TableColumn;
+  rowIndex: number;
+  columnIndex: number;
+}
+
+export type SpanMethodResult =
+  | [number, number] // [rowspan, colspan] 第一个参数表示行数，第二个参数表示列数
+  | { rowspan: number; colspan: number } // { rowspan: 行数, colspan: 列数 }
+  | undefined;
+
 // 表格props
 export const tableProps = {
   // 表格数据
@@ -95,6 +108,11 @@ export const tableProps = {
   expandRowKeys: {
     type: Array as PropType<(string | number)[]>,
     default: () => [],
+  },
+  // 合并行或列的方法
+  spanMethod: {
+    type: Function as PropType<(props: SpanMethodProps) => SpanMethodResult>,
+    default: undefined,
   },
 } as const;
 
