@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, useId, provide, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, useId, provide, nextTick, computed, onMounted, onBeforeUnmount, toRef } from "vue";
 import { tableProps, tableEmits, type TableColumn } from "./types";
 import { getScrollBarWidth } from "@toy-element/utils"
 import { useExpand } from "./composables/useExpand"
@@ -48,8 +48,10 @@ const {
   registerColumn,
   unregisterColumn,
   calculateColumnWidths,
+  tableContentWidth
 } = useColumns({
   tableRef,
+  fit: toRef(props, "fit"),
   onColumnWidthsCalculated: () => {
     checkScrollbar();
     scrollbarRef.value?.update();
@@ -168,9 +170,19 @@ const tableClass = computed(() => {
     {
       "er-table--stripe": props.stripe,
       "er-table--border": props.border,
+      "er-table--fit": props.fit
     },
   ];
 });
+
+// 获取索引
+const getIndex = (index: number, indexProp?: number | ((index: number) => number)) => {
+  if (typeof indexProp === "function") {
+    return indexProp(index)
+  }
+
+  return index + (typeof indexProp === "number" ? indexProp : 0)
+}
 
 // 判断是否是第一个数据列，用于显示树形图标
 const isFirstColumn = (column: TableColumn) => {
@@ -310,7 +322,7 @@ defineExpose({
     <div class="er-table__inner-wrapper">
       <!-- 表头 -->
       <div class="er-table__header-wrapper" ref="headerWrapperRef">
-        <table class="er-table__header">
+        <table class="er-table__header" :style="{ width: tableContentWidth + 'px' }">
           <colgroup>
             <col v-for="column in calculatedColumns" :key="column.id"
               v-bind="column.width ? { width: column.width } : {}">
@@ -375,7 +387,7 @@ defineExpose({
       <!-- 表体 -->
       <div class="er-table__body-wrapper" ref="bodyWrapperRef">
         <er-scrollbar ref="scrollbarRef" @scroll="handleScroll">
-          <table class="er-table__body">
+          <table class="er-table__body" :style="{ width: tableContentWidth + 'px' }">
             <colgroup>
               <col v-for="column in calculatedColumns" :key="column.id"
                 v-bind="column.width ? { width: column.width } : {}">
@@ -410,8 +422,7 @@ defineExpose({
                           </label>
                         </template>
                         <template v-else-if="column.type === 'index'">
-                          {{ typeof column.index === "function" ? column.index(index) : (column.index ? column.index +
-                            index : index + 1) }}
+                          {{ getIndex(index, column.index) }}
                         </template>
                         <template v-else-if="column.type === 'expand'">
                           <!-- 展开按钮 -->

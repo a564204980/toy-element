@@ -13,6 +13,7 @@ import { debounce } from "lodash-es";
 // 列管理
 export interface UseColumnsOptions {
   tableRef: Ref<HTMLElement | undefined>;
+  fit: Ref<boolean>;
   onColumnWidthsCalculated?: () => void;
 }
 
@@ -24,6 +25,7 @@ export interface UseColumnsReturn {
   flattenLeafColumns: ComputedRef<TableColumn[]>; // 展平后的叶子节点
   headerRows: ComputedRef<TableColumn[][]>; // 表头行数据（多级表头）
   tableWidth: Ref<number>; // 表格宽度
+  tableContentWidth: Ref<number>; // 表格内容的真实宽度
 
   // 计算属性
   fixedLeftColumnsLength: ComputedRef<number>; // 左固定列列数
@@ -36,9 +38,10 @@ export interface UseColumnsReturn {
 }
 
 export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
-  const { tableRef, onColumnWidthsCalculated } = options;
+  const { tableRef, fit, onColumnWidthsCalculated } = options;
 
   const tableWidth = ref(0);
+  const tableContentWidth = ref(0);
   const columns = ref<TableColumn[]>([]);
   const calculatedColumns = ref<TableColumn[]>([]);
 
@@ -98,7 +101,7 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
    */
   const fixedLeftColumnsLength = computed(() => {
     return columns.value.filter(
-      (col) => col.fixed === true || col.fixed === "left"
+      (col) => col.fixed === true || col.fixed === "left",
     ).length;
   });
 
@@ -109,6 +112,7 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
     return columns.value.filter((col) => col.fixed === "right").length;
   });
 
+  // 计算列宽
   const calculateColumnWidths = debounce(() => {
     if (!tableRef.value) return;
 
@@ -116,8 +120,8 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
     tableWidth.value = containerWidth;
 
     // 统计有固定宽度的列和无宽度的列
-    let fixedWidth = 0; // 固定宽度总和
     let flexCount = 0; // 无宽度列的数量
+    let fixedWidth = 0; // 固定宽度总和
     const minFlexWidth = 80;
 
     flattenLeafColumns.value.forEach((col) => {
@@ -132,21 +136,38 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
     const remainingWidth = containerWidth - fixedWidth;
 
     // 计算每个弹性列的宽度
-    const flexWidth =
-      flexCount > 0
-        ? Math.max(Math.floor(remainingWidth / flexCount), minFlexWidth)
-        : 0;
+    let flexWidth = minFlexWidth;
+
+    if (fit.value) {
+      flexWidth =
+        flexCount > 0
+          ? Math.max(Math.floor(remainingWidth / flexCount), minFlexWidth)
+          : 0;
+    } else {
+      flexWidth = minFlexWidth;
+    }
+
+    let totalWidth = 0; // 总宽
 
     // 分配最终宽度
     calculatedColumns.value = flattenLeafColumns.value.map((col) => {
+      let finalWidth;
       if (col.width) {
-        // 保持原有宽度
-        return { ...col };
+        finalWidth = parseWidth(col.width);
       } else {
-        // 分配计算后的宽度
-        return { ...col, width: `${flexWidth}px` };
+        finalWidth = flexWidth;
       }
+
+      totalWidth += finalWidth;
+
+      return {
+        ...col,
+        width: `${finalWidth}px`,
+        realWidth: finalWidth,
+      };
     });
+
+    tableContentWidth.value = totalWidth;
 
     nextTick(() => {
       onColumnWidthsCalculated?.();
@@ -159,7 +180,7 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
       await nextTick();
       calculateColumnWidths();
     },
-    { deep: true }
+    { deep: true },
   );
 
   return {
@@ -173,5 +194,6 @@ export const useColumns = (options: UseColumnsOptions): UseColumnsReturn => {
     calculatedColumns,
     tableWidth,
     calculateColumnWidths,
+    tableContentWidth,
   };
 };

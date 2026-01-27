@@ -24,11 +24,12 @@ export const tableProps = {
   stripe: Boolean,
   // 是否显示纵向边框
   border: Boolean,
+  // 表格高度
   height: {
     type: [String, Number] as PropType<string | number>,
     default: "",
   },
-  // 表格高度
+  // 表格最大高度
   maxHeight: {
     type: [String, Number] as PropType<string | number>,
     default: "",
@@ -113,6 +114,11 @@ export const tableProps = {
   spanMethod: {
     type: Function as PropType<(props: SpanMethodProps) => SpanMethodResult>,
     default: undefined,
+  },
+  // 列的宽度是否自适应
+  fit: {
+    type: Boolean,
+    default: true,
   },
 } as const;
 

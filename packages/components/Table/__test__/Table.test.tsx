@@ -65,6 +65,30 @@ describe("Table - 组件", () => {
 
       wrapper.unmount();
     });
+
+    it("当fit=false时，表格宽度应该等于列宽总和", async () => {
+      const columns = [
+        { prop: "name", label: "Name", width: "100" },
+        { prop: "date", label: "Date", width: "100" },
+        { prop: "address", label: "Address", width: "100" },
+      ];
+
+      const wrapper = mount(() => (
+        <Table data={[]} fit={false}>
+          {columns.map((col) => (
+            <TableColumn {...col}></TableColumn>
+          ))}
+        </Table>
+      ));
+
+      await doubleWait();
+
+      const tableHeader = wrapper.find(".er-table__header-wrapper table");
+      const tableBody = wrapper.find(".er-table__body-wrapper table");
+
+      expect(tableHeader.attributes("style")).toContain("width: 300px");
+      expect(tableBody.attributes("style")).toContain("width: 300px");
+    });
   });
 
   describe("多级表头", () => {
