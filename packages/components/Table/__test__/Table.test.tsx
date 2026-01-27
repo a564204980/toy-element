@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { mount } from "@vue/test-utils";
-import { doubleWait, createBasicTable, getTestData } from "./table-test-common";
+import {
+  doubleWait,
+  createBasicTable,
+  getTestData,
+  triggerTableColumnCalculation,
+} from "./table-test-common";
 import Table from "../Table.vue";
 import TableColumn from "../TableColumn.vue";
 import { nextTick } from "vue";
@@ -88,6 +93,65 @@ describe("Table - 组件", () => {
 
       expect(tableHeader.attributes("style")).toContain("width: 300px");
       expect(tableBody.attributes("style")).toContain("width: 300px");
+
+      wrapper.unmount();
+    });
+
+    it("当show-header=false时，应该不显示表头", async () => {
+      const columns = [
+        { prop: "name", label: "Name" },
+        { prop: "date", label: "Date" },
+      ];
+      const wrapper = mount(() => (
+        <Table data={[]} show-header={false}>
+          {columns.map((col) => (
+            <TableColumn {...col}></TableColumn>
+          ))}
+        </Table>
+      ));
+
+      await doubleWait();
+
+      const headerWrapper = wrapper.find(".er-table__header-wrapper");
+      expect(headerWrapper.exists()).toBe(false);
+    });
+
+    it("current-row-key 应该能设置当前行选中", async () => {
+      const data = [
+        { id: "1", name: "Row 1" },
+        { id: "2", name: "Row 2" },
+      ];
+
+      const wrapper = mount(() => (
+        <Table
+          data={data}
+          rowKey={"id"}
+          highlightCurrentRow={true}
+          currentRowKey={"1"}
+        >
+          <TableColumn prop="id" label="name"></TableColumn>
+          <TableColumn prop="id" label="name"></TableColumn>
+        </Table>
+      ));
+
+      await doubleWait();
+      await triggerTableColumnCalculation(wrapper);
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+
+      console.log("rows的长度", rows[0].classes());
+
+      expect(rows[0].classes()).toContain("current-row");
+      expect(rows[1].classes()).not.toContain("current-row");
+
+      await wrapper.setProps({ currentRowKey: "2" });
+
+      expect(rows[0].classes()).not.toContain("current-row");
+      expect(rows[1].classes()).toContain("current-row");
+
+      await wrapper.setProps({ currentRowKey: null });
+      expect(rows[0].classes()).not.toContain("current-row");
+      expect(rows[1].classes()).not.toContain("current-row");
     });
   });
 

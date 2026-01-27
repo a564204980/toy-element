@@ -1,7 +1,11 @@
-import { ref, type Ref } from "vue";
+import { ref, watch, type Ref } from "vue";
+import { get } from "lodash-es";
 
 export interface UseCurrentRowOptions {
   highlightCurrentRow: boolean;
+  currentRowKey: Ref<string | number | undefined | null>;
+  rowKey: Ref<string | ((row: any) => string) | undefined>;
+  data: Ref<any[]>;
   emit: (event: "current-change", current: any, old: any) => void;
 }
 
@@ -13,9 +17,11 @@ export interface UseCurrentRowReturn {
 }
 
 export const useCurrentRow = (
-  options: UseCurrentRowOptions
+  options: UseCurrentRowOptions,
 ): UseCurrentRowReturn => {
-  const { highlightCurrentRow, emit } = options;
+  const { highlightCurrentRow, emit, currentRowKey, rowKey, data } = options;
+
+  console.log("currentRowKey", currentRowKey.value);
 
   const currentRow = ref<any>(null);
 
@@ -55,6 +61,40 @@ export const useCurrentRow = (
       emit("current-change", currentRow.value, oldRow);
     }
   };
+
+  watch(
+    () => currentRowKey.value,
+    (key) => {
+      if (!highlightCurrentRow || !rowKey.value || !data.value) return;
+
+      if (key === undefined || key === null) {
+        setCurrentRow(null);
+        return;
+      }
+
+      const targetRow = data.value.find((row) => {
+        let rKey;
+        console.log(
+          'typeof rowKey.value === "string"',
+          typeof rowKey.value === "string",
+        );
+        if (typeof rowKey.value === "function") {
+          rKey = rowKey.value(row);
+        } else if (typeof rowKey.value === "string") {
+          rKey = get(row, rowKey.value);
+        }
+
+        return rKey === key;
+      });
+
+      console.log("targetRow", targetRow);
+
+      if (targetRow) {
+        setCurrentRow(targetRow);
+      }
+    },
+    { immediate: true },
+  );
 
   return {
     currentRow,

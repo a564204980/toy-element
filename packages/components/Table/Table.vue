@@ -70,6 +70,7 @@ const {
   scrollbarWidth,
 })
 
+
 const {
   currentRow,
   getRowClass,
@@ -77,6 +78,9 @@ const {
   setCurrentRow,
 } = useCurrentRow({
   highlightCurrentRow: props.highlightCurrentRow,
+  currentRowKey: toRef(props, "currentRowKey"),
+  rowKey: toRef(props, "rowKey"),
+  data: toRef(props, "data"),
   emit: emits,
 })
 
@@ -321,7 +325,7 @@ defineExpose({
   <div ref="tableRef" :class="tableClass" :style="tableStyle">
     <div class="er-table__inner-wrapper">
       <!-- 表头 -->
-      <div class="er-table__header-wrapper" ref="headerWrapperRef">
+      <div v-if="props.showHeader" class="er-table__header-wrapper" ref="headerWrapperRef">
         <table class="er-table__header" :style="{ width: tableContentWidth + 'px' }">
           <colgroup>
             <col v-for="column in calculatedColumns" :key="column.id"

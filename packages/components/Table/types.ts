@@ -46,6 +46,10 @@ export const tableProps = {
     type: Boolean,
     default: false,
   },
+  currentRowKey: {
+    type: [String, Number] as PropType<string | number | null>,
+    default: undefined,
+  },
   // 默认排序
   defaultSort: {
     type: Object as PropType<{
@@ -117,6 +121,11 @@ export const tableProps = {
   },
   // 列的宽度是否自适应
   fit: {
+    type: Boolean,
+    default: true,
+  },
+  // 是否显示表头
+  showHeader: {
     type: Boolean,
     default: true,
   },
