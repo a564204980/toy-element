@@ -84,6 +84,7 @@ const {
   emit: emits,
 })
 
+
 const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAllSelection } = useSelection({
   data: () => props.data,
   emit: emits,
@@ -263,6 +264,37 @@ const summaryData = computed(() => {
   return sums
 })
 
+// 获取用户自定义的行类名
+const getCustomRowClass = (row: any, rowIndex: number) => {
+  const { rowClassName } = props
+
+  if (typeof rowClassName === "string") {
+    return rowClassName
+  }
+
+  if (typeof rowClassName === "function") {
+    return rowClassName({ row, rowIndex })
+  }
+
+  return ""
+}
+
+// 获取用户自定义的行样式
+const getCustomRowStyle = (row: any, rowIndex: number) => {
+  const { rowStyle } = props
+
+
+  if (typeof rowStyle === "object" && rowStyle !== null) {
+    return rowStyle
+  }
+
+  if (typeof rowStyle === "function") {
+    return rowStyle({ row, rowIndex })
+  }
+
+  return undefined
+}
+
 
 
 
@@ -400,7 +432,8 @@ defineExpose({
             <tbody>
               <template v-for="(row, index) in displayData" :key="index">
                 <!-- 数据行 -->
-                <tr :class="getRowClass(row)" @click="handleRowClick(row)">
+                <tr :class="[getRowClass(row), getCustomRowClass(row, index)]" :style="getCustomRowStyle(row, index)"
+                  @click="handleRowClick(row)">
                   <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
                     :class="getCellClass(colIndex, column, calculatedColumns)" :style="{
                       ...getCellAlign(column.align),

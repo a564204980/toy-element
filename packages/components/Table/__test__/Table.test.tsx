@@ -122,24 +122,27 @@ describe("Table - 组件", () => {
         { id: "2", name: "Row 2" },
       ];
 
-      const wrapper = mount(() => (
-        <Table
-          data={data}
-          rowKey={"id"}
-          highlightCurrentRow={true}
-          currentRowKey={"1"}
-        >
-          <TableColumn prop="id" label="name"></TableColumn>
-          <TableColumn prop="id" label="name"></TableColumn>
-        </Table>
-      ));
+      const wrapper = mount(Table, {
+        props: {
+          data: data,
+          rowKey: "id",
+          highlightCurrentRow: true,
+          currentRowKey: "1",
+        },
+        slots: {
+          default: () => (
+            <>
+              <TableColumn prop="id" label="name"></TableColumn>
+              <TableColumn prop="id" label="name"></TableColumn>
+            </>
+          ),
+        },
+      });
 
       await doubleWait();
       await triggerTableColumnCalculation(wrapper);
 
       const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
-
-      console.log("rows的长度", rows[0].classes());
 
       expect(rows[0].classes()).toContain("current-row");
       expect(rows[1].classes()).not.toContain("current-row");
@@ -152,6 +155,85 @@ describe("Table - 组件", () => {
       await wrapper.setProps({ currentRowKey: null });
       expect(rows[0].classes()).not.toContain("current-row");
       expect(rows[1].classes()).not.toContain("current-row");
+    });
+
+    it("row-class-name（string）应该为所有行添加类名", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }, { id: 2 }],
+          rowClassName: "highlight-row",
+        },
+        slots: {
+          default: () => <TableColumn prop="id"></TableColumn>,
+        },
+      });
+
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+
+      expect(rows[0].classes()).toContain("highlight-row");
+      expect(rows[1].classes()).toContain("highlight-row");
+    });
+
+    it("row-class-name（function）应该为所有行添加类名", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [
+            { id: 1, type: "A" },
+            { id: 2, type: "B" },
+          ],
+          rowClassName: ({ rowIndex, row }) => {
+            if (rowIndex === 0) return "index-row";
+            if (row.type === "B") return "type-b-row";
+            return "";
+          },
+        },
+        slots: { default: () => <TableColumn prop="id"></TableColumn> },
+      });
+
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+
+      expect(rows[0].classes()).toContain("index-row");
+      expect(rows[1].classes()).toContain("type-b-row");
+    });
+
+    it("row-style (object) 应该为所有的行添加样式", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }, { id: 2 }],
+          rowStyle: { color: "red" },
+        },
+        slots: { default: () => <TableColumn prop="id" /> },
+      });
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+
+      expect(rows[0].attributes("style")).toContain("color: red");
+      expect(rows[1].attributes("style")).toContain("color: red");
+    });
+
+    it("row-style (function) 应该为所有的行添加样式", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }, { id: 2 }],
+          rowStyle: ({ rowIndex, row }) => {
+            if (rowIndex === 0) return { color: "red" };
+            if (row.id === 2) return { color: "blue" };
+            return {};
+          },
+        },
+        slots: { default: () => <TableColumn prop="id" /> },
+      });
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+
+      expect(rows[0].attributes("style")).toContain("color: red");
+      expect(rows[1].attributes("style")).toContain("color: blue");
     });
   });
 

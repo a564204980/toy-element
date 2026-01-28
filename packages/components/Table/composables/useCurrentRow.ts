@@ -21,8 +21,6 @@ export const useCurrentRow = (
 ): UseCurrentRowReturn => {
   const { highlightCurrentRow, emit, currentRowKey, rowKey, data } = options;
 
-  console.log("currentRowKey", currentRowKey.value);
-
   const currentRow = ref<any>(null);
 
   /**
