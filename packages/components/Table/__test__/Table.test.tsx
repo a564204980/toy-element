@@ -235,6 +235,113 @@ describe("Table - 组件", () => {
       expect(rows[0].attributes("style")).toContain("color: red");
       expect(rows[1].attributes("style")).toContain("color: blue");
     });
+
+    it("cell-class-name (string) 应该为所有单元格添加类名", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }, { id: 2 }],
+          cellClassName: "my-cell",
+        },
+        slots: {
+          default: () => <TableColumn prop="id" />,
+        },
+      });
+
+      await doubleWait();
+
+      const cells = wrapper.findAll(".er-table__body-wrapper tbody td");
+
+      expect(cells[0].classes()).toContain("my-cell");
+      expect(cells[1].classes()).toContain("my-cell");
+    });
+
+    it("cell-class-name (function) 应该根据逻辑添加类名", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [
+            { id: 1, val: 10 },
+            { id: 2, val: 20 },
+          ],
+          cellClassName: ({ row, columnIndex }) => {
+            console.log("row", row);
+            if (columnIndex === 0) return "my-cell";
+            if (row.id == 2) return "high-value-cell";
+            return "";
+          },
+        },
+        slots: {
+          default: () => (
+            <>
+              <TableColumn prop="id"></TableColumn>
+              <TableColumn prop="val"></TableColumn>
+            </>
+          ),
+        },
+      });
+
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+      const row0Cells = rows[0].findAll("td");
+      const row1Cells = rows[1].findAll("td");
+
+      expect(row0Cells[0].classes()).toContain("my-cell");
+      expect(row1Cells[1].classes()).toContain("high-value-cell");
+    });
+
+    it("cell-style (object) 应该为所有的单元格添加样式", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }, { id: 2 }],
+          cellStyle: { color: "red" },
+        },
+        slots: {
+          default: () => <TableColumn prop="id"></TableColumn>,
+        },
+      });
+
+      await doubleWait();
+
+      const cells = wrapper.findAll(".er-table__body-wrapper tbody td");
+
+      expect(cells[0].attributes("style")).toContain("color: red");
+      expect(cells[1].attributes("style")).toContain("color: red");
+    });
+
+    it("cell-style (function) 应该根据逻辑添加样式", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [
+            { id: 1, val: 10 },
+            { id: 2, val: 20 },
+          ],
+          cellStyle: ({ rowIndex, columnIndex }) => {
+            // 第一行显示红色
+            if (rowIndex === 0) return { color: "red" };
+            // 第二列显示蓝色
+            if (columnIndex === 1) return { color: "blue" };
+            return {};
+          },
+        },
+        slots: {
+          default: () => (
+            <>
+              <TableColumn prop="id" />
+              <TableColumn prop="val" />
+            </>
+          ),
+        },
+      });
+
+      await doubleWait();
+
+      const rows = wrapper.findAll(".er-table__body-wrapper tbody tr");
+      const rows0Cells = rows[0].findAll("td");
+      const rows1Cells = rows[1].findAll("td");
+
+      expect(rows0Cells[0].attributes("style")).toContain("color: red");
+      expect(rows1Cells[1].attributes("style")).toContain("color: blue");
+    });
   });
 
   describe("多级表头", () => {

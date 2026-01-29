@@ -1,4 +1,10 @@
-import type { CSSProperties, ExtractPropTypes, PropType, VNode } from "vue";
+import type {
+  CSSProperties,
+  ExtractPropTypes,
+  Prop,
+  PropType,
+  VNode,
+} from "vue";
 
 // 合并方法的参数类型
 export interface SpanMethodProps {
@@ -46,6 +52,32 @@ export const tableProps = {
     type: [Object, Function] as PropType<
       CSSProperties | ((data: { row: any; rowIndex: number }) => CSSProperties)
     >,
+  },
+  // 单元格类名
+  cellClassName: {
+    type: [String, Function] as PropType<
+      | string
+      | ((data: {
+          row: any;
+          rowIndex: number;
+          column: any;
+          columnIndex: number;
+        }) => string)
+    >,
+    default: "",
+  },
+  // 单元格样式
+  cellStyle: {
+    type: [Object, Function] as PropType<
+      | CSSProperties
+      | ((data: {
+          row: any;
+          rowIndex: number;
+          column: any;
+          columnIndex: number;
+        }) => CSSProperties)
+    >,
+    default: "",
   },
   // 当前行是否高亮
   highlightCurrentRow: {

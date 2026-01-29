@@ -295,7 +295,34 @@ const getCustomRowStyle = (row: any, rowIndex: number) => {
   return undefined
 }
 
+// 获取用户自定义的单元格类名
+const getCustomCellClass = (row: any, rowIndex: number, column: any, columnIndex: number) => {
+  const { cellClassName } = props
 
+  if (typeof cellClassName === "string") {
+    return cellClassName
+  }
+
+  if (typeof cellClassName === "function") {
+    return cellClassName({ row, rowIndex, column, columnIndex })
+  }
+
+  return ""
+}
+
+const getCustomCellStyle = (row: any, rowIndex: number, column: any, columnIndex: number) => {
+  const { cellStyle } = props
+
+  if (typeof cellStyle === "object" && cellStyle !== null) {
+    return cellStyle
+  }
+
+  if (typeof cellStyle === "function") {
+    return cellStyle({ row, rowIndex, column, columnIndex })
+  }
+
+  return undefined
+}
 
 
 
@@ -435,17 +462,16 @@ defineExpose({
                 <tr :class="[getRowClass(row), getCustomRowClass(row, index)]" :style="getCustomRowStyle(row, index)"
                   @click="handleRowClick(row)">
                   <td v-for="(column, colIndex) in calculatedColumns" :key="column.id"
-                    :class="getCellClass(colIndex, column, calculatedColumns)" :style="{
+                    :class="[getCellClass(colIndex, column, calculatedColumns), getCustomCellClass(row, index, column, colIndex)]"
+                    :style="{
                       ...getCellAlign(column.align),
-                      ...getCellFixedStyle(column, colIndex, calculatedColumns)
+                      ...getCellFixedStyle(column, colIndex, calculatedColumns),
+                      ...getCustomCellStyle(row, index, column, colIndex)
 
                     }" v-bind="getCellBinding(row, column, index, colIndex)">
                     <div class="er-table__cell">
                       <div class="er-table__cell-content">
                         <template v-if="column.type === 'selection'">
-                          <!-- <input type="checkbox" class="er-table__row-checkbox"
-                          :disabled="column.selectable ? !column.selectable(row, index) : false"
-                          :checked="isSelected(row)" @change="toggleRowSelection(row)" /> -->
                           <label class="er-checkbox">
                             <span class="er-checkbox__input" :class="{
                               'is-checked': isSelected(row),
