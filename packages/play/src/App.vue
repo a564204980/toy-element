@@ -17,15 +17,9 @@ const cellClassName = ({ row, columnIndex }: { row: any; columnIndex: number }) 
 };
 </script>
 <template>
-  <!-- <h3>1. Fit = True (默认，列应撑满)</h3>
-  <er-table :data="tableData" border style="width: 800px">
-    <er-table-column prop="date" label="Date" width="180" />
-    <er-table-column prop="name" label="Name" width="180" />
-    <er-table-column prop="address" label="Address" />
-  </er-table> -->
-  <h3>2. Fit = False (列不撑满，右侧应有留白)</h3>
-  <er-table :rowClassName="rowClassName" :data="tableData" row-key="id" :highlight-current-row="true"
-    :current-row-key="2" border style="width: 800px" :cellClassName="cellClassName">
+
+  <er-table :data="tableData" border style="width: 800px" :cellClassName="cellClassName" :selectOnIndeterminate="false">
+    <er-table-column type="selection" label="Index" width="80" />
     <er-table-column prop="date" label="Date" width="180" />
     <er-table-column prop="name" label="Name" width="180" />
     <er-table-column prop="address" label="Address" />

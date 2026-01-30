@@ -92,6 +92,7 @@ const { isSelected, toggleRowSelection, isAllSelected, isIndeterminate, toggleAl
   selectable: () => calculatedColumns.value.find(col => col.type === 'selection')?.selectable,
   treeProps: () => props.treeProps,
   rowKey: () => props.rowKey,
+  selectOnIndeterminate: () => props.selectOnIndeterminate
 })
 
 
@@ -542,14 +543,13 @@ defineExpose({
                 </tr>
               </template>
 
-              <!-- 空状态 -->
-              <tr v-if="props.data.length === 0">
+              <!-- <tr v-if="!props.data || props.data.length === 0">
                 <td :colspan="calculatedColumns.length">
                   <div class="er-table__cell">
-                    <div class="er-table__cell-content">暂无数据</div>
+                    <div class="er-table__cell-content">{{ emptyText }}</div>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
             </tbody>
             <!-- 合计行 -->
             <tfoot v-if="showSummary">
@@ -569,6 +569,13 @@ defineExpose({
               </tr>
             </tfoot>
           </table>
+
+          <!-- 空状态 -->
+          <div v-if="!props.data || props.data.length === 0" class="er-table__empty-block">
+            <span class="er-table__empty-text">
+              <slot name="empty">{{ props.emptyText }}</slot>
+            </span>
+          </div>
         </er-scrollbar>
       </div>
     </div>

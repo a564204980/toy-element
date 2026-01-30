@@ -159,11 +159,22 @@ $table-fixed-shadow-width: 8px;
   }
 
   // 空数据样式
-  @include e(empty-cell) {
+  @include e(empty-block) {
+    min-height: 60px;
     text-align: center;
-    color: #909399;
-    padding: 40px 0 !important;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
+  @include e(empty-text) {
+    display: block;
+    line-height: 60px;
+    width: 50%;
+    color: var(--er-text-color-secondary);
+  }
+
   // 斑马纹样式
   @include m(stripe) {
     .#{$namespace}-table__body {

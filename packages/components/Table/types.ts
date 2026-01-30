@@ -1,10 +1,4 @@
-import type {
-  CSSProperties,
-  ExtractPropTypes,
-  Prop,
-  PropType,
-  VNode,
-} from "vue";
+import type { CSSProperties, ExtractPropTypes, PropType, VNode } from "vue";
 
 // 合并方法的参数类型
 export interface SpanMethodProps {
@@ -164,6 +158,16 @@ export const tableProps = {
   },
   // 是否显示表头
   showHeader: {
+    type: Boolean,
+    default: true,
+  },
+  // 空数据时显示的文本内容
+  emptyText: {
+    type: String,
+    default: "暂无数据",
+  },
+  // 半选状态下点击全选的行为：true为全选，false为取消全选
+  selectOnIndeterminate: {
     type: Boolean,
     default: true,
   },

@@ -342,6 +342,57 @@ describe("Table - 组件", () => {
       expect(rows0Cells[0].attributes("style")).toContain("color: red");
       expect(rows1Cells[1].attributes("style")).toContain("color: blue");
     });
+
+    it("当数据为空时，empty-text应该显示", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [],
+          emptyText: "暂无数据",
+        },
+        slots: {
+          default: () => <TableColumn prop="id" />,
+        },
+      });
+
+      await doubleWait();
+
+      const emptyBlock = wrapper.find(".er-table__empty-block");
+      expect(emptyBlock.exists()).toBe(true);
+      expect(emptyBlock.text()).toBe("暂无数据");
+    });
+
+    it("当提供empty插槽时，应该优先显示插槽内容", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [],
+          emptyText: "暂无数据",
+        },
+        slots: {
+          default: () => <TableColumn prop="id" />,
+          empty: () => <div class="custom-empty">自定义插槽</div>,
+        },
+      });
+
+      await doubleWait();
+
+      const emptyBlock = wrapper.find(".er-table__empty-block");
+      expect(emptyBlock.exists()).toBe(true);
+      expect(emptyBlock.find(".custom-empty").exists()).toBe(true);
+      expect(emptyBlock.text()).toBe("自定义插槽");
+    });
+
+    it("当数据不为空时，不应显示空状态", async () => {
+      const wrapper = mount(Table, {
+        props: {
+          data: [{ id: 1 }],
+          emptyText: "No Data",
+        },
+        slots: { default: () => <TableColumn prop="id" /> },
+      });
+
+      await doubleWait();
+      expect(wrapper.find(".er-table__empty-block").exists()).toBe(false);
+    });
   });
 
   describe("多级表头", () => {

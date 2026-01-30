@@ -11,6 +11,7 @@ export interface UseSelectionOptions {
     checkStrictly?: boolean;
   };
   rowKey?: () => string | ((row: any) => string);
+  selectOnIndeterminate: () => boolean;
 }
 
 export const useSelection = (options: UseSelectionOptions) => {
@@ -135,6 +136,14 @@ export const useSelection = (options: UseSelectionOptions) => {
    */
   const toggleAllSelection = () => {
     const rows = data();
+
+    // 如果是半选状态，根据selectOnIndeterminate的值来决定是全选还是取消全选
+    if (isIndeterminate.value && !options.selectOnIndeterminate()) {
+      clearSelection();
+      emit("select-all", []);
+      emit("selection-change", []);
+      return;
+    }
 
     if (isAllSelected.value) {
       selection.value = [];
